@@ -1,0 +1,6 @@
+Import('env');
+Export('env');
+
+targets=['style_box.cpp','widget.cpp','window.cpp','painter.cpp','frame.cpp','container.cpp','geometry.cpp','keyboard.cpp','range.cpp','skin.cpp','file_system.cpp','timer.cpp'];
+
+env.Library('gui_base', targets);

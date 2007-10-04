@@ -1,0 +1,6 @@
+Import('env');
+Export('env');
+
+targets=['box_container.cpp','scroll_container.cpp','stack_container.cpp','fixed_container.cpp','grid_container.cpp','center_container.cpp'];
+
+env.Library('gui_containers', targets);

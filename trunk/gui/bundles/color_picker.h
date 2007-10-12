@@ -38,7 +38,7 @@ class ColorPicker : public HBoxContainer {
 	HSlider *a_slider;
 	ColorShow *show_color;
 	Color color;
-	Uint8 alpha;
+	unsigned char alpha;
 	bool use_alpha;
 	
 	void color_changed_callback(double);
@@ -51,7 +51,7 @@ public:
 	
 	void set_color(const Color &p_color, int p_alpha=-1);
 	Color get_color() const;
-	Uint8 get_alpha() const;
+	unsigned char get_alpha() const;
 	
 	ColorPicker(bool p_with_alpha=false);
 

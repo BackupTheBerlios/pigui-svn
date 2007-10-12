@@ -95,7 +95,7 @@ void FixedContainer::set_child_pos(Frame *p_frame,const Point &p_pos) {
 			
 			fe->desired_pos=p_pos;
 			
-			set_minimum_size_changed();
+			check_minimum_size();
 			update();
 			return;
 			
@@ -120,7 +120,7 @@ void FixedContainer::set_child_size(Frame *p_frame,const Size &p_size) {
 			
 			fe->desired_size=p_size;
 			
-			set_minimum_size_changed();
+			check_minimum_size();
 			update();
 			return;
 			

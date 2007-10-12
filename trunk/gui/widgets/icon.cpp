@@ -43,7 +43,7 @@ String Icon::get_type() {
 void Icon::set_bitmap(BitmapID p_bitmap) {
 	
 	bitmap=p_bitmap;
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 }
 

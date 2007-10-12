@@ -138,7 +138,7 @@ void ValueLabel::draw(const Point& p_pos,const Size& p_size,const Rect& p_expose
 
 void ValueLabel::range_changed() {
 
-	set_minimum_size_changed();
+	check_minimum_size();
 }
 void ValueLabel::range_value_changed(double p_to_what) {
 
@@ -162,14 +162,14 @@ void ValueLabel::set_range(RangeBase *p_range) {
 		p_range->value_changed_signal.connect(this,&ValueLabel::range_value_changed );
 	}
 	range=p_range;
-	set_minimum_size_changed();
+	check_minimum_size();
 
 }
 void ValueLabel::set_suffix(String p_suffix) {
 	
 	suffix=p_suffix;
 	update();
-	set_minimum_size_changed();	
+	check_minimum_size();	
 }
 
 ValueLabel::ValueLabel() {

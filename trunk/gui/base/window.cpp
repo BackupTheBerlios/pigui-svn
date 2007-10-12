@@ -247,6 +247,62 @@ void Window::check_for_deletes() {
 	
 }
 */
+
+void Window::frame_request_resize(Frame *p_frame) {
+
+	size_update_needed=true;
+	size_update_from=NULL;
+
+}
+
+void Window::check_size_updates() {
+
+	if (!visible)
+		return;
+		
+	if (size_update_needed && root_frame) {
+	
+		Frame *from;
+		 
+		if (size_update_from) {
+		
+		 	from = size_update_from;		 			 	
+		} else {
+		
+			from=root_frame;
+		}
+		
+		if (from == root_frame) {
+		
+			Size rfminsize = root_frame->get_minimum_size();
+
+			if (rfminsize.width > size.width || rfminsize.height > size.height)
+				set_size(rfminsize);
+			else
+				from->resize_tree(size);
+		
+		} else {
+		
+			from->resize_tree( from->get_size_cache() );
+		}
+		
+		size_update_needed=false;		
+		size_update_from=NULL;
+		
+		update( Rect( from->get_global_pos(), from->get_size_cache() ) );
+
+	}
+	
+	Window *ch = childs;
+	
+	while (ch) {
+	
+		ch->check_size_updates();
+		ch=ch->next;
+	}
+
+}
+
 void Window::check_for_updates() {
 
 	/* For now, if the window has a child, it wont redraw */
@@ -258,6 +314,7 @@ void Window::check_for_updates() {
 		return;
 	}
 
+	check_size_updates();
 	
 	root_data->update_rect_list_locked=true;
 	
@@ -726,7 +783,8 @@ void Window::frame_deleted_notify(Frame *p_frame) {
 		drag.child=0;
 	if (focus_child==p_frame)
 		focus_child=0;
-		
+	if (size_update_from==p_frame)
+		size_update_from=0;
 	
 }
 
@@ -855,8 +913,8 @@ void Window::initialize() {
 	root=this;
 	focus=this;
 	
-	
 	size_update_needed=true;
+	size_update_from=0;
 	no_local_updates=false;
 	no_stretch_root_frame=false;
 	

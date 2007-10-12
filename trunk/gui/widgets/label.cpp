@@ -84,7 +84,7 @@ void Label::set_text(const String& p_string) {
 		return;
 	
 	text=p_string;
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 	
 }

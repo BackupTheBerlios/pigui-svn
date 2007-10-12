@@ -98,7 +98,6 @@ Container::Element* Container::add_frame_internal( Frame * p_frame, bool p_front
 		get_window()->set_tree_size_changed();
 	}
 	
-	
 	return new_elem;
 }
 
@@ -474,63 +473,24 @@ void Container::resize_tree(const Size& p_new_size) {
 }
 
 
-void Container::adjust_minimum_size() {
+void Container::check_minimum_size() {
 
 	if (!get_window())
 		return;
-
-	if (_cp->resizing) {
-		_cp->recursive_resize_attempt=true; //something attempted to resize while we were resizing..
-		return; //I'm already doing that..
-	}
-	
+		
 	Size ms=get_minimum_size();
+	
 	if (ms.width>_cp->size_cache.width || ms.height>_cp->size_cache.height) {
-		/* Children stuff is bigger than this!! */
-		
+	
 		if (get_parent()) {
-			
-			get_parent()->adjust_minimum_size();
+		
+			get_window()->frame_request_resize(get_parent());
+			get_parent()->check_minimum_size();			
 		} else {
-			
-			resize_tree( ms );
-			top_size_adjust_signal.call( ms );
-		}
 		
-	} else {
-		
-		resize_tree( _cp->size_cache );
-	}
-	
-	update();
-
-}
-
-void Container::set_minimum_size_changed() {
-
-	if (!get_window())
-		return;
-	
-	if (_cp->resizing) {
-		_cp->recursive_resize_attempt=true; //something attempted to resize while we were resizing..
-		return; //I'm already doing that..
-	}
-	
-	Size ms=get_minimum_size();
-	if (ms.width>_cp->size_cache.width || ms.height>_cp->size_cache.height) {
-		/* Children stuff is bigger than this!! */
-		
-		if (get_parent()) {
-			
-			get_parent()->adjust_minimum_size();
-		} else {
-			
-			resize_tree( ms );
-			top_size_adjust_signal.call( ms );
-		}
-		
-	}
-
+			get_window()->frame_request_resize(0);		
+		}		
+	} 	
 }
 
 Point Container::get_margin_offset() {

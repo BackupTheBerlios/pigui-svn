@@ -69,8 +69,6 @@ friend struct ContainerPrivate;
 protected:	
 
 	virtual void skin_changed();	
-	virtual void set_minimum_size_changed();
-	
 
 	/* Internal API */
 	Element* get_element_list();	
@@ -106,7 +104,7 @@ public:
 
 	Signal< Method1<const Size> > top_size_adjust_signal;
 	
-	void adjust_minimum_size(); ///< Not really meant to be called
+	virtual void check_minimum_size(); 
 
 	
 	Point get_child_pos( Frame * p_child );

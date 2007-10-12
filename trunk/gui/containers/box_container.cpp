@@ -21,7 +21,7 @@ Container::Element *BoxContainer::create_new_element() {
 void BoxContainer::set_separation( int p_separation ) {
 	
 	separation=p_separation;
-	//set_minimum_size_changed();
+	//check_minimum_size();
 }
 Size BoxContainer::get_minimum_size_internal() {
 	
@@ -76,7 +76,7 @@ void BoxContainer::add_frame(Frame *p_frame,int p_stretch) {
 		return;
 	e->stretch=p_stretch;
 	
-	set_minimum_size_changed();
+	check_minimum_size();
 }
 
 

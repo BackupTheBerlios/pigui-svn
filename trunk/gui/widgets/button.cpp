@@ -37,7 +37,7 @@ void Button::set_text(String p_text) {
 
 	label_text=p_text;
 	parse_accelerator();
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 
 }
@@ -45,7 +45,7 @@ void Button::set_icon(BitmapID p_icon) {
 
 	icon=p_icon;
 
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 
 }
@@ -281,7 +281,7 @@ void Button::set_shurtcut(unsigned int p_shortcut,bool p_active) {
 
 	shortcut=p_shortcut;
 	shortcut_active=p_active;
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 	
 }

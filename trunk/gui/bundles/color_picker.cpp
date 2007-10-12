@@ -46,7 +46,7 @@ Color ColorPicker::get_color() const {
 	
 	return color;	
 }
-Uint8 ColorPicker::get_alpha() const {
+unsigned char ColorPicker::get_alpha() const {
 	
 	return alpha;
 }
@@ -57,13 +57,13 @@ void ColorPicker::color_changed_callback(double) {
 		return;
 	
 	
-	color.r=(Uint8)r_slider->get_range()->get();
-	color.g=(Uint8)g_slider->get_range()->get();
-	color.b=(Uint8)b_slider->get_range()->get();
+	color.r=(unsigned char)r_slider->get_range()->get();
+	color.g=(unsigned char)g_slider->get_range()->get();
+	color.b=(unsigned char)b_slider->get_range()->get();
 	if (!use_alpha)
 		set_color(color);
 	else {
-		alpha=(Uint8)a_slider->get_range()->get();
+		alpha=(unsigned char)a_slider->get_range()->get();
 		set_color(color,alpha);
 	}
 

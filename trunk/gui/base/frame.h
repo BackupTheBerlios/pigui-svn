@@ -29,13 +29,15 @@ protected:
 	virtual const Color& color(int p_which); ///< Get a certain color, from the enum. Override to create specific custom looking widgets.
 	
 
-	virtual void set_minimum_size_changed(); ///< This method is called BY THE FRAME (no the outside) to notify the rest of the frame tree that its minimum size has changed.
+	virtual void check_minimum_size();
+
 	virtual void set_in_window();
 	
 public:
 	
 	
 	
+	virtual void adjust_minimum_size();
 	
 	virtual	void update();
 	void update(bool p_only_rect,const Rect& p_rect=Rect()); ///< Call update. This means the frame will be redraw when IDLE (not when update called!). Alternative you can ask to update only a region.

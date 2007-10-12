@@ -27,6 +27,8 @@ struct FramePrivate {
 
 void Frame::window_hid() {}
 
+
+
 const StyleBox& Frame::stylebox(int p_which) {
 	
 	static StyleBox none;
@@ -177,15 +179,27 @@ bool Frame::can_fill_horizontal() {
 	
 }
 	
-void Frame::set_minimum_size_changed() {
+void Frame::adjust_minimum_size() {
 
-	if (!_fp->window) //pointless, means it wasnt added yet
+	if (!_fp->window)
 		return;
-	
-	if (_fp->parent)
-		_fp->parent->adjust_minimum_size();
+	_fp->window->frame_request_resize(this);
+
 }
 	
+void Frame::check_minimum_size() {
+	
+	if (!_fp->window)
+		return;
+	
+	if (!_fp->parent) {
+	
+		_fp->window->frame_request_resize(this);
+	} else {
+	
+		_fp->parent->check_minimum_size();	
+	}			
+}
 	
 void Frame::set_parent(Container *p_container) {
 	
@@ -243,10 +257,8 @@ void Frame::show() {
 		return;
 	
 	_fp->visible=true;
-//	Frame::set_minimum_size_changed();	
-	if (_fp->parent)
-		_fp->parent->adjust_minimum_size();
 	
+	check_minimum_size();
 	update();
 }
 void Frame::hide() {
@@ -261,7 +273,8 @@ void Frame::hide() {
 	/* Set hide notify, to avoid focus to continue sending to a hdiden widget */
 	if (get_window())
 		get_window()->frame_hide_notify(this);
-	//Frame::set_minimum_size_changed();
+	
+	check_minimum_size();
 }
 bool Frame::is_visible() {
 	

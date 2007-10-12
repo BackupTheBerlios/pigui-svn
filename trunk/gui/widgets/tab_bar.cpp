@@ -258,7 +258,7 @@ void TabBar::add_tab(String p_text,bool p_front) {
 		}
 	}	
 	
-	set_minimum_size_changed();
+	check_minimum_size();
 	update();
 }
 

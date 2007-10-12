@@ -101,9 +101,10 @@ private:
 	Window *parent; //in case we have a parent;
 	
 	//bool queued_delete;
-	
 
+	Frame *size_update_from;
 	bool size_update_needed;
+	
 	Window *childs;
 	Window *next;
 	
@@ -134,6 +135,7 @@ private:
 	bool no_local_updates;
 	bool no_stretch_root_frame;
 
+	void check_size_updates();
 public:
 	
 	Signal<> popup_cancel_signal;
@@ -180,6 +182,7 @@ public:
 	void set_focus(Frame *p_frame);
 	void clear_focus();
 	
+	void frame_request_resize(Frame *p_frame);
 	void frame_deleted_notify(Frame *p_frame);
 
 	Skin *get_skin();

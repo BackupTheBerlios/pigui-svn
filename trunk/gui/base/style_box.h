@@ -19,6 +19,10 @@ namespace GUI {
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
+
+/**
+	@author Juan Linietsky <reduzio@gmail.com>
+*/
 struct StyleBox {
 	
 	
@@ -40,29 +44,16 @@ struct StyleBox {
 		bool blend;
 	} flat;
 	
-	enum BitmapPos {
-		
-		POS_TOPLEFT,
-		POS_TOP,
-		POS_TOPRIGHT,
-		POS_LEFT,
-		POS_CENTER,
-		POS_RIGHT,
-		POS_BOTTOMLEFT,
-		POS_BOTTOM,
-		POS_BOTTOMRIGHT,
-		POS_MAX
-	};
-	
 	int margins[4];
-	BitmapID bitmaps[POS_MAX];
+	BitmapID bitmap;
+	int bitmap_margins[4];
 	
 	bool draw_center;
 	
 
 	StyleBox();
-	StyleBox(int p_margin,Color p_center,Color p_upleft,Color p_downright,bool p_blend=true);
-	StyleBox(int p_margin,Color p_upleft,Color p_downright); /* no center */
+	StyleBox(int p_margin,Color p_center,Color p_upleft,Color p_downright,bool p_blend=true);	
+	StyleBox(int p_margin,Color p_upleft,Color p_downright);
 
 	
 };

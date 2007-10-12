@@ -52,6 +52,8 @@ public:
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos,Direction p_dir ,const Color&p_color=Color(255,255,255) )=0;
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos, const Rect& p_src_rect,Direction p_dir,const Color&p_color=Color(255,255,255) )=0;
 	
+	virtual void draw_tiled_bitmap_region(BitmapID p_bitmap,const Rect& p_region,const Rect& p_rect,const Point& p_origin,const Color&p_color=Color());
+		
 	virtual void draw_tiled_bitmap(BitmapID p_bitmap,const Rect& p_rect,const Point& p_origin,const Color&p_color=Color(255,255,255))=0;
 	virtual void draw_tiled_bitmap(BitmapID p_bitmap,const Rect& p_rect,const Color&p_color=Color(255,255,255));
 	

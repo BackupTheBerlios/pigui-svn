@@ -16,22 +16,19 @@ namespace GUI {
 StyleBox::StyleBox()
 {
 	
-	for (int i=0;i<POS_MAX;i++) 
-		bitmaps[i]=-1; 
-	
-	for (int i=0;i<4;i++)
+	for (int i=0;i<4;i++) {
 		margins[i]=-1; //dont use forced margin
+		bitmap_margins[i]=0;
+	}
 	
 	mode=MODE_NONE;
 	flat.margin=1;
 	flat.blend=false;
 	draw_center=true;
+	bitmap=-1;
 }
 
 StyleBox::StyleBox(int p_margin,Color p_upleft,Color p_downright) {
-	
-	for (int i=0;i<POS_MAX;i++) 
-		bitmaps[i]=-1; 
 	
 	mode=MODE_FLAT;
 	flat.blend=false;
@@ -39,16 +36,16 @@ StyleBox::StyleBox(int p_margin,Color p_upleft,Color p_downright) {
 	flat.border_upleft=p_upleft;
 	flat.border_downright=p_downright;
 	draw_center=false;
+	bitmap=-1;
 	
-	for (int i=0;i<4;i++)
+	for (int i=0;i<4;i++) {
 		margins[i]=p_margin;
+		bitmap_margins[i]=0;
+	}
 	
 }
 
 StyleBox::StyleBox(int p_margin,Color p_center,Color p_upleft,Color p_downright,bool p_blend) {
-	
-	for (int i=0;i<POS_MAX;i++) 
-		bitmaps[i]=-1; 
 	
 	mode=MODE_FLAT;
 	flat.blend=p_blend;
@@ -57,9 +54,12 @@ StyleBox::StyleBox(int p_margin,Color p_center,Color p_upleft,Color p_downright,
 	flat.border_upleft=p_upleft;
 	flat.border_downright=p_downright;
 	draw_center=true;
+	bitmap=-1;
 	
-	for (int i=0;i<4;i++)
+	for (int i=0;i<4;i++) {
 		margins[i]=p_margin;
+		bitmap_margins[i]=0;
+	}
 	
 }
 

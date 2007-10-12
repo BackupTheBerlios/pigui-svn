@@ -408,14 +408,88 @@ void Painter::draw_tiled_bitmap(BitmapID p_bitmap,const Rect& p_rect,const Color
 }
 
 
+void Painter::draw_tiled_bitmap_region(BitmapID p_bitmap,const Rect& p_region,const Rect& p_rect,const Point& p_origin,const Color&p_color) {
+
+
+	if (!is_bitmap_valid(p_bitmap))
+		return;
+	
+	if (p_rect.size.width<=0 || p_rect.size.height<=0)
+		return;
+	
+	Size bm_size=p_region.size;
+	
+	Size ofs=p_rect.pos;
+	
+	if (p_origin.x < p_rect.pos.x) {
+		ofs.x-=(p_rect.pos.x-p_origin.x)%bm_size.width;
+	} else if (p_origin.x > p_rect.pos.x) {
+		
+		ofs.x-=bm_size.width-(p_origin.x-p_rect.pos.x)%bm_size.width;
+	}
+	
+	if (p_origin.y < p_rect.pos.y) {
+		ofs.y-=(p_rect.pos.y-p_origin.y)%bm_size.height;
+	} else if (p_origin.y > p_rect.pos.y) {
+		
+		ofs.y-=bm_size.height-(p_origin.y-p_rect.pos.y)%bm_size.height;
+	}
+	
+	
+	
+	while (ofs.y<(p_rect.pos.y+p_rect.size.height)) {
+		
+		Point ofsh=ofs;
+		
+		while(ofsh.x<(p_rect.pos.x+p_rect.size.width)) {
+			
+			
+			Point point=ofsh;
+			Rect lrect=Rect(Point(),bm_size);
+			
+			if (ofsh.x<p_rect.pos.x) {
+				
+				point.x=p_rect.pos.x;
+				lrect.pos.x=p_rect.pos.x-ofsh.x;
+				lrect.size.width-=lrect.pos.x;
+			}
+			
+			if ( (ofsh.x+bm_size.width) > (p_rect.pos.x+p_rect.size.width) ) {
+				
+				lrect.size.width-=(ofsh.x+bm_size.width)-(p_rect.pos.x+p_rect.size.width);
+			}
+			
+			if (ofsh.y<p_rect.pos.y) {
+				
+				point.y=p_rect.pos.y;
+				lrect.pos.y=p_rect.pos.y-ofsh.y;
+				lrect.size.height-=lrect.pos.y;
+			}
+			
+			if ( (ofsh.y+bm_size.height) > (p_rect.pos.y+p_rect.size.height) ) {
+				
+				lrect.size.height-=(ofsh.y+bm_size.height)-(p_rect.pos.y+p_rect.size.height);
+			}
+			
+			Rect r=lrect;
+			r.pos+=p_region.pos;
+			draw_bitmap( p_bitmap, point, r,p_color );
+			
+			ofsh.x+=bm_size.width;
+			
+		}
+		
+		ofs.y+=bm_size.height;
+		
+	}
+
+}
+
 void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const Size& p_size) {
 	
 	draw_stylebox( p_stylebox, p_pos, p_size, Rect( p_pos, p_size ));
 }
 void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const Size& p_size,const Rect &p_clip) {
-	
-	if (!p_clip.intersects_with( Rect( p_pos, p_size ) ))
-		    return;
 	
 	
 	switch(p_stylebox.mode) {
@@ -463,33 +537,131 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 		case StyleBox::MODE_FLAT_BITMAP:
 		case StyleBox::MODE_BITMAP: {
 			
+			if (!is_bitmap_valid(p_stylebox.bitmap))
+				break;
+				
+			const int *m=p_stylebox.bitmap_margins;
+			Point btopleft=Point( m[MARGIN_LEFT] , m[MARGIN_TOP] );
+			Point bbottomright=Point( m[MARGIN_RIGHT] , m[MARGIN_BOTTOM] );
+			
+			Size bsize = get_bitmap_size( p_stylebox.bitmap );
+			
+			Rect rect_topleft=Rect( Point(), btopleft);
+			Rect rect_center=Rect( btopleft, bsize-btopleft-bbottomright );
+			Rect rect_bottomright=Rect( bsize-bbottomright, bbottomright );
+			Rect rect_topright=Rect( Point( bsize.x-m[MARGIN_RIGHT], 0 ), Size( m[MARGIN_RIGHT], m[MARGIN_TOP] ) );
+			Rect rect_bottomleft=Rect( Point( 0,bsize.y-m[MARGIN_BOTTOM]), Size( m[MARGIN_LEFT], m[MARGIN_BOTTOM] ) );
+			Rect rect_left( Point( 0, m[MARGIN_TOP]), Size( m[MARGIN_LEFT], rect_center.size.y ));
+			Rect rect_top( Point(m[MARGIN_LEFT],0), Size( rect_center.size.x,m[MARGIN_TOP] ));
+			Rect rect_right( Point(rect_center.size.x+m[MARGIN_LEFT],m[MARGIN_TOP]), Size( m[MARGIN_RIGHT],rect_center.size.y ));
+			Rect rect_bottom( Point(m[MARGIN_LEFT],rect_center.size.y+m[MARGIN_TOP]), Size( rect_center.size.x,m[MARGIN_BOTTOM] ));
+			
+			if (!rect_topleft.has_no_area()) {
+			
+				draw_bitmap(p_stylebox.bitmap,p_pos, rect_topleft);
+			}
 			//fixed
-			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] )) {
 			
-				draw_bitmap( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] , p_pos );
-			}
-			
-			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_TOPRIGHT] )) {
+			if (!rect_topright.has_no_area()) {
 			
 				Point pos=p_pos;
-				pos.x+=p_size.x-get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPRIGHT] ).width;
-			
-				draw_bitmap( p_stylebox.bitmaps[StyleBox::POS_TOPRIGHT] , pos );
+				pos.x+=p_size.x-m[MARGIN_RIGHT];
+				draw_bitmap(p_stylebox.bitmap,pos, rect_topright);
+
 			}
-			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_BOTTOMLEFT] )) {
+			
+			 
+			if (!rect_bottomleft.has_no_area()) {
 			
 				Point pos=p_pos;
-				pos.y+=p_size.y-get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMLEFT] ).height;
-				draw_bitmap( p_stylebox.bitmaps[StyleBox::POS_BOTTOMLEFT] , pos );
-			}
-			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] )) {
-			
-				Point pos=p_pos+p_size-get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] );
-				draw_bitmap( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] , pos );
+				pos.y+=p_size.y-m[MARGIN_BOTTOM];
+				draw_bitmap(p_stylebox.bitmap,pos, rect_bottomleft);
+
 			}
 			
+			if (!rect_bottomright.has_no_area()) {
+			
+				Point pos=p_pos+p_size-Size(m[MARGIN_RIGHT],m[MARGIN_BOTTOM]);
+				draw_bitmap(p_stylebox.bitmap,pos, rect_bottomright);
+			}
+			
+			
+			if (!rect_top.has_no_area()) {
+			
+				Point pos=p_pos;
+				pos.x+=m[MARGIN_LEFT];
+				
+				Size size=p_size;
+				
+				size.width-=m[MARGIN_LEFT]+m[MARGIN_RIGHT];
+				size.height=m[MARGIN_TOP];
+				
+				Rect dest=Rect(pos,size).clip(p_clip);
+				
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_top,dest,pos); 			
+			}
+			
+			if (!rect_bottom.has_no_area()) {
+			
+				Point pos=p_pos;
+				pos.y+=p_size.y-m[MARGIN_BOTTOM];
+				pos.x+=m[MARGIN_LEFT];
+				Size size=p_size;
+				
+				size.width-=m[MARGIN_LEFT]+m[MARGIN_RIGHT];
+				size.height=m[MARGIN_BOTTOM];
+				
+				Rect dest=Rect(pos,size).clip(p_clip);
+				
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_bottom,dest,pos); 			
+			}
+			
+			if (!rect_left.has_no_area()) {
+			
+				Point pos=p_pos;
+				pos.y+=m[MARGIN_TOP];
+				
+				Size size=p_size;
+				
+				size.height-=m[MARGIN_TOP]+m[MARGIN_BOTTOM];
+				size.width=m[MARGIN_LEFT];
+				
+				Rect dest=Rect(pos,size).clip(p_clip);
+				
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_left,dest,pos); 			
+			}
+			
+			if (!rect_right.has_no_area()) {
+			
+				Point pos=p_pos;
+				pos.x+=p_size.x-m[MARGIN_RIGHT];
+				pos.y+=m[MARGIN_TOP];
+				
+				Size size=p_size;
+				
+				size.height-=m[MARGIN_TOP]+m[MARGIN_BOTTOM];
+				size.width=m[MARGIN_RIGHT];
+				
+				Rect dest=Rect(pos,size).clip(p_clip);
+				
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_right,dest,pos); 			
+			}
+			/*
+			if (p_draw_center && !rect_center.has_no_area()) {
+			
+				Point pos=p_pos+rect_topleft.size;
+				Size size=p_size;
+				size-=rect_topleft.size+rect_bottomright.size;
+				
+				Rect dest=Rect(pos,size).clip(p_clip);
+				
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_center,dest,pos); 			
+			
+			}
+			*/
+			/*
 			//expandable
-			if (p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_BITMAP && is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_CENTER] )) {
+			if (p_draw_center && p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_BITMAP && is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_CENTER] )) {
 			
 				
 				Point pos=p_pos+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] );
@@ -501,7 +673,7 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 				
 			}			
 			
-			if (p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_FLAT_BITMAP) {
+			if (p_draw_center && p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_FLAT_BITMAP) {
 			
 				
 				Point pos=p_pos+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] );
@@ -575,15 +747,18 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_BOTTOM] ,dest,pos );
 				
 			}						
+			
+			*/
 		} break;
 		
 		default: {}
 	}
+
+
 }
 
 int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_margin) {
-	
-	
+
 	
 	if (p_stylebox.margins[p_margin]>=0)
 		return p_stylebox.margins[p_margin];
@@ -599,15 +774,7 @@ int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_marg
 			} break;
 			case StyleBox::MODE_FLAT_BITMAP:
 			case StyleBox::MODE_BITMAP: {
-				
-				switch(p_margin) {
-					
-					case MARGIN_TOP: res=get_bitmap_size( p_stylebox.bitmaps[ StyleBox::POS_TOP ] ).height; break;
-					case MARGIN_BOTTOM: res=get_bitmap_size( p_stylebox.bitmaps[ StyleBox::POS_BOTTOM ] ).height; break;
-					case MARGIN_LEFT: res=get_bitmap_size( p_stylebox.bitmaps[ StyleBox::POS_LEFT ] ).width; break;
-					case MARGIN_RIGHT: res=get_bitmap_size( p_stylebox.bitmaps[ StyleBox::POS_RIGHT ] ).width; break;
-					default: res=0; 
-				};				
+				res=p_stylebox.bitmap_margins[p_margin];
 			} break;
 			default: res=0;
 	
@@ -621,6 +788,7 @@ int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_marg
 
 }
 
+
 Size Painter::get_stylebox_min_size(const StyleBox& p_stylebox,bool p_with_center) {
 	
 	Size min=Size( 	get_stylebox_margin( p_stylebox, MARGIN_LEFT) + 
@@ -630,7 +798,9 @@ Size Painter::get_stylebox_min_size(const StyleBox& p_stylebox,bool p_with_cente
 	
 	if (p_stylebox.mode==StyleBox::MODE_BITMAP && p_with_center) {
 		
-		min+=get_bitmap_size( p_stylebox.bitmaps[ StyleBox::POS_CENTER ] );
+		Size center_size=get_bitmap_size( p_stylebox.bitmap);
+		center_size-=Point( p_stylebox.bitmap_margins[MARGIN_LEFT]+p_stylebox.bitmap_margins[MARGIN_RIGHT],p_stylebox.bitmap_margins[MARGIN_TOP]+p_stylebox.bitmap_margins[MARGIN_BOTTOM]);
+		min+=center_size;
 	}
 		     
 		     

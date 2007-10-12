@@ -928,7 +928,7 @@ void Window::set_no_local_updates(bool p_disable) {
 
 void Window::set_no_stretch_root_frames(bool p_disable) {
 
-	no_stretch_root_frame=p_disable;
+	//no_stretch_root_frame=p_disable;
 }
 
 void Window::adjust_size_type() {

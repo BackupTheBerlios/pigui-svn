@@ -646,8 +646,8 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 				
 				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_right,dest,pos); 			
 			}
-			/*
-			if (p_draw_center && !rect_center.has_no_area()) {
+			
+			if (!rect_center.has_no_area()) {
 			
 				Point pos=p_pos+rect_topleft.size;
 				Size size=p_size;
@@ -658,7 +658,7 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_center,dest,pos); 			
 			
 			}
-			*/
+			
 			/*
 			//expandable
 			if (p_draw_center && p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_BITMAP && is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_CENTER] )) {

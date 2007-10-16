@@ -21,7 +21,7 @@ namespace GUI {
 */
 class StackContainer : public Container {
 	
-	Size get_minimum_size_internal();
+	virtual Size get_minimum_size_internal();
 	void resize_internal(const Size& p_new_size);
 	
 public:

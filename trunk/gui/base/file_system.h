@@ -38,6 +38,9 @@ public:
 	virtual bool make_dir(String p_dir)=0; ///< Make a directory
 
 	virtual bool file_exists(String p_file)=0; ///< true wether a (local/global) file exists
+
+	virtual String get_abs_dir_path(String p_dir);
+	virtual String get_abs_file_path(String p_file);
 	
 	virtual ~FileSystem();
 

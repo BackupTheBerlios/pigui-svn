@@ -80,4 +80,38 @@ StringInputDialog::StringInputDialog(Window *p_parent) : Window(p_parent,MODE_PO
 	mg->add( new CenterContainer)->set( new Button("Ok")) ->pressed_signal.connect( this, &StringInputDialog::ok_pressed );
 }
 
+/******* QUESTION ********/
+
+void QuestionInputDialog::button_pressed(int p_but) {
+	
+	hide();
+	button_pressed_signal.call(p_but);
+};
+
+void QuestionInputDialog::clear() {
+	
+	delete button_hbox;
+	button_hbox = mg->add( new HBoxContainer );
+};
+
+void QuestionInputDialog::add_button(int p_id, String p_text) {
+	
+	Button* but = button_hbox->add(new Button(p_text));
+	but->pressed_signal.connect(Method( Method1<int>( this, &QuestionInputDialog::button_pressed ), p_id)); 
+};
+
+void QuestionInputDialog::show(String p_question) {
+	
+	mg->set_label_text(p_question);
+	Window::show();
+};
+
+QuestionInputDialog::QuestionInputDialog(Window* p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
+
+	mg = new MarginGroup("Question");
+	set_root_frame(mg);
+	button_hbox = mg->add( new HBoxContainer );
+};
+
+
 }

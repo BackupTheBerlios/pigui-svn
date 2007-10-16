@@ -58,6 +58,24 @@ public:
 	StringInputDialog(Window *p_parent);
 };
 
+class QuestionInputDialog : public Window {
+	
+	MarginGroup *mg;
+	HBoxContainer* button_hbox;
+	
+	void button_pressed(int p_but);
+public:
+
+	void clear();
+
+	void add_button(int p_id, String p_text);
+	void show(String p_question);
+
+	Signal< Method1<int> > button_pressed_signal;
+	
+	QuestionInputDialog(Window* p_parent);
+};
+
 }
 
 #endif

@@ -106,6 +106,11 @@ void ArrowButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expos
 	
 }
 
+Direction ArrowButton::get_dir () const {
+	
+	return dir;
+};
+
 String ArrowButton::get_type() {
 	
 	

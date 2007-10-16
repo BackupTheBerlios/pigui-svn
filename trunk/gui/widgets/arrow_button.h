@@ -32,6 +32,7 @@ class ArrowButton : public BaseButton {
 	
 public:
 	void set_dir(Direction p_dir);
+	Direction get_dir () const;
 	
 	ArrowButton(Direction p_dir,bool p_no_minsize=false);
 	~ArrowButton();

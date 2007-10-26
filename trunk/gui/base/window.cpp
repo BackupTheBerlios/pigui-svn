@@ -145,7 +145,7 @@ void Window::set_pos(const Point &p_pos) {
 	
 }
 
-void Window::top_frame_resized(const Size p_size) {
+void Window::top_frame_resized(Size p_size) {
 	
 	set_size(p_size);
 	
@@ -159,7 +159,6 @@ void Window::set_size(const Size& p_size) {
 		return;
 	}
 	
-	Rect size_update( get_global_pos(), size );
 	
 	Size new_size = root_frame->get_minimum_size();
 	
@@ -175,6 +174,7 @@ void Window::set_size(const Size& p_size) {
 	
 	size=new_size;
 	root_frame->resize_tree( new_size );
+	Rect size_update( get_global_pos(), size );
 	
 	size_update.merge( Rect( size_update.pos, new_size) );
 	
@@ -205,16 +205,32 @@ void Window::redraw_contents_over_area(const Rect& p_rect) {
 
 	/* Redrawing all should work fine */
 	
+	get_painter()->reset_clip_rect_stack();
+	get_painter()->reset_local_rect_stack();
+	
+	
+	
 	Rect local_rect=Rect( get_global_pos(), size );
+	
+	
 	get_painter()->push_local_rect( local_rect );
 	Rect expose_rect = Rect( Point(),size ).clip( p_rect ); // create expose
-	Rect clip_rect = Rect( get_global_pos() + p_rect.pos , p_rect.size );
+	Rect clip_rect = Rect( p_rect.pos , p_rect.size );
 	get_painter()->push_clip_rect( clip_rect );
 	
 	root_frame->draw_tree( local_rect.pos, local_rect.size, expose_rect );
 	
 	get_painter()->pop_local_rect();
 	get_painter()->pop_clip_rect();
+	
+	/* debug 
+	get_painter()->reset_clip_rect_stack();
+	get_painter()->reset_local_rect_stack();
+	
+	get_painter()->draw_rect( local_rect.pos, local_rect.size, Color(255,0,255)); 
+	get_painter()->draw_rect( local_rect.pos+clip_rect.pos, clip_rect.size, Color(0,255,255)); 
+	*/
+
 	
 }
 

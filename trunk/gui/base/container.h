@@ -102,7 +102,7 @@ public:
 	
 	
 
-	Signal< Method1<const Size> > top_size_adjust_signal;
+	Signal< Method1<Size> > top_size_adjust_signal;
 	
 	virtual void check_minimum_size(); 
 

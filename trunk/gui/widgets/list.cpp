@@ -331,6 +331,25 @@ void List::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_mas
 	
 }
 
+void List::ensure_cursor_visible() {
+	int selected=get_selected();
+	
+	if (allow_multiple) {
+		if (cursor>=(offset+get_visible_lines()))
+			set_offset((cursor-get_visible_lines())+1);
+		if (cursor<offset)
+			set_offset(cursor);
+
+	} else {
+		if (selected>=(offset+get_visible_lines()))
+			set_offset((selected-get_visible_lines())+1);
+		if (selected<offset)
+			set_offset(selected);
+	}
+			
+
+}
+
 void List::isearch_timeout_slot() {
 	
 	
@@ -626,6 +645,7 @@ bool List::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,b
 							select( count );
 						}
 						
+						ensure_cursor_visible();
 						match=true;
 						break;
 					}

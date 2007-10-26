@@ -126,7 +126,7 @@ private:
 	void redraw_screen_over_area(const Rect &p_rect);
 	void redraw_contents_over_area(const Rect& p_rect);
 
-	void top_frame_resized(const Size p_size);
+	void top_frame_resized(Size p_size);
 	
 	void adjust_size_type();
 	

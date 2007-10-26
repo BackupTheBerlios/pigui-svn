@@ -24,6 +24,7 @@ namespace GUI {
 class ScrollBar : public RangeOwner {
 
 
+	String get_type();
 	static bool focus_by_default;
 
 	Orientation orientation;

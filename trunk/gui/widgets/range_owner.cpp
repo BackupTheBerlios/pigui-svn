@@ -36,7 +36,6 @@ void RangeOwner::_range_changed() {
 }
 void RangeOwner::_value_changed(double p_new_val) {
 
-	
 	value_changed(p_new_val);
 	update();
 

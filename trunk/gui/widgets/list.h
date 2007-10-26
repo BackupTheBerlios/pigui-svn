@@ -92,6 +92,8 @@ class List : public RangeOwner {
 	void set_in_window();
 	
 	void isearch_timeout_slot();
+	
+	void ensure_cursor_visible();
 public:	
 
 	

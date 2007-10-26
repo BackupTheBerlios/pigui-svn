@@ -122,7 +122,7 @@ public:
 	_EmptyFunc get_method() const { return get_method_ptr(method); }
 	bool is_empty() { return object==0; }
 	
-	bool operator==(const Method6& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method6& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method6& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1,P2 p2,P3 p3,P4 p4,P5 p5,P6 p6) {
@@ -229,7 +229,7 @@ public:
 	_EmptyFunc get_method() const { return bindobj?bindobj->get_method():get_method_ptr(method); }
 	bool is_empty() { return object==0 && bindobj==0; }
 
-	bool operator==(const Method5& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method5& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method5& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1,P2 p2,P3 p3,P4 p4,P5 p5) {
@@ -392,7 +392,7 @@ public:
 	_EmptyFunc get_method() const { return bindobj?bindobj->get_method():get_method_ptr(method); }
 	bool is_empty() { return object==0 && bindobj==0; }
 
-	bool operator==(const Method4& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method4& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method4& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1,P2 p2,P3 p3,P4 p4) {
@@ -555,7 +555,7 @@ public:
 	_EmptyFunc get_method() const { return bindobj?bindobj->get_method():get_method_ptr(method); }
 	bool is_empty() { return object==0 && bindobj==0; }
 
-	bool operator==(const Method3& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method3& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method3& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1,P2 p2,P3 p3) {
@@ -718,7 +718,7 @@ public:
 	_EmptyFunc get_method() const { return bindobj?bindobj->get_method():get_method_ptr(method); }
 	bool is_empty() { return object==0 && bindobj==0; }
 
-	bool operator==(const Method2& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method2& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method2& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1,P2 p2) {
@@ -881,7 +881,7 @@ public:
 	_EmptyFunc get_method() const { return bindobj?bindobj->get_method():get_method_ptr(method); }
 	bool is_empty() { return object==0 && bindobj==0; }
 
-	bool operator==(const Method1& p_method) const { return ( method==p_method.method && object==object ); }
+	bool operator==(const Method1& p_method) const { return ( get_instance()==p_method.get_instance() && get_method()==p_method.get_method()); }
 	bool operator!=(const Method1& p_method) const { return !( *this==p_method ); }
 	
 	void call(P1 p1) {
@@ -1289,8 +1289,9 @@ public:
 		
 		while (c) {
 			
-			if (c->method==m)
+			if (c->method==m) {
 				return; // already connected there! dont do it again
+			}
 
 			if (!c->next)
 				last=c;
@@ -1354,13 +1355,12 @@ public:
 		call_ref++;
 		
 		Connection *c = conn_list;
-				
 		while (c) {
 			
 			if (!c->removed) //removed in a previous call
 				c->method.call();
 			c=c->next;
-		}			
+		}	
 		call_ref--;
 		
 		if (call_ref==0 && remotion_on_call)
@@ -1375,12 +1375,15 @@ public:
 
 		Connection *c = conn_list;
 
+
 		while (c) {
+
 
 			if (!c->removed) //removed in a previous call
 				c->method.call(p1);
 			c=c->next;
 		}		
+
 
 		call_ref--;
 

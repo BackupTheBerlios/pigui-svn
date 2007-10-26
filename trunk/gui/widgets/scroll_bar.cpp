@@ -18,6 +18,12 @@ namespace GUI {
 
 bool ScrollBar::focus_by_default=true;
 
+String ScrollBar::get_type() {
+
+	return "ScrollBar";
+}
+
+
 bool ScrollBar::set_can_focus_by_default(bool p_can_focus) {
 	
 	focus_by_default=p_can_focus;

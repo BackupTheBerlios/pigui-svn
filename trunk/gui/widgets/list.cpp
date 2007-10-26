@@ -628,7 +628,7 @@ bool List::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,b
 				bool match=false;
 				while (l) {
 
-					if (l->text.strip_edges().findn(isearch_word)==0) {
+					if (l->text.findn(isearch_word)==0) {
 						/* matches */
 						if (isearch_timer!=INVALID_TIMER_ID) {	
 							

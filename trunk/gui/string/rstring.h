@@ -159,6 +159,8 @@ public:
 	String to_upper();
 	
 	String left(int p_chars);
+	String strip_edges();
+
 
 	void erase(int p_pos, int p_chars);
 	

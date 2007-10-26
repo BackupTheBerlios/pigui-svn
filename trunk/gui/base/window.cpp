@@ -207,13 +207,14 @@ void Window::redraw_contents_over_area(const Rect& p_rect) {
 	
 	Rect local_rect=Rect( get_global_pos(), size );
 	get_painter()->push_local_rect( local_rect );
-	
-	
 	Rect expose_rect = Rect( Point(),size ).clip( p_rect ); // create expose
+	Rect clip_rect = Rect( get_global_pos() + p_rect.pos , p_rect.size );
+	get_painter()->push_clip_rect( clip_rect );
 	
 	root_frame->draw_tree( local_rect.pos, local_rect.size, expose_rect );
 	
 	get_painter()->pop_local_rect();
+	get_painter()->pop_clip_rect();
 	
 }
 

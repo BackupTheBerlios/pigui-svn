@@ -22,12 +22,20 @@ namespace GUI {
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
+
+
+/**
+	@author Juan Linietsky <reduzio@gmail.com>
+*/
 class List : public RangeOwner {
 	
 	/* Using a Linked List for now, Memory "staticness" is a priority over speed,
 	   May change to a table or something */
 	
-
+	enum {
+		
+		INCREMENTAL_SEARCH_TIMEOUT=1500 /* incremental search timeout, in msecs */
+	};
 	
 	
 	struct Element {
@@ -56,6 +64,11 @@ class List : public RangeOwner {
 	LineEdit *editor;
 	int editor_pos;
 	
+	/* timer for incremental search */
+	bool isearch_enabled;
+	TimerID isearch_timer;
+	String isearch_word;
+	
 	virtual Size get_minimum_size_internal();
 	virtual void draw(const Point& p_global,const Size& p_size,const Rect& p_exposed);
 	virtual void mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask);
@@ -77,6 +90,8 @@ class List : public RangeOwner {
 	void editor_string_changed(String p_string);
 
 	void set_in_window();
+	
+	void isearch_timeout_slot();
 public:	
 
 	
@@ -123,6 +138,8 @@ public:
 
 	void set_max_string_length(int p_length);
 	int get_max_string_length();
+	
+	void set_incremental_search(bool p_enabled);
 	
 	List();
 	~List();

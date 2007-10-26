@@ -110,6 +110,7 @@ public:
 	
 	void set_dir(String p_dir);
 	
+	void set_incremental_search(bool p_enabled);
 	void set_custom_filesystem(FileSystem *p_custom_filesystem,bool p_own_it=false);
 	FileDialog(Window *p_parent);
 	~FileDialog();

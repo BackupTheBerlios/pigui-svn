@@ -114,6 +114,11 @@ void TimerSDL::loop_iterate() {
 	iteration++;
 }
 
+unsigned long int TimerSDL::get_tick_ms() {
+	
+	return SDL_GetTicks();	
+}
+
 TimerSDL::TimerSDL(){
 	
 	

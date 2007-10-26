@@ -130,6 +130,16 @@ void Frame::update(bool p_only_rect,const Rect& p_rect) {
 	if (update_rect.has_no_area())
 		return; //pointless
 	
+	/* check if this widget is REALLY visible */
+	Frame *p = this;
+	
+	while (p) {
+	
+		if (!p->_fp->visible)
+			return;
+		p=p->_fp->parent;
+	}
+	
 	_fp->window->update( update_rect );
 }
 

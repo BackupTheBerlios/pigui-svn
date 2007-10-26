@@ -121,6 +121,8 @@ public:
 
 	bool is_child( Frame *p_frame);
 	
+	void set_stylebox_override(const StyleBox& p_sb);
+	
 	Container();
 	~Container();
 };

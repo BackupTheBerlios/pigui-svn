@@ -57,6 +57,7 @@ public:
 	virtual void change_timer_interval(TimerID p_timer,int p_interval_msec);
 	virtual int get_interval(TimerID p_timer);	
 	void call(TimerID p_timer);
+	unsigned long int get_tick_ms();
 	
 	void loop_iterate(); //avoids events being called more than once per processing loop
 	

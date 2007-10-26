@@ -20,6 +20,13 @@ typedef int FontID;
 typedef int BitmapID;
 typedef int TimerID;
 
+enum InvalidValues {
+	
+	INVALID_TIMER_ID=-1,
+ 	INVALID_BITMAP_ID=-1,
+  	INVALID_FONT_ID=-1
+};
+
 
 enum MouseButton { 
 

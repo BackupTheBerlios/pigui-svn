@@ -9,6 +9,7 @@ namespace GUI {
 
 struct ContainerPrivate {
 
+	StyleBox style_override;
 	Container::Element * element_list;
 	Container::Element * element_list_end;
 	Size minimum_size;
@@ -20,6 +21,10 @@ struct ContainerPrivate {
 
 };
 
+void Container::set_stylebox_override(const StyleBox& p_sb) {
+
+	_cp->style_override=p_sb;
+}
 String Container::get_type() {
 
 	return "Container";
@@ -398,6 +403,9 @@ void Container::draw_tree(const Point& p_global,const Size& p_size,const Rect& p
 
 
 const StyleBox& Container::container_stylebox() {
+	
+	if (_cp->style_override.mode!=StyleBox::MODE_NONE)
+		return _cp->style_override;
 	
 	if (!get_parent()) { /* Is Root Container */
 		

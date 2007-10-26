@@ -17,6 +17,7 @@
 namespace GUI {
 
 
+
 String List::get_type() {
 
 	return "List";
@@ -98,7 +99,7 @@ void List::draw(const Point& p_global,const Size& p_size,const Rect& p_exposed) 
 
 	get_painter()->draw_stylebox( stylebox( SB_LIST_NORMAL ), Point() , p_size, p_exposed );
 	if (has_focus())
-		get_painter()->draw_stylebox( stylebox( SB_LIST_FOCUS ), Point() , p_size, p_exposed );
+		get_painter()->draw_stylebox( stylebox( SB_LIST_FOCUS ), Point() , p_size, p_exposed);
 	
 
 	Element *l=list;
@@ -329,6 +330,18 @@ void List::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_mas
 
 	
 }
+
+void List::isearch_timeout_slot() {
+	
+	
+	if (isearch_timer==INVALID_TIMER_ID)
+		return;
+	
+	isearch_word="";
+	get_window()->get_timer()->remove_timer(isearch_timer);	
+	isearch_timer=INVALID_TIMER_ID;
+}
+
 bool List::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask) {
 	
 
@@ -540,7 +553,6 @@ bool List::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,b
 				
 				if (cursor>maxv)
 					cursor=maxv;
-				
 					
 				if (cursor>=(offset+get_visible_lines()))
 					set_offset((cursor-get_visible_lines())+1);
@@ -586,8 +598,47 @@ bool List::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,b
 			}
 		} break;
 		
-		default:
+		default: {
+			
+			if (p_unicode && isearch_enabled && get_window()->get_timer()) {
+				
+				Element *l=list;
+				isearch_word+=p_unicode;
+				
+				int count=0;
+				bool match=false;
+				while (l) {
+
+					if (l->text.strip_edges().findn(isearch_word)==0) {
+						/* matches */
+						if (isearch_timer!=INVALID_TIMER_ID) {	
+							
+							get_window()->get_timer()->remove_timer(isearch_timer);
+							
+						}
+						isearch_timer=get_window()->get_timer()->create_timer( Method(this,&List::isearch_timeout_slot), INCREMENTAL_SEARCH_TIMEOUT );
+						
+						if (allow_multiple) {
+							
+							cursor=count;
+						} else {
+							
+							select( count );
+						}
+						
+						match=true;
+						break;
+					}
+					l=l->next;
+					count++;
+				}
+				
+				if (!match)
+					isearch_word=""; /* word not found, reset isearch */
+			}
+			
 			return false;
+		} break;
 			
 	}
 	
@@ -685,36 +736,26 @@ void List::add_sorted_string(const String& p_str) {
 	n->text=p_str;
 	n->selected=false;
 
-	if (!list) {
-		//if list is empty
-		n->next=list;
-		list=n;
-		update();
-		get_range()->set_max( get_size() );
-		return;
+	Element **l=&list;
 
-	}
-
-	Element *l=list;
-	int count=1;
-
-	while (l) {
+	while(true) {
 
 
-		if (!l->next || p_str.nocasecmp_to( l->next->text)<0 ) {
+		if (!(*l) || p_str.nocasecmp_to( (*l)->text)<0 ) {
 
-			n->next=l->next;
-			l->next=n;
+			
+			n->next=(*l);
+			*l=n;
 			update();
 			get_range()->set_max( get_size() );
 			return;
 
 		}
 
-		l=l->next;
-		count++;
+		l=&(*l)->next;
 
-	}
+	} 
+	
 	
 }
 
@@ -1006,12 +1047,7 @@ void List::clear() {
 
 class VBC : public VBoxContainer{
 public:
-	const StyleBox & stylebox(int p_which) { 
-		if (p_which==SB_POPUP_BG)
-			return Frame::stylebox(SB_LIST_EDITOR_BG);
-		
-		return Frame::stylebox(p_which);
-	}
+	const StyleBox & get_stylebox() { return stylebox(SB_LIST_EDITOR_BG); }
 	
 };
 
@@ -1023,6 +1059,7 @@ void List::set_in_window() {
 
 	VBoxContainer *vbc = new VBC;
 	editor_window->set_root_frame( vbc );
+	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );
 	editor= vbc->add(new LineEdit(),1);
 	editor->get_focus();
 	editor->set_max_length( max_string_len );
@@ -1049,6 +1086,11 @@ void List::set_number_min_integers(int p_num) {
 	number_min_integers=p_num;
 	
 	
+}
+
+void List::set_incremental_search(bool p_enabled) {
+	
+	isearch_enabled=p_enabled;
 }
 
 void List::set_max_string_length(int p_length) {
@@ -1086,6 +1128,9 @@ List::List() {
 	get_range()->set_step(1);
 	get_range()->set(0);
 	
+	isearch_enabled=true;
+	isearch_timer=INVALID_TIMER_ID;
+	
 	
 }
 
@@ -1095,6 +1140,7 @@ List::~List() {
 	clear();
 	delete editor_window;
 }
+
 
 
 }

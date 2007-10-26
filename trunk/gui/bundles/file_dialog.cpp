@@ -266,7 +266,7 @@ int FileDialog::get_file_count() {
 	if (mode!=MODE_OPEN_MULTI && mode !=MODE_OPEN_DIR)
 		return 0;
 	
-	return file_list->get_selection_size();
+	file_list->get_selection_size();
 }
 String FileDialog::get_path(int p_which) {
 	
@@ -353,6 +353,10 @@ void FileDialog::set_custom_filesystem(FileSystem *p_custom_filesystem,bool p_ow
 	
 }
 
+void FileDialog::set_incremental_search(bool p_enabled) {
+	
+	file_list->set_incremental_search(p_enabled);
+}
 FileDialog::FileDialog(Window *p_parent) : Window(p_parent,MODE_POPUP,SIZE_TOPLEVEL_CENTER) {
 
         filter_list=0;

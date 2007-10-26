@@ -1141,6 +1141,28 @@ String String::left(int p_chars) {
 	
 	return substr(0,p_chars);
 }
+String String::strip_edges() {
+	
+	int beg=0,end=length();
+	
+	for (int i=0;i<length();i++) {
+		
+		if (operator[](i)<=32)
+			beg++;
+		else
+			break;
+	}
+	
+	for (int i=(int)(length()-1);i>=0;i--) {
+		
+		if (operator[](i)<=32)
+			end++;
+		else
+			break;
+	}
+	
+	return substr(beg,end-beg);
+}
 
 }
 

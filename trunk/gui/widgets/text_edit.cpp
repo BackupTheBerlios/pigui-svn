@@ -543,6 +543,8 @@ void TextEdit::set_readonly(bool p_readonly) {
 	readonly=p_readonly;
 }
 TextEdit::TextEdit()  {
+
+	readonly=false;
 	setting_row=false;
 	clear();
 	

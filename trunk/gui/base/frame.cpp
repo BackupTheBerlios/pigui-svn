@@ -268,6 +268,8 @@ void Frame::show() {
 	
 	_fp->visible=true;
 	
+	if (_fp->parent)
+		_fp->parent->adjust_minimum_size();
 	check_minimum_size();
 	update();
 }

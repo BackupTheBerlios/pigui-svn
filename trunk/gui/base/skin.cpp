@@ -36,7 +36,7 @@ set_bitmap(m_which,m_bitmap);
 set_color_name(m_which,#m_which);\
 set_color(m_which,m_color);
 
-#include <stdio.h>
+
 int Skin::find_stylebox(String p_by_name) {
 	
 	String upper_name=p_by_name.to_upper();

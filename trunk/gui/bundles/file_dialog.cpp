@@ -318,7 +318,7 @@ void FileDialog::ok_pressed() {
 		
 	} else if (mode==MODE_OPEN_MULTI) {
 		
-		hide();
+		//hide();
 		multi_file_activated_signal.call();		
 		// ?
 	} else if (mode==MODE_OPEN_DIR) {

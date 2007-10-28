@@ -950,6 +950,9 @@ void Window::set_no_stretch_root_frames(bool p_disable) {
 
 void Window::adjust_size_type() {
 
+	if (!parent)
+		return;
+
 	switch (size_mode) {
 
 		case SIZE_CENTER: {

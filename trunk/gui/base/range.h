@@ -14,6 +14,7 @@
 
 
 #include "signals/signals.h"
+#include "string/rstring.h"
 
 namespace GUI {
 

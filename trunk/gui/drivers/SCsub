@@ -3,4 +3,6 @@ Export('env');
 
 targets=['painter_sdl.cpp','keycodes_sdl.cpp','file_system_dirent.cpp','timer_sdl.cpp','file_system_windows.cpp'];
 
-env.Library('gui_drivers', targets);
+
+for x in targets:
+	env.gui_objects += [env.Object(x)]

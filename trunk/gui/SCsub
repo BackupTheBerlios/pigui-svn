@@ -1,3 +1,9 @@
+Import('env')
+
+env.gui_objects = []
+
+Export('env')
+
 SConscript('string/SCsub');
 SConscript('signals/SCsub');
 SConscript('base/SCsub');
@@ -6,3 +12,5 @@ SConscript('bundles/SCsub');
 SConscript('containers/SCsub');
 SConscript('drivers/SCsub');
 
+
+env.gui_lib = env.Library('gui', env.gui_objects);

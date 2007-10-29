@@ -3,4 +3,5 @@ Export('env');
 
 targets=['style_box.cpp','widget.cpp','window.cpp','painter.cpp','frame.cpp','container.cpp','geometry.cpp','keyboard.cpp','range.cpp','skin.cpp','file_system.cpp','timer.cpp'];
 
-env.Library('gui_base', targets);
+for x in targets:
+	env.gui_objects += [env.Object(x)]

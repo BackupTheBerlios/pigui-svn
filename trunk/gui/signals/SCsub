@@ -3,4 +3,5 @@ Export('env');
 
 targets=['signals.cpp'];
 
-env.Library('gui_signals', targets);
+for x in targets:
+	env.gui_objects += [env.Object(x)]

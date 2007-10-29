@@ -3,4 +3,5 @@ Export('env');
 
 targets=['rstring.cpp'];
 
-env.Library('gui_string', targets);
+for x in targets:
+	env.gui_objects += [env.Object(x)]

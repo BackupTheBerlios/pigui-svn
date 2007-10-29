@@ -13,7 +13,10 @@
 #ifndef PIGUISIGNALS_H
 #define PIGUISIGNALS_H
 
+#ifndef GUI_EXTERNAL_SIGNAL
+
 #include "base/defs.h"
+
 
 namespace GUI {
 
@@ -1532,6 +1535,11 @@ public:
 
 }
 		
+#else
+
+#include GUI_EXTERNAL_SIGNAL
+
+#endif		
 #endif
 
 

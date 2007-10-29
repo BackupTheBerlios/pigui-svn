@@ -11,6 +11,8 @@
 //
 #include "signals.h"
 
+#ifndef GUI_EXTERNAL_SIGNAL
+
 namespace GUI {
 
 bool SignalBase::register_at_target( SignalTarget *p_target ) {
@@ -88,3 +90,5 @@ SignalTarget::~SignalTarget() {
 }
 
 }
+
+#endif

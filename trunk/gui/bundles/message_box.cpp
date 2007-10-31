@@ -26,11 +26,11 @@ void MessageBox::show(String p_text) {
 MessageBox::MessageBox(Window *p_parent) : Window(p_parent,Window::MODE_POPUP, Window::SIZE_CENTER) {
 	
 	
-	WindowBox *vbc = new WindowBox("!!");
+	WindowBox *vbc = GUI_NEW( WindowBox("!!") );
 	set_root_frame( vbc );
-	custom_vb= vbc->add(new VBoxContainer,0);
-	text = vbc->add(new Label);
-	vbc->add( new CenterContainer )->set( new Button("Ok"))->pressed_signal.connect( static_cast<Window*>(this), &Window::hide );
+	custom_vb= vbc->add(GUI_NEW( VBoxContainer),0);
+	text = vbc->add(GUI_NEW(Label));
+	vbc->add( GUI_NEW( CenterContainer) )->set( GUI_NEW( Button("Ok")) )->pressed_signal.connect( static_cast<Window*>(this), &Window::hide );
 	
 }
 

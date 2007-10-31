@@ -67,8 +67,9 @@ void SpinBox::set_range(RangeBase *p_range,bool p_own_it) {
 
 	}
 	
-	if (range_owned) 
-		delete range;
+	if (range_owned) {
+		GUI_DELETE( range );
+	}
 
 	range=p_range;
 
@@ -98,8 +99,8 @@ void SpinBox::set_suffix(String p_suffix) {
 
 SpinBox::SpinBox(){
 
-	line_edit = add( new LineEdit, 1);
-	updown= add( new UpDown, 0);
+	line_edit = add( GUI_NEW( LineEdit), 1);
+	updown= add( GUI_NEW( UpDown), 0);
 	
 		
 	line_edit->text_enter_signal.connect( this, &SpinBox::line_edit_enter_pressed );
@@ -107,7 +108,7 @@ SpinBox::SpinBox(){
 	line_edit->lost_focus_signal.connect( this, &SpinBox::lost_focus );
 	range=0;
 	range_owned=false;
-	set_range( new Range, true );	
+	set_range( GUI_NEW( Range), true );	
 	
 	line_edit->set_text( get_range()->get_as_text() );
 	
@@ -117,8 +118,9 @@ SpinBox::SpinBox(){
 
 SpinBox::~SpinBox() {
 
-	if (range_owned)
-		delete range;
+	if (range_owned) {
+		GUI_DELETE( range );
+	}
 
 }
 

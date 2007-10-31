@@ -17,7 +17,7 @@ namespace GUI {
 Container::Element *GridContainer::create_new_element() {
 
 
-	return new GridElement;
+	return GUI_NEW( GridElement );
 }
 
 void GridContainer::compute_cachedatas() {
@@ -224,9 +224,10 @@ void GridContainer::add_frame(Frame *p_frame, bool p_h_expand, bool p_v_expand) 
 	while (rows>vcache_size) {
 
 		vcache_size+=VCACHE_RESIZE_EVERY;
-		CacheData * new_cache = new CacheData[vcache_size];
-		if (vcache)
-			delete[] vcache;
+		CacheData * new_cache = GUI_NEW_ARRAY( CacheData, vcache_size);
+		if (vcache) {
+			GUI_DELETE_ARRAY( vcache );
+		}
 		vcache=new_cache;
 	}
 
@@ -241,7 +242,7 @@ GridContainer::GridContainer(int p_columns) {
         elements=0;
 	columns = p_columns;
 
-	hcache = new CacheData[columns];
+	hcache = GUI_NEW_ARRAY( CacheData, columns);
 	vcache=0;
 	rows=0;
 	vcache_size=0;
@@ -253,10 +254,12 @@ GridContainer::GridContainer(int p_columns) {
 
 GridContainer::~GridContainer()
 {
-	if (vcache)
-		delete[] vcache;
-	if (hcache)
-		delete[] hcache;
+	if (vcache) {
+		GUI_DELETE_ARRAY( vcache );
+	}
+	if (hcache){
+		GUI_DELETE_ARRAY( hcache );;
+	}
 }
 
 

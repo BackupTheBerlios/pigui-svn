@@ -348,7 +348,7 @@ void Window::check_for_updates() {
 		get_painter()->update_screen_rect( rect->rect );
 		
 		root_data->update_rect_list = root_data->update_rect_list->next;
-		delete rect;
+		GUI_DELETE( rect );
 	//	found++;
 	}
 	
@@ -826,7 +826,7 @@ void Window::update_rect_merge(UpdateRectList **p_rect) {
 				ur=p_rect;
 			}
 			    
-			delete to_erase;
+			GUI_DELETE( to_erase );
 			/* Test wether a merge must be done */
 			
 			if ((*ur)->rect.contains( testrect ) ) //need to merge?
@@ -859,7 +859,7 @@ void Window::add_update_rect(const Rect& p_rect) {
 		return;
 	}
 	
-	UpdateRectList *ur= new UpdateRectList;
+	UpdateRectList *ur= GUI_NEW( UpdateRectList );
 	ur->rect=p_rect;
 	ur->next=root->root_data->update_rect_list;
 	root->root_data->update_rect_list=ur;
@@ -1007,7 +1007,7 @@ void Window::show() {
 		if (root->focus)
 			root->focus->drag.child=0; //disable drag on whoever, just in case we clicked
 		root->focus=this;
-		ModalStack * ms = new ModalStack;
+		ModalStack * ms = GUI_NEW( ModalStack );
 		ms->window=this;
 		ms->next=root->root_data->modal_stack;
 		root->root_data->modal_stack=ms;
@@ -1210,7 +1210,7 @@ Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 	initialize();
 
 	root=this;
-	root_data = new RootWindowData;
+	root_data = GUI_NEW( RootWindowData );
 	root_data->painter=p_painter;
 	root_data->skin=p_skin;
 	root_data->timer=p_timer;
@@ -1229,13 +1229,15 @@ Window::~Window() {
 //	if (parent)
 		//parent->child_window.child=0; //parent lost a child
 	
-	if (root_frame)
-		delete root_frame;
+	if (root_frame) {
+		GUI_DELETE( root_frame );
+	}
 	
 	root_frame=0;
 	
-	if (root_data)
-		delete root_data;
+	if (root_data) {
+		GUI_DELETE( root_data );
+	}
 }
 
 

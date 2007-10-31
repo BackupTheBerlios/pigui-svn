@@ -16,7 +16,7 @@ namespace GUI {
 
 Container::Element *FixedContainer::create_new_element() {
 	
-	return new FixedElement;
+	return GUI_NEW( FixedElement );
 }
 
 Size FixedContainer::get_minimum_size_internal() {

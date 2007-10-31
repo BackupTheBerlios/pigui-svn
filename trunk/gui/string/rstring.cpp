@@ -146,7 +146,7 @@ void String::free_shared() {
 	
 	if (shared->refcount==1) { //only us using it
 		free(shared->data);
-		delete shared;
+		GUI_DELETE( shared );
 		
 	} else {
 		

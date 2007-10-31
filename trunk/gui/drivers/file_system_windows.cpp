@@ -238,7 +238,7 @@ bool FileSystemWindows::file_exists(String p_file) {
 
 FileSystem *FileSystemWindows::create_fs() {
 	
-	return new FileSystemWindows;
+	return GUI_NEW( FileSystemWindows );
 }
 
 void FileSystemWindows::set_default_filesystem() {
@@ -249,7 +249,7 @@ void FileSystemWindows::set_default_filesystem() {
 
 FileSystemWindows::FileSystemWindows() {
 	
-	p = new FileSystemWindowsPrivate;
+	p = GUI_NEW( FileSystemWindowsPrivate );
 	current_dir=".";
 	
 	drive_count=0;
@@ -277,7 +277,7 @@ FileSystemWindows::FileSystemWindows() {
 
 FileSystemWindows::~FileSystemWindows()
 {
-	delete p;
+	GUI_DELETE( p );
 }
 
 }

@@ -236,7 +236,7 @@ void TabBar::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 
 void TabBar::add_tab(String p_text,bool p_front) {
 	
-	Tab *t = new Tab;
+	Tab *t = GUI_NEW( Tab );
 	t->text=p_text;
 	
 	if (!list|| p_front) {

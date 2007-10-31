@@ -47,7 +47,7 @@ struct PainterPrivate {
 				while(characters[i]) {
 					Character *c=characters[i];
 					characters[i]=c->next;
-					delete c;
+					GUI_DELETE(c);
 				}
 			}
 			height=0;
@@ -61,7 +61,7 @@ struct PainterPrivate {
 			
 			if ( !c ) {
 				
-				c = new Character;
+				c = GUI_NEW( Character );
 				int bucket=p_char&HASHTABLE_MASK;
 				c->next=characters[bucket]; //should be added at the end for speed...
 				characters[bucket]=c;			
@@ -108,6 +108,12 @@ struct PainterPrivate {
 	PainterPrivate() { 
 		clip_rect_count=0;
 		local_rect_count=0;
+	}
+	
+	~PainterPrivate() { 
+	
+		for (int i=0;i<MAX_FONTS;i++)
+			fonts[i].cleanup();
 	}
 };
 
@@ -894,11 +900,11 @@ void Painter::draw_arrow( const Point& p_pos, const Size& p_size, Direction p_di
 
 Painter::Painter() {
 	
-	p = new PainterPrivate;
+	p = GUI_NEW( PainterPrivate );
 }
 Painter::~Painter() {
 	
-	delete p;
+	GUI_DELETE( p );
 }
 
 };

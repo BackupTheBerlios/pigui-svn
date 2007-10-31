@@ -83,9 +83,9 @@ void ScrollBox::set_frame(Frame *p_frame) {
 ScrollBox::ScrollBox() : GridContainer(2)
 {
 	
-	scroll = GridContainer::add( new ScrollContainer, true, true );
-	vbar = GridContainer::add( new VScrollBar, false, true );
-	hbar = GridContainer::add( new HScrollBar, true, false );
+	scroll = GridContainer::add( GUI_NEW( ScrollContainer), true, true );
+	vbar = GridContainer::add( GUI_NEW( VScrollBar), false, true );
+	hbar = GridContainer::add( GUI_NEW( HScrollBar), true, false );
 	
 	vbar->set_range(scroll->get_v_range());
 	hbar->set_range(scroll->get_h_range());

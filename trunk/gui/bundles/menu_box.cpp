@@ -91,7 +91,7 @@ void MenuBox::add_item(const String& p_str,int p_id,unsigned int p_shortcut,bool
 
 	if (!popup) {
 
-		add_to_defered_list( new DeferredAdd( p_str, p_id, -1,p_shortcut,p_shortcut_active ) );
+		add_to_defered_list( GUI_NEW( DeferredAdd( p_str, p_id, -1,p_shortcut,p_shortcut_active )) );
 		return;
 
 	}
@@ -108,7 +108,7 @@ void MenuBox::add_item(BitmapID p_ID,const String& p_str,int p_id,unsigned int p
 	if (!popup) {
 
 
-		add_to_defered_list( new DeferredAdd( p_str, p_id, p_ID,p_shortcut,p_shortcut_active ) );
+		add_to_defered_list( GUI_NEW( DeferredAdd( p_str, p_id, p_ID,p_shortcut,p_shortcut_active )) );
 		return;
 
 	}
@@ -125,7 +125,7 @@ void MenuBox::add_separator() {
 
 	if (!popup) {
 
-		add_to_defered_list( new DeferredAdd );
+		add_to_defered_list( GUI_NEW( DeferredAdd ) );
 		return;
 
 	}
@@ -157,7 +157,7 @@ void MenuBox::clear_deferred_list() {
 		DeferredAdd *aux=deferred_add_list;
 
 		deferred_add_list=deferred_add_list->next;
-		delete aux;
+		GUI_DELETE( aux );
 	}
 	
 }
@@ -171,7 +171,7 @@ void MenuBox::clear() {
 
 void MenuBox::set_in_window() {
 	
-	popup = new PopUpMenu( get_window() );
+	popup = GUI_NEW( PopUpMenu( get_window() ) );
 	popup->selected_id_signal.connect( this, &MenuBox::item_activated );
 	
 	DeferredAdd *l=deferred_add_list;
@@ -199,8 +199,9 @@ MenuBox::MenuBox(String p_text,BitmapID p_bitmap_ID) : Button(p_text,p_bitmap_ID
 
 MenuBox::~MenuBox() {
 
-	if (popup)
-		delete popup;
+	if (popup) {
+		GUI_DELETE( popup );
+	}
 	clear_deferred_list();
 }
 

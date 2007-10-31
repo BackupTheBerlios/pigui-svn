@@ -75,28 +75,28 @@ ColorPicker::ColorPicker(bool p_with_alpha) {
 	
 	use_alpha=p_with_alpha;
 	
-	show_color = add( new ColorShow, 1 );
+	show_color = add( GUI_NEW( ColorShow ), 1 );
 	
-	GridContainer *g = add( new GridContainer, 2 );
+	GridContainer *g = add( GUI_NEW( GridContainer ), 2 );
 	
-	g->add( new Label("R"), false, false );
-	r_slider = g->add( new HSlider, true, false );
+	g->add( GUI_NEW(Label("R")), false, false );
+	r_slider = g->add( GUI_NEW( HSlider ), true, false );
 	r_slider->get_range()->config( 0, 255, 0, 1 );
 	r_slider->get_range()->value_changed_signal.connect( this, &ColorPicker::color_changed_callback );
 	
-	g->add( new Label("G"), false, false );
-	g_slider = g->add( new HSlider, true, false );
+	g->add( GUI_NEW( Label("G")), false, false );
+	g_slider = g->add( GUI_NEW( HSlider), true, false );
 	g_slider->get_range()->config( 0, 255, 0, 1 );
 	g_slider->get_range()->value_changed_signal.connect( this, &ColorPicker::color_changed_callback );
 	
-	g->add( new Label("B"), false, false );
-	b_slider = g->add( new HSlider, true, false );
+	g->add( GUI_NEW( Label("B")) , false, false );
+	b_slider = g->add( GUI_NEW( HSlider ), true, false );
 	b_slider->get_range()->config( 0, 255, 0, 1 );
 	b_slider->get_range()->value_changed_signal.connect( this, &ColorPicker::color_changed_callback );
 	
 	if (use_alpha) {
-		g->add( new Label("A"), false, false );
-		a_slider = g->add( new HSlider, true, false );
+		g->add( GUI_NEW( Label("A")), false, false );
+		a_slider = g->add( GUI_NEW( HSlider ), true, false );
 		a_slider->get_range()->config( 0, 255, 0, 1 );
 		a_slider->get_range()->value_changed_signal.connect( this, &ColorPicker::color_changed_callback );
 	} else {

@@ -751,7 +751,7 @@ String List::get_selected_string(int p_which) {
 void List::add_sorted_string(const String& p_str) {
 		
 
-	Element *n = new Element;
+	Element *n = GUI_NEW( Element );
 
 	n->text=p_str;
 	n->selected=false;
@@ -783,7 +783,7 @@ void List::add_sorted_string(const String& p_str) {
 void List::add_string(const String& p_str,int p_at) {
 
 
-	Element *n = new Element;
+	Element *n = GUI_NEW( Element );
 
 	n->text=p_str;
 	n->selected=false;
@@ -862,7 +862,7 @@ void List::erase(int p_at) {
 
 			Element *aux=l;
 			*lpre=l->next;
-			delete aux;
+			GUI_DELETE( aux );
 			if (cursor>=idx && cursor>0)
 				cursor--;
 			
@@ -1053,7 +1053,7 @@ void List::clear() {
 
 		Element *aux=list;
 		list=list->next;
-		delete aux;
+		GUI_DELETE( aux );
 		
 	}
 
@@ -1075,12 +1075,12 @@ public:
 void List::set_in_window() {
 
 	
-	editor_window = new Window(get_window(),Window::MODE_POPUP);
+	editor_window = GUI_NEW( Window(get_window(),Window::MODE_POPUP) );
 
-	VBoxContainer *vbc = new VBC;
+	VBoxContainer *vbc = GUI_NEW( VBC );
 	editor_window->set_root_frame( vbc );
 	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );
-	editor= vbc->add(new LineEdit(),1);
+	editor= vbc->add(GUI_NEW( LineEdit() ),1);
 	editor->get_focus();
 	editor->set_max_length( max_string_len );
 }
@@ -1158,7 +1158,7 @@ List::List() {
 List::~List() {
 
 	clear();
-	delete editor_window;
+	GUI_DELETE( editor_window );
 }
 
 

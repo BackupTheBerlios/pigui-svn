@@ -41,17 +41,17 @@ HBoxContainer *WindowBox::get_top_hb() {
 
 WindowBox::WindowBox(String p_top_text,bool p_close,bool p_resize) {
 
-	top_hb = BoxContainer::add( new HBoxContainer, 0 );
+	top_hb = BoxContainer::add( GUI_NEW( HBoxContainer), 0 );
 	
-	top=top_hb->add( new WindowTop(p_top_text),1);
+	top=top_hb->add( GUI_NEW( WindowTop(p_top_text) ),1);
 	
 	if (p_close) {
 		
-		top_hb->add( new WindowButton(WindowButton::MODE_CLOSE) );
+		top_hb->add( GUI_NEW( WindowButton(WindowButton::MODE_CLOSE) ) );
 	}
 
-	spacer = BoxContainer::add( new Widget, 0 );
-	internal_vb=BoxContainer::add( new VBoxContainer, 1);
+	spacer = BoxContainer::add( GUI_NEW( Widget ), 0 );
+	internal_vb=BoxContainer::add( GUI_NEW( VBoxContainer ), 1);
 	
 }
 

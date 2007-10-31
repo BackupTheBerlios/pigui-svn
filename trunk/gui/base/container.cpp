@@ -16,8 +16,9 @@ struct ContainerPrivate {
 	Size size_cache; //size cache
 	bool resizing; /// flag to tell we are currently resizing
 	bool recursive_resize_attempt; ///something decided on size, while we were resizing it..
+	bool on_destructor;
 	
-	ContainerPrivate() { element_list = 0; element_list_end=0; resizing=false; recursive_resize_attempt=false; }
+	ContainerPrivate() { element_list = 0; element_list_end=0; resizing=false; recursive_resize_attempt=false; on_destructor=false; }
 
 };
 
@@ -45,7 +46,7 @@ Container::Element* Container::get_element_list_end() {
 
 Container::Element *Container::create_new_element() {
 
-	return new Element;
+	return GUI_NEW( Element );
 }
 
 Container::Element* Container::add_frame_internal( Frame * p_frame, bool p_front ) {
@@ -156,7 +157,9 @@ bool Container::is_child( Frame *p_frame) {
 
 void Container::remove_frame( Frame * p_frame ) {
 	
-	
+	if (_cp->on_destructor)
+		return;
+		
 	Element * list = get_element_list();
 	
 	while(list) {
@@ -182,7 +185,7 @@ void Container::remove_frame( Frame * p_frame ) {
 				
 			}
 					
-			delete list;
+			GUI_DELETE( list );
 			return;
 		}
 		
@@ -695,21 +698,24 @@ ChildIterator Container::next_child(const ChildIterator& p_child) {
 Container::Container() {
 	
 	
-	_cp = new ContainerPrivate;
+	_cp = GUI_NEW( ContainerPrivate );
 	
 }
 
 Container::~Container() {
 
+	
+	_cp->on_destructor=true;
 	while (_cp->element_list) {
 
 		Element *e=_cp->element_list;
 		_cp->element_list=_cp->element_list->next;
-		delete e->frame;
-		delete e;
+		GUI_DELETE( e->frame );
+		GUI_DELETE( e );
 	}
+	_cp->on_destructor=false;
 	
-	delete _cp;
+	GUI_DELETE( _cp );
 }
 
 } // end of namespace

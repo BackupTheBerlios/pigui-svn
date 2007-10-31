@@ -274,40 +274,40 @@ Skin::Skin(int p_stylebox_max,int p_constant_max,int p_bitmap_max,int p_font_max
 		p_color_max=COLOR_MAX;
 				
 	
-	stylebox_array = new StyleBox[p_stylebox_max];
-	stylebox_name = new const char*[p_stylebox_max];
+	stylebox_array = GUI_NEW_ARRAY(StyleBox,p_stylebox_max);
+	stylebox_name = GUI_NEW_ARRAY(const char*,p_stylebox_max);
 	for (int i=0;i<p_stylebox_max;i++) {
 		stylebox_name[i]=0;
 	}
 	stylebox_count=p_stylebox_max;
 	
 
-	constant_array = new int[p_constant_max];
-	constant_name = new const char*[p_constant_max];
+	constant_array = GUI_NEW_ARRAY(int,p_constant_max);
+	constant_name = GUI_NEW_ARRAY(const char*,p_constant_max);
 	for (int i=0;i<p_constant_max;i++) {
 		constant_name[i]=0;
 		constant_array[i]=0;
 	}
 	constant_count=p_constant_max;
 	
-	bitmap_array = new BitmapID[p_bitmap_max];
-	bitmap_name = new const char*[p_bitmap_max];
+	bitmap_array = GUI_NEW_ARRAY(BitmapID,p_bitmap_max);
+	bitmap_name = GUI_NEW_ARRAY(const char*,p_bitmap_max);
 	for (int i=0;i<p_bitmap_max;i++) {
 		bitmap_name[i]=0;
 		bitmap_array[i]=-1;
 	}
 	bitmap_count = p_bitmap_max;
 	
-	font_array = new FontID[p_font_max];
-	font_name = new const char*[p_font_max];
+	font_array = GUI_NEW_ARRAY(FontID,p_font_max);
+	font_name = GUI_NEW_ARRAY(const char*,p_font_max);
 	for (int i=0;i<p_font_max;i++) {
 		font_name[i]=0;
 		font_array[i]=-1;
 	}
 	font_count = p_font_max;
 	
-	color_array = new Color[p_color_max];
-	color_name = new const char*[p_color_max];
+	color_array = GUI_NEW_ARRAY(Color,p_color_max);
+	color_name = GUI_NEW_ARRAY(const char*,p_color_max);
 	for (int i=0;i<p_color_max;i++)
 		color_name[i]=0;
 	color_count = p_color_max;
@@ -317,16 +317,16 @@ Skin::Skin(int p_stylebox_max,int p_constant_max,int p_bitmap_max,int p_font_max
 }
 Skin::~Skin(){
 	
-	delete[] stylebox_array;
-	delete[] constant_array;
-	delete[] bitmap_array;
-	delete[] font_array;
-	delete[] color_array;
-	delete[] stylebox_name;
-	delete[] constant_name;
-	delete[] bitmap_name;
-	delete[] font_name;
-	delete[] color_name;
+	GUI_DELETE_ARRAY( stylebox_array );
+	GUI_DELETE_ARRAY( constant_array );
+	GUI_DELETE_ARRAY( bitmap_array );
+	GUI_DELETE_ARRAY( font_array );
+	GUI_DELETE_ARRAY( color_array );
+	GUI_DELETE_ARRAY( stylebox_name );
+	GUI_DELETE_ARRAY( constant_name );
+	GUI_DELETE_ARRAY( bitmap_name );
+	GUI_DELETE_ARRAY( font_name );
+	GUI_DELETE_ARRAY( color_name );
 	
 }
 
@@ -526,7 +526,7 @@ void Skin::set_default() {
 	SET_STYLEBOX( SB_LIST_SELECTED, StyleBox( 0,  Color( 70,100,255 ), Color( 70,100,255 ), Color( 70,100,255 ) ) );
 	SET_STYLEBOX( SB_LIST_NORMAL, StyleBox( 2,  Color(240,240,240 ), Color( 60,60,60 ), Color( 150,150,150 ) ) );
 	SET_STYLEBOX( SB_LIST_FOCUS, StyleBox( 1,  Color( 255,80,80 ), Color( 255,80,80 ) ) );
-	SET_STYLEBOX( SB_LIST_CURSOR, StyleBox( 1,  Color(0,0,0 ), Color(0,0,0 ), Color(0,0,0 ) ) );
+	SET_STYLEBOX( SB_LIST_CURSOR, StyleBox( 1,  Color(0,0,0 ), Color(0,0,0 )  ) );
 
 	SET_STYLEBOX(SB_LIST_EDITOR_BG,StyleBox( 0, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ));
 	
@@ -553,7 +553,8 @@ void Skin::set_default() {
 	SET_COLOR(COLOR_TREE_FONT,Color(0));
 	SET_COLOR(COLOR_TREE_FONT_SELECTED,Color(255));
 	SET_COLOR(COLOR_TREE_GUIDES,Color(0));
-	SET_CONSTANT( C_TREE_HSPACING, 2 );
+	SET_COLOR(COLOR_TREE_GRID,Color(200));
+	SET_CONSTANT( C_TREE_HSPACING, 3 );
 	SET_CONSTANT( C_TREE_VSPACING, 2 );
 	SET_CONSTANT(C_TREE_GUIDE_WIDTH, 15 );
 	SET_CONSTANT(C_TREE_CHECK_SIZE, 9 );

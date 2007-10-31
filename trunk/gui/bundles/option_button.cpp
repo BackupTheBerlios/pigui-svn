@@ -140,7 +140,7 @@ void OptionButton::clear() {
 
 void OptionButton::set_in_window() {
 	
-	popup = new PopUpMenu( get_window() );
+	popup = GUI_NEW( PopUpMenu( get_window() ) );
 	popup->selected_id_signal.connect( this, &OptionButton::item_activated );	
 }
 
@@ -152,7 +152,7 @@ OptionButton::OptionButton() {
 
 OptionButton::~OptionButton() {
 	
-	delete popup;
+	GUI_DELETE( popup );
 }
 
 

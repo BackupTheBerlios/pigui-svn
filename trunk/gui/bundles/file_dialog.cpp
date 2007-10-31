@@ -240,7 +240,7 @@ void FileDialog::add_filter(String p_description,String p_extension) {
 	
 	p_extension.replace( "*","" );
 	
-	FilterList *f = new FilterList;
+	FilterList *f = GUI_NEW( FilterList );
 	f->filter=p_extension;
 	f->description=p_description;
 	f->next=filter_list;
@@ -255,7 +255,7 @@ void FileDialog::clear_filter_list() {
 		
 		FilterList *aux=filter_list;
 		filter_list=filter_list->next;
-		delete aux;
+		GUI_DELETE( aux );
 	}
 	
 	update_filter_list();
@@ -344,8 +344,9 @@ void FileDialog::set_custom_filesystem(FileSystem *p_custom_filesystem,bool p_ow
 	if (!p_custom_filesystem)
 		return;
 	
-	if (own_filesystem)
-		delete fs;
+	if (own_filesystem) {
+		GUI_DELETE( fs );
+	}
 	fs=p_custom_filesystem;
 	own_filesystem=p_own_it;
 	
@@ -360,38 +361,38 @@ void FileDialog::set_incremental_search(bool p_enabled) {
 FileDialog::FileDialog(Window *p_parent) : Window(p_parent,MODE_POPUP,SIZE_TOPLEVEL_CENTER) {
 
         filter_list=0;
-	WindowBox *vb = new WindowBox("File Dialog");	
+	WindowBox *vb = GUI_NEW( WindowBox("File Dialog") );	
 	set_root_frame( vb );
 	wb=vb;
 	
-	MarginGroup *path_mg= vb->add( new MarginGroup("Path"),0);
-	HBoxContainer *path_hbc = path_mg->add( new HBoxContainer, 0 );
+	MarginGroup *path_mg= vb->add( GUI_NEW( MarginGroup("Path") ),0);
+	HBoxContainer *path_hbc = path_mg->add( GUI_NEW( HBoxContainer), 0 );
 	
-	path = path_hbc->add( new LineEdit, 7);
+	path = path_hbc->add( GUI_NEW( LineEdit), 7);
 	path->text_enter_signal.connect(this,&FileDialog::path_lineedit_changed );
 	
-	drive = path_hbc->add( new ComboBox, 1 );
+	drive = path_hbc->add( GUI_NEW( ComboBox ), 1 );
 	drive->selected_signal.connect( this, &FileDialog::drive_changed );
 
-	HBoxContainer *file_hb = vb->add( new MarginGroup("Directories & Files"),1)->add( new HBoxContainer, 1);
-	file_list = file_hb ->add( new List, 1);
-	VScrollBar *vsb=file_hb->add( new VScrollBar, 0);
+	HBoxContainer *file_hb = vb->add( GUI_NEW(MarginGroup("Directories & Files")),1)->add( GUI_NEW( HBoxContainer ), 1);
+	file_list = file_hb ->add( GUI_NEW( List ), 1);
+	VScrollBar *vsb=file_hb->add( GUI_NEW( VScrollBar), 0);
 	vsb->set_range( file_list->get_range() );
 	vsb->set_auto_hide( true );
 	
-	filter_group=vb->add( new MarginGroup("Filter"),0);
-	filter_box=filter_group->add( new ComboBox, 0 );
+	filter_group=vb->add( GUI_NEW(MarginGroup("Filter")),0);
+	filter_box=filter_group->add( GUI_NEW( ComboBox), 0 );
 	filter_box->selected_signal.connect( this, &FileDialog::filter_type_changed );
 	
 	filter_group->hide();
 	
-	extra_vb = vb->add(new VBoxContainer);	
+	extra_vb = vb->add(GUI_NEW( VBoxContainer));	
 	
-	file_group=vb->add( new MarginGroup("Selected file"),0);
-	file=file_group->add( new LineEdit, 0);
+	file_group=vb->add( GUI_NEW( MarginGroup("Selected file")),0);
+	file=file_group->add( GUI_NEW( LineEdit), 0);
 	file->text_enter_signal.connect(this,&FileDialog::ok_pressed_s );
 
-	action=vb->add( new CenterContainer,0 )->set( new Button("Open"));
+	action=vb->add( GUI_NEW( CenterContainer),0 )->set( GUI_NEW( Button("Open")));
 	action->pressed_signal.connect( this, &FileDialog::ok_pressed );
 	
 	mode=MODE_OPEN;
@@ -410,8 +411,9 @@ FileDialog::FileDialog(Window *p_parent) : Window(p_parent,MODE_POPUP,SIZE_TOPLE
 
 FileDialog::~FileDialog()
 {
-	if (own_filesystem)
-		delete fs;
+	if (own_filesystem) {
+		GUI_DELETE( fs );
+	}
 	clear_filter_list();
 }
 

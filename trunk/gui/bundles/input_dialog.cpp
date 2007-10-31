@@ -41,12 +41,12 @@ void NumericInputDialog::ok_pressed() {
 }
 NumericInputDialog::NumericInputDialog(Window *p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
 	
-	mg = new MarginGroup("Enter a Number:");
+ 	mg = GUI_NEW( MarginGroup("Enter a Number:") );
 	set_root_frame( mg );
-	sb = mg->add( new SpinBox );
+	sb = mg->add( GUI_NEW( SpinBox) );
 	sb->get_line_edit()->text_enter_signal.connect( this, &NumericInputDialog::ok_pressed_text);
 	
-	mg->add( new CenterContainer)->set( new Button("Ok")) ->pressed_signal.connect( this, &NumericInputDialog::ok_pressed );
+	mg->add( GUI_NEW( CenterContainer))->set( GUI_NEW(Button("Ok"))) ->pressed_signal.connect( this, &NumericInputDialog::ok_pressed );
 }
 
 /******* STRING ********/
@@ -72,12 +72,12 @@ void StringInputDialog::ok_pressed() {
 }
 StringInputDialog::StringInputDialog(Window *p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
 	
-	mg = new MarginGroup("Enter a Number:");
+	mg = GUI_NEW( MarginGroup("Enter a Number:") );
 	set_root_frame( mg );
-	le = mg->add( new LineEdit );
+	le = mg->add( GUI_NEW( LineEdit) );
 	le->text_enter_signal.connect( this, &StringInputDialog::ok_pressed_text);
 	
-	mg->add( new CenterContainer)->set( new Button("Ok")) ->pressed_signal.connect( this, &StringInputDialog::ok_pressed );
+	mg->add( GUI_NEW(CenterContainer))->set( GUI_NEW( Button("Ok"))) ->pressed_signal.connect( this, &StringInputDialog::ok_pressed );
 }
 
 /******* QUESTION ********/
@@ -90,13 +90,13 @@ void QuestionInputDialog::button_pressed(int p_but) {
 
 void QuestionInputDialog::clear() {
 	
-	delete button_hbox;
-	button_hbox = mg->add( new HBoxContainer );
+	GUI_DELETE( button_hbox );
+	button_hbox = mg->add( GUI_NEW( HBoxContainer) );
 };
 
 void QuestionInputDialog::add_button(int p_id, String p_text) {
 	
-	Button* but = button_hbox->add(new Button(p_text));
+	Button* but = button_hbox->add(GUI_NEW( Button(p_text)));
 	but->pressed_signal.connect(Method( Method1<int>( this, &QuestionInputDialog::button_pressed ), p_id)); 
 };
 
@@ -108,9 +108,9 @@ void QuestionInputDialog::show(String p_question) {
 
 QuestionInputDialog::QuestionInputDialog(Window* p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
 
-	mg = new MarginGroup("Question");
+	mg = GUI_NEW( MarginGroup("Question") );
 	set_root_frame(mg);
-	button_hbox = mg->add( new HBoxContainer );
+	button_hbox = mg->add( GUI_NEW( HBoxContainer ) );
 };
 
 

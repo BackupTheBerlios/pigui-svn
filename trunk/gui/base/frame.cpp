@@ -295,7 +295,7 @@ bool Frame::is_visible() {
 	
 Frame::Frame() {
 	
-	_fp = new FramePrivate;
+	_fp = GUI_NEW( FramePrivate );
 }
 
 Frame *Frame::next_in_focus( Frame *p_from ) {
@@ -381,7 +381,7 @@ Frame::~Frame() {
 	if (_fp->window)
 		_fp->window->frame_deleted_notify( this );
 	
-	delete _fp;
+	GUI_DELETE( _fp );
 }
 
 }; //end of namespace

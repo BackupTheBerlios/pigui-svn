@@ -15,7 +15,7 @@ namespace GUI {
 
 Container::Element *BoxContainer::create_new_element() {
 	
-	return new BoxElement;
+	return GUI_NEW( BoxElement );
 }
 
 void BoxContainer::set_separation( int p_separation ) {

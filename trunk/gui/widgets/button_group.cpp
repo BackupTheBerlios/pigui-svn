@@ -88,7 +88,7 @@ void ButtonGroup::set_current(int p_idx){
 	
 void ButtonGroup::add_button(BaseButton *p_button){
 	
-	ButtonList *bl = new ButtonList;
+	ButtonList *bl = GUI_NEW( ButtonList );
 	
 	/* Append at the end */
 	ButtonList **bl_ptr=&button_list;
@@ -118,7 +118,7 @@ void ButtonGroup::remove(BaseButton *p_button){
 			
 			ButtonList *b = (*bl_ptr);
 			bl_ptr=&(*bl_ptr)->next;
-			delete b;
+			GUI_DELETE( b );
 			continue;
 		}
 		bl_ptr=&(*bl_ptr)->next;
@@ -139,7 +139,7 @@ ButtonGroup::~ButtonGroup() {
 		
 		ButtonList*aux=button_list;
 		button_list=button_list->next;
-		delete aux;
+		GUI_DELETE( aux );
 	}
 }
 

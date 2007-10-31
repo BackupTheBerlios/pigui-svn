@@ -58,8 +58,8 @@ void TabBox::set_in_window() {
 }
 TabBox::TabBox() {
 	
-	tabs=BoxContainer::add( new TabBar );
-	stack=BoxContainer::add( new TabBoxContainer,1 );
+	tabs=BoxContainer::add( GUI_NEW( TabBar) );
+	stack=BoxContainer::add( GUI_NEW( TabBoxContainer),1 );
 	tabs->tab_changed_signal.connect( stack, &StackContainer::raise );
 	
 }

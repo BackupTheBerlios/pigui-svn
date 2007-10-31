@@ -37,12 +37,12 @@ HBoxContainer *MarginGroup::get_label_hb() {
 
 MarginGroup::MarginGroup(String p_label) {
 
-	label_hb = BoxContainer::add( new HBoxContainer, 0 );
-	label=label_hb->add( new Label(p_label),0);
+	label_hb = BoxContainer::add( GUI_NEW( HBoxContainer ), 0 );
+	label=label_hb->add( GUI_NEW( Label(p_label)),0);
 
-	HBoxContainer *hbc=BoxContainer::add( new HBoxContainer,1);
-	spacer=hbc->add( new Widget,0 );
-	internal_vb=hbc->add( new VBoxContainer, 1);
+	HBoxContainer *hbc=BoxContainer::add( GUI_NEW( HBoxContainer),1);
+	spacer=hbc->add( GUI_NEW( Widget ),0 );
+	internal_vb=hbc->add( GUI_NEW( VBoxContainer) , 1);
 	
 }
 

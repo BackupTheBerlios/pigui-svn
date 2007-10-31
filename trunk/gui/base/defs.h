@@ -5,6 +5,8 @@
 
 #include "string/rstring.h"
 #include "base/keyboard.h"
+#include "base/memory.h"
+
 #include <stddef.h>
 
 namespace GUI {
@@ -89,6 +91,9 @@ enum BitmapMode {
 #define MIN(m_a,m_b) (((m_a)<(m_b))?(m_a):(m_b))
 #define MAX(m_a,m_b) (((m_a)>(m_b))?(m_a):(m_b))
 #endif
+
+
+
 } //end of namespace
 
 

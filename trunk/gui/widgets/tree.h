@@ -14,7 +14,7 @@
 
 
 #include "base/widget.h"
-
+#include "base/range.h"
 
 		
 namespace GUI {
@@ -24,46 +24,93 @@ namespace GUI {
 */
 class Tree;
 
+enum TreeCellMode {
+	CELL_MODE_STRING, ///< just a string	
+	CELL_MODE_CHECK, ///< string + check
+	CELL_MODE_RANGE, ///< Contains a range
+	CELL_MODE_BITMAP, ///< Contains a bitmap, not editable
+	CELL_MODE_CUSTOM, ///< Contains a custom value, show a string, and an edit button
+};
+
 class TreeItem {
+public:
+
+private:
 friend class Tree;
 
 
+	struct Cell {
+	
+		TreeCellMode mode;
+		union {
+			BitmapID bitmap;
+			bool checked;
+			RangeBase *range;
+		} data;
+		String string;
+		Color color;
+		bool custom_color;
+		bool owned_range;
+		bool selected;
+		bool selectable;
+		bool editable;
+		bool range_is_combo;
+	
+		Cell() {
+		
+			mode=CELL_MODE_STRING;
+			owned_range=false;
+			custom_color=false;
+			selected=false;
+			selectable=true;
+			editable=false;
+			range_is_combo=false;
+		}
+		
+		~Cell() {
+		
+			if (owned_range && mode==CELL_MODE_RANGE && data.range)
+				GUI_DELETE( data.range );
+		}
+	};
 			
-	BitmapID bitmap;
-	String text;
-	bool checked; // in case it's a checkable tree
+	Cell *cells; // tree->columns to know the amount of cells
 	
 	bool collapsed; // wont show childs
-
-	Signal<> changed_signal;
-	Signal< Method1<TreeItem*> > internal_selected_signal;
-	Signal<Method1<TreeItem*> > internal_deselected_signal;
 
 	TreeItem *parent; // parent item
 	TreeItem *next; // next in list
 	TreeItem *childs; //child items
 	Tree *tree; //tree (for reference)
 
-	bool selected;
-	
-	bool checkable;
-	bool selectable;
-
-	bool custom_color;
-	Color color;
-
-
-	
+	TreeItem(Tree *p_tree);	
 public:
 
-	Signal<> selected_signal;
-	Signal< Method1<bool> > checked_signal;
-	void set_checked(bool p_checked);
-	void set_text(String p_text);
-	void set_bitmap(BitmapID p_bitmap);
+	Signal< Method1<int> > selected_signal;
+	Signal< Method1<int> > deselected_signal;
+	Signal< Method1<int> > changed_signal;
+	Signal<> collapsed_signal;
+	
+	/* cell mode */
+	void set_cell_mode( int p_column, TreeCellMode p_mode );
+	TreeCellMode get_cell_mode( int p_column );
+	
+	/* check mode */
+	void set_checked(int p_column,bool p_checked);
+	bool is_checked(int p_column);
+	
+	void set_text(int p_column,String p_text);
+	String get_text(int p_column);
+	
+	void set_bitmap(int p_column,BitmapID p_bitmap);
+	BitmapID get_bitmap(int p_column);
+	
+	/* range works for mode number or mode combo */
+	void set_range(int p_column,RangeBase *p_range,bool p_own_range=false);
+	RangeBase *get_range(int p_column);
+	
 	void set_collapsed(bool p_collapsed);
 
-	bool is_checked();
 	String get_text();
 	BitmapID get_bitmap();
 	bool is_collapsed();
@@ -76,28 +123,32 @@ public:
 	
 	void remove_child(TreeItem *p_item);
 
+	void set_selectable(int p_column,bool p_selectable);
 
-	void set_checkable(bool p_checkable);
-	void set_selectable(bool p_selectable);
+	bool is_selected(int p_column);
+	void select(int p_column);
+	void deselect(int p_column);
 
-	bool is_selected();
-	void select();
-	void deselect();
-
-	void set_custom_color(const Color& p_color);
-	void clear_custom_color();
-	TreeItem();
+	void set_custom_color(int p_column,const Color& p_color);
+	void clear_custom_color(int p_column);
+	
 	~TreeItem();
 };
 
 
 class Tree : public Widget {
+public:
 
+	enum ColumnMode {
+		COLUMN_EXPAND=-1 ///< Column expands
+	};	
+
+private:
 	
 
-	void redraw_all();
+	void item_changed(int p_column,TreeItem *p_item);
 	
-	Size get_item_size(TreeItem *root);
+	int get_item_height(TreeItem *root);
 	void tree_changed_callback();
 	Size get_minimum_size_internal();
 
@@ -111,11 +162,19 @@ class Tree : public Widget {
 
 	bool allow_multi; //allow multiple item selection
 
-	void item_selected(TreeItem *p_item);
-	void item_deselected(TreeItem *p_item);
+	void item_selected(int p_column,TreeItem *p_item);
+	void item_deselected(int p_column,TreeItem *p_item);
 
 	void select_single_item(TreeItem *p_item,TreeItem *p_current);
 
+	int *column_min_size;
+	bool *column_expand;
+	int columns;
+	
+	int* column_width_caches;
+	void compute_column_size_caches();
+	int get_column_width(int p_column);
+	
 friend class TreeItem;
 	
 	TreeItem *root;	
@@ -125,13 +184,12 @@ public:
 	void clear();
 
 	TreeItem *create_item(TreeItem *p_parent=0); /// create item as toplevel (replacing it if it exists), or alternatively, create item with another parent
-	TreeItem *create_item(String p_text,TreeItem *p_parent=0); /// create item as toplevel (replacing it if it exists), or alternatively, create item with another parent
-	TreeItem *create_item(BitmapID p_bitmap, String p_text,TreeItem *p_parent=0); /// create item as toplevel (replacing it if it exists), or alternatively, create item with another parent
+
 
 	TreeItem* get_root_item();
 	
 	void set_multi_mode(bool p_enabled);
-	Tree();
+	Tree(int p_columns=1);
 	~Tree();
 };
 

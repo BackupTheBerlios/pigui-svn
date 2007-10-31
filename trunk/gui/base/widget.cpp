@@ -97,11 +97,11 @@ void Widget::draw_tree(const Point& p_global,const Size& p_size,const Rect& p_ex
 
 Widget::Widget() {
 	
-	_wp = new WidgetPrivate;
+	_wp = GUI_NEW( WidgetPrivate );
 }
 Widget::~Widget() {
 	
-	delete _wp;
+	GUI_DELETE( _wp );
 }
 
 

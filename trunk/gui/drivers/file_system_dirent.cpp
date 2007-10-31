@@ -20,7 +20,7 @@ namespace GUI {
 
 FileSystem *FileSystemDirent::create_fs() {
 	
-	return new FileSystemDirent;
+	return GUI_NEW( FileSystemDirent );
 }
 
 bool FileSystemDirent::list_dir_begin() {

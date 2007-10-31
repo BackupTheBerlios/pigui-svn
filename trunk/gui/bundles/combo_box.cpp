@@ -194,13 +194,13 @@ void ComboBox::set_in_window() {
 	
 	Container::set_in_window();
 
-	popup = new Window(get_window(),Window::MODE_POPUP);
+	popup = GUI_NEW( Window(get_window(),Window::MODE_POPUP) );
 	
-	hbc = new HBCCombo;
+	hbc = GUI_NEW( HBCCombo );
 	popup->set_root_frame( hbc );
 	hbc->add( list, 1);
 	list->set_cursor_hint( true );	
-	ScrollBar *sb = hbc->add( new ScrollBar(VERTICAL), 0);
+	ScrollBar *sb = hbc->add( GUI_NEW( ScrollBar(VERTICAL)), 0);
 	sb->set_range( list->get_range() );
 	sb->set_auto_hide( true );
 	list->selected_signal.connect( this, &ComboBox::list_selection_changed_slot );
@@ -210,26 +210,31 @@ void ComboBox::set_in_window() {
 
 ComboBox::ComboBox(Mode p_mode) {
 
-	list=new List;
+	list=GUI_NEW( List );
 	mode=p_mode;
-	line_edit = add( new LineEdit, 1 );
+	line_edit = add( GUI_NEW( LineEdit ), 1 );
 	if (p_mode==MODE_EDIT || p_mode==MODE_ADD)
 		line_edit->text_enter_signal.connect( this, &ComboBox::line_edit_enter_pressed );
 	if (p_mode==MODE_SELECT)
 		line_edit->set_editable( false );
 	
-	arrow_button = add( new ArrowButton( DOWN ), 0 );
+	arrow_button = add( GUI_NEW( ArrowButton( DOWN )) , 0 );
 	arrow_button->set_focus_mode( FOCUS_NONE );
 	
 	arrow_button->pressed_signal.connect( this, &ComboBox::button_clicked );
 	
 
 	setting_line_edit=false;
+	popup=NULL;
 }
 
 
-ComboBox::~ComboBox()
-{
+ComboBox::~ComboBox(){ 
+
+	if (popup) {
+	
+		GUI_DELETE( popup );
+	}
 }
 
 

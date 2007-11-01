@@ -112,8 +112,8 @@ public:
 	
 	void set_collapsed(bool p_collapsed);
 
-	String get_text();
-	BitmapID get_bitmap();
+	//String get_text();
+	//BitmapID get_bitmap();
 	bool is_collapsed();
 
 	TreeItem *get_next();

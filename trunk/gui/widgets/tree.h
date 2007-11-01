@@ -15,7 +15,8 @@
 
 #include "base/widget.h"
 #include "base/range.h"
-
+#include "widgets/line_edit.h"
+#include "bundles/popup_menu.h"
 		
 namespace GUI {
 
@@ -55,7 +56,6 @@ friend class Tree;
 		bool selected;
 		bool selectable;
 		bool editable;
-		bool range_is_combo;
 	
 		Cell() {
 		
@@ -65,7 +65,6 @@ friend class Tree;
 			selected=false;
 			selectable=true;
 			editable=false;
-			range_is_combo=false;
 		}
 		
 		~Cell() {
@@ -74,7 +73,7 @@ friend class Tree;
 				GUI_DELETE( data.range );
 		}
 	};
-			
+				
 	Cell *cells; // tree->columns to know the amount of cells
 	
 	bool collapsed; // wont show childs
@@ -89,7 +88,8 @@ public:
 
 	Signal< Method1<int> > selected_signal;
 	Signal< Method1<int> > deselected_signal;
-	Signal< Method1<int> > changed_signal;
+	Signal< Method1<int> > changed_signal; ///< Called when changing editability/color/etc
+	Signal< Method1<int> > edited_signal; ///< Called when changing contents
 	Signal<> collapsed_signal;
 	
 	/* cell mode */
@@ -130,6 +130,8 @@ public:
 	void select(int p_column);
 	void deselect(int p_column);
 
+	void set_editable(int p_column,bool p_editable);
+	bool is_editable(int p_column);
 	void set_custom_color(int p_column,const Color& p_color);
 	void clear_custom_color(int p_column);
 	
@@ -157,7 +159,7 @@ private:
 	virtual void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
 
 	int compute_item_height(TreeItem *p_item);
-	int propagate_mouse_event(const Point &p_pos,bool p_doubleclick,TreeItem *p_item,int p_mod_state); //return true on handled
+	int propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_doubleclick,TreeItem *p_item,int p_button,int p_mod_state); //return true on handled
 	virtual void mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask);
 	
 
@@ -166,7 +168,7 @@ private:
 	void item_selected(int p_column,TreeItem *p_item);
 	void item_deselected(int p_column,TreeItem *p_item);
 
-	void select_single_item(TreeItem *p_item,TreeItem *p_current);
+	void select_single_item(TreeItem *p_selected,TreeItem *p_current,int col);
 
 	int *column_min_size;
 	bool *column_expand;
@@ -175,6 +177,17 @@ private:
 	int* column_width_caches;
 	void compute_column_size_caches();
 	int get_column_width(int p_column);
+	
+	Window *line_edit_window;
+	LineEdit *line_edit;
+	PopUpMenu *popup_menu;
+	
+	TreeItem *popup_edited_item;
+	int popup_edited_item_col;
+	void popup_select_slot(int p_option);
+	void line_edit_enter_slot(String p_text);
+	
+	void set_in_window();
 	
 friend class TreeItem;
 	

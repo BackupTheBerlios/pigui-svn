@@ -12,7 +12,8 @@
 #include "tree.h"
 #include "base/painter.h"
 #include "base/skin.h"
-#include <stdio.h>
+#include "containers/box_container.h"
+
 namespace GUI {
 
 
@@ -33,12 +34,20 @@ void TreeItem::set_cell_mode( int p_column, TreeCellMode p_mode ) {
 		c.owned_range=false;
 	}
 	
-	if ( p_mode == CELL_MODE_RANGE) {
-	
-		c.data.range = GUI_NEW( Range );
-		c.owned_range=true;
-		c.string = "";
+	switch(p_mode) {
+		case CELL_MODE_RANGE: {
 		
+			c.data.range = GUI_NEW( Range );
+			c.owned_range=true;
+			c.string = "";
+		} break;
+		case CELL_MODE_CHECK : {
+			c.data.checked=false;
+		} break;
+		case CELL_MODE_BITMAP: {
+			c.data.bitmap=INVALID_BITMAP_ID;
+		} break;
+		default:{}
 	}
 	
 	c.mode = p_mode;
@@ -229,9 +238,13 @@ void TreeItem::select(int p_column) {
 	
 	if (!c.selectable)
 		return;
-	c.selected=true;
-	
-	selected_signal.call( p_column );
+		
+	if (!tree->allow_multi)
+		tree->select_single_item(this,tree->root,p_column);
+	else {
+		c.selected=true;
+		selected_signal.call( p_column );
+	}
 }
 
 void TreeItem::deselect(int p_column) {
@@ -288,6 +301,25 @@ void TreeItem::clear_custom_color(int p_column) {
 
 }
 
+void TreeItem::set_editable(int p_column,bool p_editable) {
+
+	if (p_column<0 || p_column >=tree->columns) 
+		return;
+	Cell &c = cells[ p_column ];
+		
+	c.editable=p_editable;
+	changed_signal.call(p_column);
+	
+}
+bool TreeItem::is_editable(int p_column) {
+
+	if (p_column<0 || p_column >=tree->columns) 
+		return false;
+	Cell &c = cells[ p_column ];
+
+	return c.editable;
+}
+
 TreeItem::TreeItem(Tree *p_tree) {
 
 	tree=p_tree;
@@ -320,6 +352,9 @@ TreeItem::~TreeItem() {
 		tree->root=0;
 	}
 
+	if (tree && tree->popup_edited_item==this)
+		tree->popup_edited_item=NULL;
+		
 	GUI_DELETE_ARRAY( cells );
 }
 
@@ -458,8 +493,20 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 				} break;
 				case CELL_MODE_RANGE: {
 				
-					if (p_item->cells[i].range_is_combo) {
+					if (!p_item->cells[i].data.range)
+						break;
+					if (p_item->cells[i].string!="") {
 					
+						if (!p_item->cells[i].editable)
+							break;
+							
+						int option = (int)p_item->cells[i].data.range->get();
+						
+						String s = p_item->cells[i].string;
+						s=s.get_slice(",",option);
+						
+						get_painter()->draw_text( font(FONT_TREE), text_pos, s, col,item_rect.size.x );
+							
 						//?
 						int arrow_w = item_rect.size.y/2;
 						Point arrow_pos=item_rect.pos;
@@ -475,6 +522,9 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 							
 						get_painter()->draw_text( font(FONT_TREE), text_pos, r->get_as_text(), col,item_rect.size.x );
 						
+																	if (!p_item->cells[i].editable)
+							break;
+
 						int updown_w = item_rect.size.y/2;
 						Point updown_pos=item_rect.pos;
 						updown_pos.x+=item_rect.size.x-updown_w;
@@ -499,6 +549,9 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 				case CELL_MODE_CUSTOM: {
 				
 					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x );
+				
+					if (!p_item->cells[i].editable)
+						break;
 				
 					int arrow_w = item_rect.size.y/2;
 					Point arrow_pos=item_rect.pos;
@@ -595,7 +648,7 @@ int Tree::compute_item_height(TreeItem *p_item) {
 
 }
 
-int Tree::propagate_mouse_event(const Point &p_pos,bool p_doubleclick,TreeItem *p_item,int p_mod_state) {
+int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_doubleclick,TreeItem *p_item,int p_button,int p_mod_state) {
 
 	int item_h=compute_item_height( p_item )+constant( C_TREE_VSPACING );
 
@@ -603,9 +656,9 @@ int Tree::propagate_mouse_event(const Point &p_pos,bool p_doubleclick,TreeItem *
 	if (p_pos.y<item_h) {
 		// check event!
 
-		/*
+		
 		int x=p_pos.x;
-		if ( x< constant(C_TREE_GUIDE_WIDTH) ) {
+		if ( x >= x_ofs && x < (x_ofs+constant(C_TREE_GUIDE_WIDTH)) ) {
 
 
 			if (p_item->childs)
@@ -613,58 +666,166 @@ int Tree::propagate_mouse_event(const Point &p_pos,bool p_doubleclick,TreeItem *
 
 			return -1; //handled!
 		}
-
-		x-=constant(C_TREE_GUIDE_WIDTH);
-
-
-		if (p_item->checkable) {
-
-			int checkw=constant(C_TREE_CHECK_SIZE)+constant( C_TREE_HSPACING )*2;
-
-
-			if (x<checkw) {
-
-				p_item->set_checked( !p_item->checked );
-				return -1;
+		/* find clicked column */
+		int col=-1;
+		int col_ofs=0;
+		for (int i=0;i<columns;i++) {
+		
+			int cw=get_column_width(i);
+			if (x>cw) {
+				col_ofs+=cw;
+				x-=cw;
+				continue;
 			}
-
-			x-=checkw;
+						
+			col=i;
+			break;		
 		}
-
-
-
-		if (allow_multi && p_mod_state&KEY_MASK_CTRL) {
-
-			if (!p_item->selected) {
-				p_item->selected=true;
-				p_item->selected_signal.call();
+		
+		if (col==-1)
+			return -1;
+			
+		TreeItem::Cell &c = p_item->cells[col];
+			
+		bool already_selected=c.selected;
+			
+		if (p_button==1) {
+			/* process selection */
+			if (allow_multi && p_mod_state&KEY_MASK_CTRL && c.selectable) {
+	
+				if (!c.selected) {
+					
+					c.selected=true;
+					p_item->selected_signal.call(col);
+				} else {
+	
+					c.selected=false;
+					p_item->deselected_signal.call(col);
+				}
+	
+				update();
 			} else {
-
-				p_item->selected=false;
-
+	
+				if (c.selectable)
+					select_single_item( p_item, root, col );
 			}
-
-			update();
-		} else {
-
-			p_item->select();
 		}
+		
+		if (!c.editable)
+			return -1; // if cell is not editable, don't bother
 
-		*/
+		/* editing */
+		
+		bool bring_up_editor=c.selected && already_selected;
+		String editor_text=c.string;
+		
+		switch (c.mode) {
+		
+			case CELL_MODE_STRING: {
+				//nothing in particular
+			} break;
+			case CELL_MODE_CHECK: {
+			
+				bring_up_editor=false; //checkboxes are not edited with editor
+				if (x <= constant(C_TREE_CHECK_SIZE) ) {
+				
+					c.data.checked = !c.data.checked;
+					p_item->edited_signal.call(col);
+					
+				}
+				
+			} break;
+			case CELL_MODE_RANGE: {
+				
+				if (!c.data.range) {
+					bring_up_editor=false;
+					break;
+				}
+				
+				if (c.string!="") {
+				
+					//if (x >= (get_column_width(col)-item_h/2)) {
+				
+					popup_menu->clear();
+					for (int i=0;i<c.string.get_slice_count(",");i++) {
+					
+						String s = c.string.get_slice(",",i);
+						popup_menu->add_item(s,i);
+								
+					}
+				
+					popup_menu->set_size(Size(get_column_width(col),0));
+					popup_menu->popup( get_global_pos() + Point(col_ofs,y_ofs+item_h));
+					popup_edited_item=p_item;
+					popup_edited_item_col=col;
+					//}
+					bring_up_editor=false;
+				} else if (x >= (get_column_width(col)-item_h/2)) {
+				
+					/* touching the combo */
+					bool up=p_pos.y < (item_h /2);
+					
+					if (p_button==BUTTON_LEFT) {
+						c.data.range->set( c.data.range->get() + (up?1.0:-1.0) * c.data.range->get_step() );
+					} else if (p_button==BUTTON_RIGHT) {
+					
+						c.data.range->set( up?c.data.range->get_max():c.data.range->get_min()  );
+					} else if (p_button==BUTTON_WHEEL_UP) {
+					
+						c.data.range->set( c.data.range->get() +  c.data.range->get_step() );
+						
+					} else if (p_button==BUTTON_WHEEL_DOWN) {
+					
+						c.data.range->set( c.data.range->get() -  c.data.range->get_step() );
+						
+					}
+					
+					p_item->edited_signal.call(col);
+					
+					bring_up_editor=false;
+				} else {
+				
+					editor_text=c.data.range->get_as_text();
+					
+				}
+				
+			} break;
+			case CELL_MODE_BITMAP: {
+			
+				bring_up_editor=false;
+			} break;
+			case CELL_MODE_CUSTOM: {
+				bring_up_editor=false;
+			} break;
+	
+		};
+		
+		if (!bring_up_editor || p_button!=BUTTON_LEFT)
+			return -1;
+				
+		popup_edited_item=p_item;
+		popup_edited_item_col=col;
+		line_edit_window->set_pos(get_global_pos() + Point(col_ofs,y_ofs) );
+		line_edit_window->set_size( Size(get_column_width(col),item_h));
+		line_edit->clear();
+		line_edit->set_text( editor_text );
+		line_edit_window->show();
+		
 		return -1; //select
 	} else {
 		
 		Point new_pos=p_pos;
-		new_pos.x-=constant( C_TREE_GUIDE_WIDTH );
+		x_ofs+=constant( C_TREE_GUIDE_WIDTH );
+		y_ofs+=item_h;
 		new_pos.y-=item_h;
-
+	
 		if (!p_item->collapsed) { /* if not collapsed, check the childs */
 
 			TreeItem *c=p_item->childs;
 
 			while (c) {
 
-				int child_h=propagate_mouse_event( new_pos,p_doubleclick,c,p_mod_state);
+				int child_h=propagate_mouse_event( new_pos,x_ofs,y_ofs,p_doubleclick,c,p_button,p_mod_state);
 
 				if (child_h<0)
 					return -1; // break, stop propagating, no need to anymore
@@ -683,17 +844,60 @@ int Tree::propagate_mouse_event(const Point &p_pos,bool p_doubleclick,TreeItem *
 
 }
 
+void Tree::line_edit_enter_slot(String p_text) {
+
+	
+	line_edit_window->hide();
+	
+	if (!popup_edited_item)
+		return;
+	
+	if (popup_edited_item_col<0 || popup_edited_item_col>columns)
+		return;
+		
+	TreeItem::Cell &c=popup_edited_item->cells[popup_edited_item_col];
+	switch( c.mode ) {
+	
+		case CELL_MODE_STRING: {
+		
+			c.string=p_text;
+			popup_edited_item->edited_signal.call( popup_edited_item_col );
+		} break;
+		case CELL_MODE_RANGE: {
+		
+			if (!c.data.range)				
+				break;
+			
+			c.data.range->set( p_text.to_double() );
+			popup_edited_item->edited_signal.call( popup_edited_item_col );
+		} break;
+		default: { PRINT_ERROR("INVALID MODE"); }	
+	}
+
+}
+void Tree::popup_select_slot(int p_option) {
+
+	if (!popup_edited_item)
+		return;
+	
+	if (popup_edited_item_col<0 || popup_edited_item_col>columns)
+		return;
+		
+	if (!popup_edited_item->cells[popup_edited_item_col].data.range)
+		return;
+	popup_edited_item->cells[popup_edited_item_col].data.range->set( p_option );
+	popup_edited_item->edited_signal.call( popup_edited_item_col );
+	update();
+}
+
 void Tree::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
 
-
-	if (p_button!=BUTTON_LEFT)
-		return;
 
 	if (!p_press)
 		return;
 
 
-	propagate_mouse_event(p_pos,false,root,p_modifier_mask);
+	propagate_mouse_event(p_pos,0,0,false,root,p_button,p_modifier_mask);
 
 }
 
@@ -803,37 +1007,40 @@ void Tree::item_changed(int p_column,TreeItem *p_item) {
 
 	update(); //just redraw all for now, could be optimized for asking a redraw with exposure for the item
 }
-void Tree::select_single_item(TreeItem *p_item,TreeItem *p_current) {
+void Tree::select_single_item(TreeItem *p_selected,TreeItem *p_current,int p_col) {
 
-/*
-	if (p_item==p_current) {
+	TreeItem::Cell &selected_cell=p_selected->cells[p_col];
 
-		if (!p_item->selected) {
-
-			p_item->selected=true;
-			p_item->selected_signal.call();
+	for (int i=0;i<columns;i++) {
+	
+		TreeItem::Cell &c=p_current->cells[i];
+		
+		if (&selected_cell==&c) {
+	
+			if (!selected_cell.selected) {
+	
+				selected_cell.selected=true;
+				p_selected->selected_signal.call(p_col);
+			}
+		} else {
+	
+			c.selected=false;
+			p_current->deselected_signal.call(p_col);
 		}
-	} else {
-
-		p_current->selected=false;
+	
 	}
-
-
+	
 	TreeItem *c=p_current->childs;
-
 
 	while (c) {
 
-		select_single_item(p_item,c);
+		select_single_item(p_selected,c,p_col);
 		c=c->next;
 	}
-	*/
+	
 }
 
 void Tree::item_selected(int p_column,TreeItem *p_item) {
-
-
-	select_single_item(p_item,root);
 
 	update();
 }
@@ -870,6 +1077,20 @@ int Tree::get_column_width(int p_column) {
 	return column_width_caches[p_column];
 }
 
+void Tree::set_in_window() {
+
+	popup_menu = GUI_NEW( PopUpMenu( get_window() ) );
+	popup_menu->hide();
+	popup_menu->selected_id_signal.connect( this, &Tree::popup_select_slot );
+	line_edit_window = GUI_NEW( Window(get_window(),Window::MODE_POPUP,Window::SIZE_NORMAL) );
+	VBoxContainer *vbc = GUI_NEW( VBoxContainer );
+	line_edit_window->set_root_frame( vbc );
+	line_edit = vbc->add( GUI_NEW( LineEdit ) );
+	line_edit_window->hide();
+	line_edit->text_enter_signal.connect(this,&Tree::line_edit_enter_slot);
+	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );
+}
+
 Tree::Tree(int p_columns) {
 
 	if (p_columns<1)
@@ -892,6 +1113,8 @@ Tree::Tree(int p_columns) {
 	
 	allow_multi=true;
 	root=0;
+	popup_menu=NULL;
+	popup_edited_item=NULL;
 }
 
 
@@ -904,6 +1127,8 @@ Tree::~Tree() {
 	GUI_DELETE_ARRAY( column_expand );
 	GUI_DELETE_ARRAY( column_width_caches );
 	
+	if (popup_menu)
+		GUI_DELETE(popup_menu);
 }
 
 

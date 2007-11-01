@@ -42,11 +42,12 @@ friend class Tree;
 	struct Cell {
 	
 		TreeCellMode mode;
-		union {
+		union _Data {
 			BitmapID bitmap;
 			bool checked;
 			RangeBase *range;
-		} data;
+		};
+		_Data data;
 		String string;
 		Color color;
 		bool custom_color;

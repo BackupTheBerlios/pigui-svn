@@ -1,3 +1,4 @@
+#ifdef SDL_ENABLED
 //
 // C++ Interface: paintersdl
 //
@@ -106,5 +107,7 @@ public:
 };
 
 }
+
+#endif
 
 #endif

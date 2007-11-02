@@ -1,3 +1,4 @@
+#ifdef SDL_ENABLED
 //
 // C++ Interface: keycodes_sdl
 //
@@ -27,5 +28,7 @@ public:
 };
 
 }
+
+#endif
 
 #endif

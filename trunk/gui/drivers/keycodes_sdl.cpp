@@ -1,3 +1,5 @@
+#ifdef SDL_ENABLED
+
 //
 // C++ Implementation: keycodes_sdl
 //
@@ -262,3 +264,5 @@ KeycodesSDL::~KeycodesSDL()
 
 
 }
+
+#endif

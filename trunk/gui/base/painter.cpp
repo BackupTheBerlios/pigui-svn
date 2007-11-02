@@ -557,10 +557,10 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 			Rect rect_bottomright=Rect( bsize-bbottomright, bbottomright );
 			Rect rect_topright=Rect( Point( bsize.x-m[MARGIN_RIGHT], 0 ), Size( m[MARGIN_RIGHT], m[MARGIN_TOP] ) );
 			Rect rect_bottomleft=Rect( Point( 0,bsize.y-m[MARGIN_BOTTOM]), Size( m[MARGIN_LEFT], m[MARGIN_BOTTOM] ) );
-			Rect rect_left( Point( 0, m[MARGIN_TOP]), Size( m[MARGIN_LEFT], rect_center.size.y ));
-			Rect rect_top( Point(m[MARGIN_LEFT],0), Size( rect_center.size.x,m[MARGIN_TOP] ));
-			Rect rect_right( Point(rect_center.size.x+m[MARGIN_LEFT],m[MARGIN_TOP]), Size( m[MARGIN_RIGHT],rect_center.size.y ));
-			Rect rect_bottom( Point(m[MARGIN_LEFT],rect_center.size.y+m[MARGIN_TOP]), Size( rect_center.size.x,m[MARGIN_BOTTOM] ));
+			Rect rect_left = Rect( Point( 0, m[MARGIN_TOP]), Size( m[MARGIN_LEFT], rect_center.size.y ));
+			Rect rect_top = Rect( Point(m[MARGIN_LEFT],0), Size( rect_center.size.x,m[MARGIN_TOP] ));
+			Rect rect_right = Rect( Point(rect_center.size.x+m[MARGIN_LEFT],m[MARGIN_TOP]), Size( m[MARGIN_RIGHT],rect_center.size.y ));
+			Rect rect_bottom = Rect( Point(m[MARGIN_LEFT],rect_center.size.y+m[MARGIN_TOP]), Size( rect_center.size.x,m[MARGIN_BOTTOM] ));
 			
 			if (!rect_topleft.has_no_area()) {
 			

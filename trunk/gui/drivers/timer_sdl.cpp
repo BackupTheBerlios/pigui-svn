@@ -1,3 +1,4 @@
+#ifdef SDL_ENABLED
 //
 // C++ Implementation: timer_sdl
 //
@@ -140,3 +141,4 @@ TimerSDL::~TimerSDL() {
 
 
 }
+#endif

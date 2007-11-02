@@ -1,3 +1,4 @@
+#ifdef SDL_ENABLED
 //
 // C++ Interface: timer_sdl
 //
@@ -69,5 +70,7 @@ public:
 };
 
 }
+
+#endif
 
 #endif

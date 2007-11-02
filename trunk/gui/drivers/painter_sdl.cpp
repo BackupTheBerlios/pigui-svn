@@ -1,3 +1,4 @@
+#ifdef SDL_ENABLED
 //
 // C++ Implementation: paintersdl
 //
@@ -889,3 +890,4 @@ PainterSDL::~PainterSDL()
 
 
 }
+#endif

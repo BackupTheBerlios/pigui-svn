@@ -14,7 +14,7 @@
 #include "containers/center_container.h"
 #include "bundles/window_box.h"
 #include "widgets/window_top.h"
-#include <stdio.h>
+
 namespace GUI {
 
 bool FileDialog::ignore_filter() {
@@ -263,10 +263,11 @@ void FileDialog::clear_filter_list() {
 
 int FileDialog::get_file_count() {
 	
+	
 	if (mode!=MODE_OPEN_MULTI && mode !=MODE_OPEN_DIR)
 		return 0;
 	
-	file_list->get_selection_size();
+	return file_list->get_selection_size();
 }
 String FileDialog::get_path(int p_which) {
 	

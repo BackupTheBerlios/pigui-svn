@@ -5,11 +5,7 @@
 #include <stdio.h>
 namespace GUI {
 
-void __print_error(const char *p_file,int p_line,const char* p_error) {
-
-	printf("ERROR: at %s:%i -- %s\n",p_file,p_line,p_error);
-}
-
+/** ARIEL, DEJA DE VOLVER A PONER __PRINT_ERROR ACA!  :( ponelo en el .cpp de algun otro lado! */
 struct WidgetPrivate {
 	
 	Size minimum_size;

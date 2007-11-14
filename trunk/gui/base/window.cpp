@@ -189,6 +189,8 @@ Size Window::get_size() {
 }
 void Window::redraw_all(Rect p_custom_area) {
 
+	if (!root_frame)
+		return;
 
 	get_painter()->reset_clip_rect_stack();
 	get_painter()->reset_local_rect_stack();

@@ -1171,6 +1171,16 @@ Skin *Window::get_skin() {
 	
 }
 
+Window::Mode Window::get_mode() {
+		
+	return mode;	
+}
+
+bool Window::is_visible() {
+	
+	return visible;
+}
+
 Window::Window(Window *p_parent,Mode p_mode, SizeMode p_size_mode) {
 
 	
@@ -1195,16 +1205,6 @@ Window::Window(Window *p_parent,Mode p_mode, SizeMode p_size_mode) {
 	
 }
 
-
-Window::Mode Window::get_mode() {
-		
-	return mode;	
-}
-
-bool Window::is_visible() {
-	
-	return visible;
-}
 Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 
 

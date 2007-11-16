@@ -1500,6 +1500,23 @@ public:
 
 	}
 
+	void clear() {
+
+		if (call_ref>0) {
+			
+			ERR_PRINT(" DO NOT CLEAR A SIGNAL IN THE MIDDLE OF A CALL() ");
+			
+		}
+		
+		Connection *c = conn_list;
+				
+		while (c) {
+			
+			c->removed=true;
+			c=c->next;
+		}
+		remove_pending();
+	};
 	
 	Signal() {
 
@@ -1516,16 +1533,8 @@ public:
 			PRINT_ERROR(" DO NOT DELETE A SIGNAL IN THE MIDDLE OF A CALL() ");
 			
 		}
-			
-		Connection *c = conn_list;
-				
-		while (c) {
-			
-			c->removed=true;
-			c=c->next;
-		}
-		
-		remove_pending();
+
+		clear();
 		
 	};
 

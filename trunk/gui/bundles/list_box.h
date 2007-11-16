@@ -6,14 +6,14 @@
 namespace GUI {
 	
 class List;
-class HScrollBar;
+class VScrollBar;
 	
 class ListBox : HBoxContainer {
 
 private:
 	
 	List* list;
-	HScrollBar* scroll_bar;
+	VScrollBar* scroll_bar;
 
 public:
 

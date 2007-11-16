@@ -76,6 +76,7 @@ ColorPicker::ColorPicker(bool p_with_alpha) {
 	use_alpha=p_with_alpha;
 	
 	show_color = add( GUI_NEW( ColorShow ), 1 );
+	show_color->set_minimum_size(GUI::Size(50, 0));
 	
 	GridContainer *g = add( GUI_NEW( GridContainer ), 2 );
 	
@@ -83,6 +84,7 @@ ColorPicker::ColorPicker(bool p_with_alpha) {
 	r_slider = g->add( GUI_NEW( HSlider ), true, false );
 	r_slider->get_range()->config( 0, 255, 0, 1 );
 	r_slider->get_range()->value_changed_signal.connect( this, &ColorPicker::color_changed_callback );
+	r_slider->set_minimum_size(GUI::Size(100, 0));
 	
 	g->add( GUI_NEW( Label("G")), false, false );
 	g_slider = g->add( GUI_NEW( HSlider), true, false );

@@ -90,6 +90,7 @@ public:
 	Signal< Method1<int> > deselected_signal;
 	Signal< Method1<int> > changed_signal; ///< Called when changing editability/color/etc
 	Signal< Method1<int> > edited_signal; ///< Called when changing contents
+	Signal< Method2<int, Rect> > custom_popup_signal;
 	Signal<> collapsed_signal;
 	
 	/* cell mode */

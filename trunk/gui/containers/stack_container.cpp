@@ -21,7 +21,11 @@ Size StackContainer::get_minimum_size_internal() {
 	Size minsize;
 	
 	while (e) {
-		
+
+		if (!e->frame->is_visible()) {
+			e = e->next;
+			continue;
+		};
 		Size element_min=e->frame->get_minimum_size();
 		
 		if (element_min.width>minsize.width)
@@ -43,6 +47,10 @@ void StackContainer::resize_internal(const Size& p_new_size) {
 	
 	while (e) {
 		
+		if (!e->frame->is_visible()) {
+			e = e->next;
+			continue;
+		};
 		e->rect.pos=Point();
 		e->rect.size=p_new_size;
 		e->frame->resize_tree(p_new_size);

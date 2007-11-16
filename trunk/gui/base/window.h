@@ -141,6 +141,7 @@ public:
 	Signal<> popup_cancel_signal;
 	Signal< Method5<unsigned long,unsigned long,bool,bool,int> > key_unhandled_signal;
 	Signal<> skin_changed_signal;
+	Signal<> update_signal; //< called after check_for_updates and gets cleared after every call
 	
 	void set_no_local_updates(bool p_disable);
 	void set_no_stretch_root_frames(bool p_disable);

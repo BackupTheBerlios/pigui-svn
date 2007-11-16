@@ -326,6 +326,8 @@ void Window::check_for_updates() {
 
 	/* For now, if the window has a child, it wont redraw */
 
+	update_signal.call();
+	update_signal.clear();
 	
 	if (!root || !root_data ) {
 		

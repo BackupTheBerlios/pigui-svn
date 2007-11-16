@@ -791,11 +791,16 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 				
 			} break;
 			case CELL_MODE_BITMAP: {
-			
 				bring_up_editor=false;
 			} break;
 			case CELL_MODE_CUSTOM: {
+				if (x >= (get_column_width(col)-item_h/2)) {
+					p_item->custom_popup_signal.call(col, Rect(get_global_pos() + Point(col_ofs,y_ofs+item_h), Size(get_column_width(col),item_h)));
+				} else {
+					p_item->edited_signal.call(col);
+				};
 				bring_up_editor=false;
+				return -1;
 			} break;
 	
 		};
@@ -831,6 +836,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 					return -1; // break, stop propagating, no need to anymore
 
 				new_pos.y-=child_h;
+				y_ofs+=child_h;
 				c=c->next;
 				item_h+=child_h;
 			}

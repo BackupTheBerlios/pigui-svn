@@ -932,6 +932,34 @@ void Tree::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 }
 
 
+void Tree::resize(const Size& p_new_size) {
+
+	int available=p_new_size.x;
+	int expanding_count=0;
+	
+	for (int i=0;i<columns;i++) {
+	
+		available-=column_min_size[i];
+		if (column_expand[i])
+			expanding_count++;
+	}
+	
+	if (available<0) {
+	
+		PRINT_ERROR("aviable space less than needed");
+		return;
+	}
+	
+	for (int i=0;i<columns;i++) {
+	
+		int new_size=column_min_size[i];
+		if (column_expand[i])
+			new_size+=available/expanding_count;
+			
+		column_width_caches[i]=new_size;
+	}
+}
+
 Size Tree::get_minimum_size_internal() {
 
 	int w=0;
@@ -1099,6 +1127,7 @@ void Tree::set_in_window() {
 
 Tree::Tree(int p_columns) {
 
+	
 	if (p_columns<1)
 		p_columns=1;
 	
@@ -1113,8 +1142,8 @@ Tree::Tree(int p_columns) {
 	for (int i=0;i<columns;i++) {
 	
 		column_expand[i]=true;
-		column_min_size[i]=100;
-		column_width_caches[i]=100;
+		column_min_size[i]=10;
+		column_width_caches[i]=10;
 	}
 	
 	allow_multi=true;

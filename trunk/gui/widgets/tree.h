@@ -189,6 +189,7 @@ private:
 	void line_edit_enter_slot(String p_text);
 	
 	void set_in_window();
+	void resize(const Size& p_new_size); 		
 	
 friend class TreeItem;
 	

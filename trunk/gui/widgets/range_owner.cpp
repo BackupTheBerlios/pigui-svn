@@ -21,8 +21,10 @@ void RangeOwner::_check_auto_hide() {
 	if (auto_hide) {
 		if ( ((range->get_max()-range->get_min())-range->get_page()) <=0 )
 			hide();
-		else
+		else {
 			show();
+			printf("showing\n");
+		}
 	}
 	
 }

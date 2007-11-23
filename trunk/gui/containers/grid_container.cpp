@@ -48,6 +48,8 @@ void GridContainer::compute_cachedatas() {
 
 
 		Size emin=ge->frame->get_minimum_size();
+		if (!ge->frame->is_visible())
+			emin=Size();
 
 
 		if (row<(rows-1))

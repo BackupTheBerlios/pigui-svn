@@ -45,7 +45,7 @@ public:
 	HBoxContainer *get_label_hb();
 	void set_label_text(String p_label);
 	
-	MarginGroup(String p_label);
+	MarginGroup(String p_label="");
 	~MarginGroup();
 
 };

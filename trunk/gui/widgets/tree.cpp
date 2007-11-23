@@ -166,8 +166,12 @@ RangeBase *TreeItem::get_range(int p_column)   {
 
 void TreeItem::set_collapsed(bool p_collapsed) {
 
+	if (p_collapsed==collapsed)
+		return;
 	collapsed=p_collapsed;
 	collapsed_signal.call();
+	
+	tree->check_minimum_size();
 }
 
 bool TreeItem::is_selected(int p_column) {
@@ -298,7 +302,7 @@ void TreeItem::clear_custom_color(int p_column) {
 	c.custom_color=false;
 	
 	changed_signal.call(p_column);
-
+	
 }
 
 void TreeItem::set_editable(int p_column,bool p_editable) {
@@ -364,6 +368,7 @@ TreeItem::~TreeItem() {
 int Tree::get_item_height(TreeItem *p_item) {
 
 	int height=compute_item_height(p_item);
+	height+=constant( C_TREE_VSPACING );
 	
 	if (!p_item->collapsed) { /* if not collapsed, check the childs */
 
@@ -505,10 +510,11 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 						String s = p_item->cells[i].string;
 						s=s.get_slice(",",option);
 						
-						get_painter()->draw_text( font(FONT_TREE), text_pos, s, col,item_rect.size.x );
+						int arrow_w = item_rect.size.y/2;
+						
+						get_painter()->draw_text( font(FONT_TREE), text_pos, s, col,item_rect.size.x-arrow_w );
 							
 						//?
-						int arrow_w = item_rect.size.y/2;
 						Point arrow_pos=item_rect.pos;
 						arrow_pos.x+=item_rect.size.x-arrow_w;
 							
@@ -520,12 +526,13 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 						if (!r)
 							break;
 							
-						get_painter()->draw_text( font(FONT_TREE), text_pos, r->get_as_text(), col,item_rect.size.x );
+																int updown_w = item_rect.size.y/2;
+
+						get_painter()->draw_text( font(FONT_TREE), text_pos, r->get_as_text(), col,item_rect.size.x-updown_w );
 						
 																	if (!p_item->cells[i].editable)
 							break;
 
-						int updown_w = item_rect.size.y/2;
 						Point updown_pos=item_rect.pos;
 						updown_pos.x+=item_rect.size.x-updown_w;
 						
@@ -548,12 +555,12 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 				} break;
 				case CELL_MODE_CUSTOM: {
 				
-					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x );
+					int arrow_w = item_rect.size.y/2;
 				
+					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x-arrow_w );
 					if (!p_item->cells[i].editable)
 						break;
 				
-					int arrow_w = item_rect.size.y/2;
 					Point arrow_pos=item_rect.pos;
 					arrow_pos.x+=item_rect.size.x-arrow_w;
 						
@@ -797,7 +804,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 				if (x >= (get_column_width(col)-item_h/2)) {
 					p_item->custom_popup_signal.call(col, Rect(get_global_pos() + Point(col_ofs,y_ofs+item_h), Size(get_column_width(col),item_h)));
 				} else {
-					p_item->edited_signal.call(col);
+					if (already_selected)
+						p_item->edited_signal.call(col);
 				};
 				bring_up_editor=false;
 				return -1;
@@ -1029,6 +1037,7 @@ TreeItem *Tree::create_item(TreeItem *p_parent) {
 
 	return ti;
 
+	check_minimum_size();
 }
 
 TreeItem* Tree::get_root_item() {
@@ -1040,6 +1049,7 @@ TreeItem* Tree::get_root_item() {
 void Tree::item_changed(int p_column,TreeItem *p_item) {
 
 	update(); //just redraw all for now, could be optimized for asking a redraw with exposure for the item
+	check_minimum_size();
 }
 void Tree::select_single_item(TreeItem *p_selected,TreeItem *p_current,int p_col) {
 
@@ -1096,6 +1106,8 @@ void Tree::clear() {
 		GUI_DELETE( root );
 		root = NULL;
 	};
+	
+	check_minimum_size();
 };
 
 

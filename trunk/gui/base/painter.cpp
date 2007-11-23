@@ -258,7 +258,7 @@ void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string
 		if (!c)
 			continue;
 
-		if (p_clip_w>=0 && (ofs+c->rect.size.width)>(ofs+p_clip_w))
+		if (p_clip_w>=0 && (ofs+c->rect.size.width)>(p_clip_w))
 			break; //width exceeded
 		
 		switch (p_dir) {

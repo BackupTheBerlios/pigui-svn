@@ -89,6 +89,9 @@ ScrollBox::ScrollBox() : GridContainer(2)
 	
 	vbar->set_range(scroll->get_v_range());
 	hbar->set_range(scroll->get_h_range());
+	
+	vbar->set_auto_hide(true);
+	hbar->set_auto_hide(true);
 }
 
 

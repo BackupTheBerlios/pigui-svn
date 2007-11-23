@@ -33,6 +33,8 @@ class ScrollContainer : public Container {
 	
 	virtual Size get_minimum_size_internal();
 	virtual void resize_internal(const Size& p_new_size);
+	virtual void check_minimum_size();
+	void adjust_child_size();
 
 	void v_scroll_changed(double p_new);
 	void h_scroll_changed(double p_new);

@@ -122,6 +122,12 @@ void ScrollContainer::h_scroll_changed(double p_new) {
 	update();
 }
 
+void ScrollContainer::check_minimum_size() {
+
+	Container::check_minimum_size();
+	adjust_child_size();
+}
+
 Size ScrollContainer::get_minimum_size_internal() {
 	
 	Size minsize;
@@ -142,8 +148,8 @@ Size ScrollContainer::get_minimum_size_internal() {
 }
 
 
-void ScrollContainer::resize_internal(const Size& p_new_size) {
-	
+void ScrollContainer::adjust_child_size() {
+
 	Size minsize;
 	
 	Element *e=get_element_list();
@@ -152,26 +158,26 @@ void ScrollContainer::resize_internal(const Size& p_new_size) {
 			
 	minsize=e->frame->get_minimum_size();
 
-	if (expand_h && p_new_size.width>minsize.width)
-		minsize.width=p_new_size.width;
+	if (expand_h && get_size_cache().width>minsize.width)
+		minsize.width=get_size_cache().width;
 	
 	
 	h_scroll.set_min(0);
 	h_scroll.set_max(minsize.width);
-	h_scroll.set_page(p_new_size.width);
+	h_scroll.set_page(get_size_cache().width);
 
-	if (p_new_size.width>minsize.width)
+	if (get_size_cache().width>minsize.width)
 		h_scroll.set(0);
 		   
-	if (expand_v && p_new_size.height>minsize.height)
-		minsize.height=p_new_size.height;
+	if (expand_v && get_size_cache().height>minsize.height)
+		minsize.height=get_size_cache().height;
 	
 	
 	v_scroll.set_min(0);
 	v_scroll.set_max(minsize.height);
-	v_scroll.set_page(p_new_size.height);
+	v_scroll.set_page(get_size_cache().height);
 
-	if (p_new_size.height>minsize.height)
+	if (get_size_cache().height>minsize.height)
 		v_scroll.set(0);
 	
 	e->rect.pos.x=-(int)(h_scroll.get());
@@ -180,6 +186,11 @@ void ScrollContainer::resize_internal(const Size& p_new_size) {
 	e->rect.size=minsize;
 	e->frame->resize_tree( minsize );
 
+}
+
+void ScrollContainer::resize_internal(const Size& p_new_size) {
+	
+	adjust_child_size();
 }
 
 

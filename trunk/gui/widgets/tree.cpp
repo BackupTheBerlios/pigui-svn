@@ -47,7 +47,7 @@ void TreeItem::set_cell_mode( int p_column, TreeCellMode p_mode ) {
 		case CELL_MODE_BITMAP: {
 			c.data.bitmap=INVALID_BITMAP_ID;
 		} break;
-		default:{}
+		default:{ c.data.bitmap=INVALID_BITMAP_ID; }
 	}
 	
 	c.mode = p_mode;
@@ -115,8 +115,10 @@ void TreeItem::set_bitmap(int p_column,BitmapID p_bitmap) {
 		return;
 
 	Cell &c = cells[ p_column ];
-	if (c.mode!=CELL_MODE_BITMAP)
+	
+	if (c.mode!=CELL_MODE_STRING && c.mode!=CELL_MODE_BITMAP && c.mode!=CELL_MODE_CUSTOM )
 		return;
+	
 	c.data.bitmap=p_bitmap;
 	
 	changed_signal.call(p_column);
@@ -128,7 +130,7 @@ BitmapID TreeItem::get_bitmap(int p_column) {
 		
 	Cell &c = cells[ p_column ];
 		
-	if (c.mode!=CELL_MODE_BITMAP)
+	if (c.mode!=CELL_MODE_STRING && c.mode!=CELL_MODE_BITMAP && c.mode!=CELL_MODE_CUSTOM )
 		return INVALID_BITMAP_ID;
 
 	return c.data.bitmap;
@@ -329,7 +331,7 @@ TreeItem::TreeItem(Tree *p_tree) {
 	tree=p_tree;
 	cells = GUI_NEW_ARRAY( Cell, tree->columns );
 	collapsed=false;
-
+	
 	parent=0; // parent item
 	next=0; // next in list
 	childs=0; //child items
@@ -383,6 +385,25 @@ int Tree::get_item_height(TreeItem *p_item) {
 	}
 
 	return height;
+}
+
+void Tree::draw_item_text(String p_text,BitmapID p_bitmap,bool p_tool,Rect p_rect,Color p_color) {
+
+	
+	if (p_bitmap!=INVALID_BITMAP_ID) {
+		Size bmsize = get_painter()->get_bitmap_size(p_bitmap);
+		get_painter()->draw_bitmap(p_bitmap, p_rect.pos + Size(0,(p_rect.size.y-bmsize.y)/2));
+		p_rect.pos.x+=bmsize.x+constant( C_TREE_HSPACING );
+		p_rect.size.x-=bmsize.x+constant( C_TREE_HSPACING );
+		
+	}
+
+	if (p_tool)
+		p_rect.size.x-=p_rect.size.y/2;
+		
+	p_rect.pos.y+=get_painter()->get_font_ascent( font(FONT_TREE) );
+	get_painter()->draw_text( font(FONT_TREE), p_rect.pos, p_text, p_color,p_rect.size.x );
+
 }
 
 int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) { //return height
@@ -471,7 +492,7 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 			
 				case CELL_MODE_STRING: {
 				
-					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x );
+					draw_item_text(p_item->cells[i].string,p_item->cells[i].data.bitmap,false,item_rect,col);
 				} break;
 				case CELL_MODE_CHECK: {
 				
@@ -557,7 +578,8 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 				
 					int arrow_w = item_rect.size.y/2;
 				
-					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x-arrow_w );
+					draw_item_text(p_item->cells[i].string,p_item->cells[i].data.bitmap,p_item->cells[i].editable,item_rect,col);
+
 					if (!p_item->cells[i].editable)
 						break;
 				

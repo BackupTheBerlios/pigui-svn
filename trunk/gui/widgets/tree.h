@@ -60,6 +60,7 @@ friend class Tree;
 		Cell() {
 		
 			mode=CELL_MODE_STRING;
+			data.bitmap=INVALID_BITMAP_ID;
 			owned_range=false;
 			custom_color=false;
 			selected=false;
@@ -84,6 +85,9 @@ friend class Tree;
 	Tree *tree; //tree (for reference)
 
 	TreeItem(Tree *p_tree);	
+	
+	
+	
 public:
 
 	Signal< Method1<int> > selected_signal;
@@ -190,6 +194,8 @@ private:
 	
 	void set_in_window();
 	void resize(const Size& p_new_size); 		
+	
+	void draw_item_text(String p_text,BitmapID p_bitmap,bool p_tool,Rect p_rect,Color p_color);
 	
 friend class TreeItem;
 	

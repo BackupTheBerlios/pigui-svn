@@ -189,6 +189,7 @@ Size Window::get_size() {
 }
 void Window::redraw_all(Rect p_custom_area) {
 
+
 	if (!root_frame)
 		return;
 
@@ -328,6 +329,7 @@ void Window::check_for_updates() {
 
 	update_signal.call();
 	update_signal.clear();
+	frame_signal.call();
 	
 	if (!root || !root_data ) {
 		

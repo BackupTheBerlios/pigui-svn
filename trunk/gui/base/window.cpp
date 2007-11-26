@@ -965,6 +965,8 @@ void Window::adjust_size_type() {
 			
 			set_size( root_frame->get_minimum_size() );
 			pos=(get_painter()->get_display_size()-size)/2;
+			if (parent)
+				pos-=parent->get_global_pos();
 			
 		} break;
 		case SIZE_TOPLEVEL_CENTER: {
@@ -972,6 +974,8 @@ void Window::adjust_size_type() {
 			set_size( get_painter()->get_display_size()*3/4 );
 	
 			pos=(get_painter()->get_display_size()-size)/2;
+			if (parent)
+				pos-=parent->get_global_pos();
 			
 		} break;
 		case SIZE_NORMAL: {

@@ -53,6 +53,7 @@ void CenterContainer::set_frame(Frame *p_frame) {
 	}
 	
 	add_frame_internal( p_frame );
+	check_minimum_size();
 }
 
 CenterContainer::CenterContainer()

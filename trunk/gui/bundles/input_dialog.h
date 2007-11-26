@@ -14,6 +14,7 @@
 
 #include "bundles/spin_box.h"
 #include "widgets/line_edit.h"
+#include "widgets/label.h"
 #include "base/window.h"
 #include "bundles/margin_group.h"
 
@@ -60,7 +61,8 @@ public:
 
 class QuestionInputDialog : public Window {
 	
-	MarginGroup *mg;
+	VBoxContainer *vb;
+	Label *l;
 	HBoxContainer* button_hbox;
 	
 	void button_pressed(int p_but);

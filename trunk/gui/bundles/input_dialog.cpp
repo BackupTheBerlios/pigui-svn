@@ -91,7 +91,8 @@ void QuestionInputDialog::button_pressed(int p_but) {
 void QuestionInputDialog::clear() {
 	
 	GUI_DELETE( button_hbox );
-	button_hbox = mg->add( GUI_NEW( HBoxContainer) );
+	button_hbox = vb->add( GUI_NEW(CenterContainer) )->set( GUI_NEW( HBoxContainer) );
+	button_hbox->set_separation(5);
 };
 
 void QuestionInputDialog::add_button(int p_id, String p_text) {
@@ -102,15 +103,17 @@ void QuestionInputDialog::add_button(int p_id, String p_text) {
 
 void QuestionInputDialog::show(String p_question) {
 	
-	mg->set_label_text(p_question);
+	l->set_text(p_question);
 	Window::show();
 };
 
 QuestionInputDialog::QuestionInputDialog(Window* p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
 
-	mg = GUI_NEW( MarginGroup("Question") );
-	set_root_frame(mg);
-	button_hbox = mg->add( GUI_NEW( HBoxContainer ) );
+	VBoxContainer * vb=GUI_NEW( VBoxContainer );
+	set_root_frame(vb);
+	l=vb->add( GUI_NEW( Label("Question")) );
+	button_hbox = vb->add( GUI_NEW(CenterContainer) )->set( GUI_NEW( HBoxContainer) );
+	button_hbox->set_separation(5);
 };
 
 

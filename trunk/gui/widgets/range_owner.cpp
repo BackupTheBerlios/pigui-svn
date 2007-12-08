@@ -23,7 +23,6 @@ void RangeOwner::_check_auto_hide() {
 			hide();
 		else {
 			show();
-			printf("showing\n");
 		}
 	}
 	

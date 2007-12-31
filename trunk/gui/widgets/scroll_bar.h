@@ -1,7 +1,7 @@
 //
 // C++ Interface: scroll_bar
 //
-// Description: 
+// Description:
 //
 //
 // Author: Juan Linietsky <reduzio@gmail.com>, (C) 2006
@@ -31,7 +31,7 @@ class ScrollBar : public RangeOwner {
 	Size size;
 
 	struct Drag {
-	
+
 		bool active;
 		float pos_at_click;
 		float value_at_click;
@@ -44,7 +44,7 @@ class ScrollBar : public RangeOwner {
 	int get_grabber_offset();
 
 
-	// Overrides 
+	// Overrides
 
 	virtual Size get_minimum_size_internal();
 	virtual void draw(const Point& p_global,const Size& p_size,const Rect& p_exposed);
@@ -53,9 +53,9 @@ class ScrollBar : public RangeOwner {
 	virtual bool key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask);
 	virtual void resize(const Size& p_new_size);
 public:
-	
-	static bool set_can_focus_by_default(bool p_can_focus); ///< In some apps, people wont like scrollbars being focusable
-	
+
+	static void set_can_focus_by_default(bool p_can_focus); ///< In some apps, people wont like scrollbars being focusable
+
 	ScrollBar(Orientation p_orientation=HORIZONTAL);
 
 	~ScrollBar();
@@ -64,20 +64,20 @@ public:
 
 
 class HScrollBar : public ScrollBar {
-	
-public:	
-	
+
+public:
+
 	HScrollBar() : ScrollBar(HORIZONTAL) {}
 };
 
 class VScrollBar : public ScrollBar {
-	
-public:	
-	
+
+public:
+
 	VScrollBar() : ScrollBar(VERTICAL) {}
 };
 
 
 }
-	
+
 #endif

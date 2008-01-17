@@ -1371,7 +1371,7 @@ public:
 			
 	}
 
-		template<class P1>
+	template<class P1>
 	void call(P1 p1) {
 
 		call_ref++;
@@ -1395,7 +1395,7 @@ public:
 
 	}
 
-		template<class P1,class P2>
+	template<class P1,class P2>
 	void call(P1 p1,P2 p2) {
 
 		call_ref++;
@@ -1416,7 +1416,7 @@ public:
 
 	}
 
-		template<class P1,class P2,class P3>
+	template<class P1,class P2,class P3>
 	void call(P1 p1,P2 p2,P3 p3) {
 
 		call_ref++;
@@ -1437,7 +1437,7 @@ public:
 
 	}
 
-		template<class P1,class P2,class P3,class P4>
+	template<class P1,class P2,class P3,class P4>
 	void call(P1 p1,P2 p2,P3 p3,P4 p4) {
 
 		call_ref++;
@@ -1479,7 +1479,7 @@ public:
 
 	}
 
-		template<class P1,class P2,class P3,class P4,class P5,class P6>
+	template<class P1,class P2,class P3,class P4,class P5,class P6>
 	void call(P1 p1,P2 p2,P3 p3,P4 p4,P5 p5,P6 p6) {
 
 		call_ref++;
@@ -1504,7 +1504,7 @@ public:
 
 		if (call_ref>0) {
 			
-			ERR_PRINT(" DO NOT CLEAR A SIGNAL IN THE MIDDLE OF A CALL() ");
+			PRINT_ERROR(" DO NOT CLEAR A SIGNAL IN THE MIDDLE OF A CALL() ");
 			
 		}
 		

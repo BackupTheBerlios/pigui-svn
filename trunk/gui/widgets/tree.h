@@ -207,7 +207,6 @@ public:
 
 	TreeItem *create_item(TreeItem *p_parent=0); /// create item as toplevel (replacing it if it exists), or alternatively, create item with another parent
 
-
 	TreeItem* get_root_item();
 	
 	void set_multi_mode(bool p_enabled);

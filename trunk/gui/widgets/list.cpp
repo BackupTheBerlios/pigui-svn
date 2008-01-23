@@ -1157,7 +1157,13 @@ List::List() {
 
 List::~List() {
 
-	clear();
+	while(list) {
+
+		Element *aux=list;
+		list=list->next;
+		GUI_DELETE( aux );
+		
+	}
 	GUI_DELETE( editor_window );
 }
 

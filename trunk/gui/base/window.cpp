@@ -933,7 +933,7 @@ void Window::initialize() {
 	//queued_delete=false;
 	next=0;
 	childs=0;
-	root=this;
+	root=NULL;
 	focus=this;
 	
 	size_update_needed=true;
@@ -1239,15 +1239,42 @@ Window::~Window() {
 //	if (parent)
 		//parent->child_window.child=0; //parent lost a child
 	
+	// get rid of childs first 
+	
 	if (root_frame) {
 		GUI_DELETE( root_frame );
 	}
 	
-	root_frame=0;
+	
+	while (childs) {
+	
+		GUI_DELETE(childs);	
+	}
+	
+	
+	
+	
+	if (parent) {
+		
+		Window **w=&parent->childs;
+		while (*w) {
+		
+			if (*w==this) {
+			
+				*w=(*w)->next;
+				break;
+			}
+		
+			w=&(*w)->next;
+		}
+		
+	}
+	
 	
 	if (root_data) {
 		GUI_DELETE( root_data );
 	}
+	printf("f\n");
 }
 
 

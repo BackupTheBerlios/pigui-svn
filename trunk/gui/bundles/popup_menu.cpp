@@ -238,6 +238,33 @@ void PopUpMenu::add_separator() {
 
 }
 
+bool PopUpMenu::is_item_checked(int p_ID) {
+
+	ChildIterator I=vbc->first_child();
+	
+	while (!I.end()) {
+
+		Frame *f=*I;
+		
+		if (f->get_type()!="MenuButton") {
+			
+			I=vbc->next_child( I );
+			continue;
+		}
+		
+		MenuButton *mb=(MenuButton*)f;
+				
+		if (mb->get_id()==p_ID) {
+			
+			
+			return mb->is_checked();
+		}
+		I=vbc->next_child( I );
+		
+	}
+
+	return false;
+};
 
 String PopUpMenu::get_item_text(int p_ID) {
 	

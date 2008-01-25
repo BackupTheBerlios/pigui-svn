@@ -74,6 +74,7 @@ public:
 	void popup(); ///< Popup at preset pos of parent window (use set_pos/set_size, then this )
 	void popup(const Point &p_pos); ///< Popup at given position
 			
+	bool is_item_checked(int p_ID);
 	String get_item_text(int p_ID);
 	BitmapID get_item_icon(int p_ID);
 	void* get_item_userdata(int p_ID);

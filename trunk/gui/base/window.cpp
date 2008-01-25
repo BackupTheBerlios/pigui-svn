@@ -1274,7 +1274,6 @@ Window::~Window() {
 	if (root_data) {
 		GUI_DELETE( root_data );
 	}
-	printf("f\n");
 }
 
 

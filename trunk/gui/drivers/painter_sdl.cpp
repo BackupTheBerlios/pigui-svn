@@ -807,6 +807,7 @@ void PainterSDL::set_fullscreen(bool p_full,int p_mode) {
 		}
 		Uint32 new_flags=surface->flags;
 		new_flags&=~SDL_FULLSCREEN;
+		new_flags|=SDL_RESIZABLE;
 		surface=SDL_SetVideoMode( normal_mode.width,normal_mode.height, surface->format->BitsPerPixel,new_flags); 
 		
 	}

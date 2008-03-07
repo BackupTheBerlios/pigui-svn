@@ -128,6 +128,8 @@ String FileSystemWindows::get_drive(int p_drive) {
 }
 
 bool FileSystemWindows::change_dir(String p_dir) {
+
+	p_dir.replace("/","\\");	
 	
 	if (unicode) {
 		
@@ -176,6 +178,8 @@ bool FileSystemWindows::change_dir(String p_dir) {
 
 bool FileSystemWindows::make_dir(String p_dir) {
 	
+	p_dir.replace("/","\\");
+	
 	if (unicode) {
 		wchar_t real_current_dir_name[2048];
 		GetCurrentDirectoryW(2048,real_current_dir_name);
@@ -212,6 +216,8 @@ String FileSystemWindows::get_current_dir() {
 }
 
 bool FileSystemWindows::file_exists(String p_file) {
+	
+	p_file.replace("/","\\");
 	
 	if (unicode) {
 		

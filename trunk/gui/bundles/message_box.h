@@ -28,7 +28,7 @@ class MessageBox : public Window{
 public:
 	VBoxContainer *get_custom_vb() { return custom_vb; }
 	void show(String p_text);
-	MessageBox(Window *p_parent);
+	MessageBox(Window *p_parent,SizeMode p_size_mode=SIZE_CENTER);
 	~MessageBox();
 
 };

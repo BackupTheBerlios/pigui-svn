@@ -237,7 +237,7 @@ int Painter::get_font_string_width(FontID p_font,const String& p_string) {
 	return width;
 }
 
-void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color=Color()) {
+void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color) {
 
 	if (!is_font_valid( p_font )) {
 		

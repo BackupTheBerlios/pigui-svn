@@ -13,6 +13,8 @@
 #include "text_view.h"
 #include "base/painter.h"
 #include "base/skin.h"
+
+
 namespace GUI {
 
 
@@ -28,7 +30,6 @@ void TextView::regenerate_word_cache() {
 
 	Size size = get_size_cache();
 	
-	String::CharType last=' ';
 	
 	int current_word_size=0;
 	int word_pos=0;
@@ -38,9 +39,9 @@ void TextView::regenerate_word_cache() {
 	
 	WordCache *last;
 	
-	for (int i=0;i<text.size();i++) {
+	for (int i=0;i<text.size()+1;i++) {
 		
-		String::CharType current=text[i];
+		String::CharType current=i<text.length()?text[i]:' '; //always a space at the end, so the algo works
 		
 		bool insert_newline=false;
 		
@@ -58,8 +59,9 @@ void TextView::regenerate_word_cache() {
 				
 				wc->pixel_width=current_word_size;
 				wc->char_pos=word_pos;
-				wc->word_len=word_pos-i;
+				wc->word_len=i-word_pos;
 				current_word_size=0;								
+					
 			}
 			
 			if (current=='\n') {
@@ -80,7 +82,7 @@ void TextView::regenerate_word_cache() {
 
 		}
 			
-		if ((line_width=>size.width && last_width<size.width) || insert_newline) {
+		if ((line_width>=size.width && last_width<size.width) || insert_newline) {
 			
 			WordCache *wc = GUI_NEW( WordCache );
 			if (word_cache) {
@@ -94,6 +96,7 @@ void TextView::regenerate_word_cache() {
 			wc->char_pos=WordCache::CHAR_NEWLINE;
 			line_width=current_word_size;
 			line_count++;
+			
 		}
 		
 		last_width=line_width;
@@ -102,7 +105,7 @@ void TextView::regenerate_word_cache() {
 	
 	
 	get_range()->set_max(line_count);
-	get_range()->set_page_size( size.height/get_painter()->get_font_char_height(font(FONT_TEXT_VIEW)) );
+	get_range()->set_page( size.height/get_painter()->get_font_height(font(FONT_TEXT_VIEW)) );
 }
 
 void TextView::resize(const Size& p_new_size) {
@@ -112,7 +115,7 @@ void TextView::resize(const Size& p_new_size) {
 
 Size TextView::get_minimum_size_internal() {
 	
-	return Size();	
+	return Size(1,1);	
 }
 
 
@@ -120,10 +123,11 @@ void TextView::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 	
 	Size string_size;
 		
-	Painter *p=p;
+	Painter *p=get_painter();
 	int font_h = p->get_font_height( font( FONT_TEXT_VIEW ) );
-	int line_from=(int)get_range()->get() + p_exposed.pos.y / font_h;
-	int line_to=(int)get_range()->get() + p_exposed.pos.y+p_exposed.size.height / font_h;
+	int line_from=(int)get_range()->get(); // + p_exposed.pos.y / font_h;
+	int line_to=(int)get_range()->get() + p_size.y/font_h; //p_exposed.pos.y+p_exposed.size.height / font_h;
+	int space_w=p->get_font_char_width( font( FONT_TEXT_VIEW), ' ' );
 	
 	
 	WordCache *wc = word_cache;
@@ -162,7 +166,7 @@ void TextView::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 		int spaces=0;
 		while(to && to->char_pos!=WordCache::CHAR_NEWLINE) {
 		
-			taken+=to->next->pixel_width;
+			taken+=to->pixel_width;
 			if (to!=from) {
 				spaces++;
 			}
@@ -190,20 +194,37 @@ void TextView::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 			} break;
 		}
 		
-		int y_ofs=(line-(int)get_range()->get())/font_h + get_painter()->get_font_ascent( font( FONT_TEXT_VIEW ) );
+		int y_ofs=(line-(int)get_range()->get())*font_h + get_painter()->get_font_ascent( font( FONT_TEXT_VIEW ) );
 		
 		while(from!=to) {
 		
 			// draw a word
 			int pos = from->char_pos;
-			ERR_FAIL_COND(from->char_pos==WordCache::CHAR_NEWLINE); // bug if it happens
+			if (from->char_pos==WordCache::CHAR_NEWLINE) {
+			
+				PRINT_ERROR("BUG");
+				return;
+			}
+			if (from!=wc) {
+				/* spacing */
+				x_ofs+=space_w;				
+				if (align==ALIGN_FILL && spaces) {
+				
+					x_ofs+=(p_size.width-(taken+space_w*spaces))/spaces;
+				}
+
+				
+			}
 			for (int i=0;i<from->word_len;i++) {
 			
 				p->draw_char( font( FONT_TEXT_VIEW), Point( x_ofs, y_ofs ), text[i+pos], color( COLOR_TEXT_VIEW_FONT ) );
+				x_ofs+=p->get_font_char_width( font( FONT_TEXT_VIEW), text[i+pos] );
 			}
+			from=from->next;
 		}
 		
 		wc=to?to->next:0;
+		line++;
 		
 	}	
 	
@@ -227,7 +248,7 @@ void TextView::set_text(const String& p_string) {
 		return;
 	
 	text=p_string;
-	regenerate_word_cache()
+	regenerate_word_cache();
 	update();
 	
 }

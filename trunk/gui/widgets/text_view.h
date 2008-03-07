@@ -1,3 +1,4 @@
+
 //
 // C++ Interface: label
 //
@@ -21,7 +22,7 @@ namespace GUI {
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
-class Text : public RangeOwner {
+class TextView : public RangeOwner {
 public:	
 	
 	enum Align {
@@ -69,9 +70,9 @@ public:
 	void set_text(const String& p_string);
 	String get_text();
 	
-	Text(String p_text="",Align p_align=ALIGN_LEFT);
+	TextView(String p_text="",Align p_align=ALIGN_LEFT);
 
-    ~Text();
+    ~TextView();
 
 };
 

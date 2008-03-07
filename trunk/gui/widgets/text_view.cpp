@@ -10,13 +10,13 @@
 //
 //
 
-#include "text.h"
+#include "text_view.h"
 #include "base/painter.h"
 #include "base/skin.h"
 namespace GUI {
 
 
-void Text::regenerate_word_cache() {
+void TextView::regenerate_word_cache() {
 
 	while (word_cache) {
 	
@@ -105,18 +105,18 @@ void Text::regenerate_word_cache() {
 	get_range()->set_page_size( size.height/get_painter()->get_font_char_height(font(FONT_TEXT_VIEW)) );
 }
 
-void Text::resize(const Size& p_new_size) {
+void TextView::resize(const Size& p_new_size) {
 
 	regenerate_word_cache();
 }
 
-Size Text::get_minimum_size_internal() {
+Size TextView::get_minimum_size_internal() {
 	
 	return Size();	
 }
 
 
-void Text::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
+void TextView::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	
 	Size string_size;
 		
@@ -209,19 +209,19 @@ void Text::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	
 }
 
-void Text::set_align(Align p_align) {
+void TextView::set_align(Align p_align) {
 	
 	align=p_align;
 	update();
 }
-Text::Align Text::get_align(){
+TextView::Align TextView::get_align(){
 	
 	return align;
 }
 
 
 
-void Text::set_text(const String& p_string) {
+void TextView::set_text(const String& p_string) {
 	
 	if (text==p_string)
 		return;
@@ -231,17 +231,17 @@ void Text::set_text(const String& p_string) {
 	update();
 	
 }
-String Text::get_text() {
+String TextView::get_text() {
 	
 	return text;
 }
 
-String Text::get_type() {
+String TextView::get_type() {
 
-	return "Text";
+	return "TextView";
 }
 
-Text::Text(String p_text,Align p_align)
+TextView::TextView(String p_text,Align p_align)
 {
 	align=p_align;
 	text=p_text;
@@ -250,7 +250,7 @@ Text::Text(String p_text,Align p_align)
 }
 
 
-Text::~Text() {
+TextView::~TextView() {
 
 	while (word_cache) {
 	

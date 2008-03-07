@@ -655,6 +655,10 @@ void Skin::set_default() {
 	SET_STYLEBOX(SB_COMBO_POPUP,StyleBox( 2, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ));
 	
 	
+	/* Text View */
+	
+	SET_COLOR(COLOR_TEXT_VIEW_FONT,Color(0));
+	SET_FONT(FONT_TEXT_VIEW,0);
 	
 	set_default_extra();
 }

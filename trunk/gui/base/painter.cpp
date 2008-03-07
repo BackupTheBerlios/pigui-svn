@@ -237,6 +237,20 @@ int Painter::get_font_string_width(FontID p_font,const String& p_string) {
 	return width;
 }
 
+void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color=Color()) {
+
+	if (!is_font_valid( p_font )) {
+		
+		PRINT_ERROR("Invalid Font");
+		return ;
+	}	
+
+	PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_char);
+	
+	draw_bitmap( c->bitmap, p_pos-Point(0,p->fonts[p_font].ascent), c->rect, p_color );
+}
+
+
 void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string,const Color&p_color,int p_clip_w) {
 	
 	draw_text(p_font,p_pos,p_string,RIGHT,p_color,p_clip_w);

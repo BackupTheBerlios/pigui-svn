@@ -10,19 +10,18 @@
 //
 //
 
-#if 0
 
 #ifndef PIGUITEXT_H
 #define PIGUITEXT_H
 
-#include "base/widget.h"
+#include "widgets/range_owner.h"
 
 namespace GUI {
 
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
-class Text : public Widget {
+class Text : public RangeOwner {
 public:	
 	
 	enum Align {
@@ -38,13 +37,23 @@ private:
 
 	struct WordCache {
 
-		int char_pos;
+		enum {
+			CHAR_NEWLINE=-1
+		};
+		int char_pos; // if -1, then newline
+		int word_len;
 		int pixel_width;
+		WordCache *next;
+		WordCache() { char_pos=0; word_len=0; pixel_width=0; next=0; }
 	};
+	
+	
+	void regenerate_word_cache();
 	
 	WordCache *word_cache;
 
-	virtual void resize(const Size& p_new_size); virtual Size get_minimum_size_internal();
+	virtual void resize(const Size& p_new_size); 
+	virtual Size get_minimum_size_internal();
 protected:
 
 	virtual String get_type();	
@@ -70,4 +79,3 @@ public:
 
 #endif
 
-#endif

@@ -68,6 +68,7 @@ public:
 	 */
 	
 	virtual void draw_text(FontID p_font,const Point & p_pos,const String &p_string,const Color&p_color=Color(),int p_clip_w=-1);
+	virtual void draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color=Color());
 	virtual void draw_text(FontID p_font,const Point & p_pos,const String &p_string,Direction p_dir,const Color&p_color=Color(),int p_clip_w=-1);
 	
 	virtual int get_font_char_width(FontID p_font,unsigned int p_char);

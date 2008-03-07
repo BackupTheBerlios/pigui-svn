@@ -23,9 +23,14 @@ namespace GUI {
 
 struct Point { //used for point and size
 	
-	int x,y;	
+	union {
 	
-	int &width,&height;
+		int x,width;
+	};
+	union {
+	
+		int y,height;
+	};
 	
 	bool operator==(const Point& p_point) const { return x==p_point.x && y==p_point.y; }
 	bool operator!=(const Point& p_point) const { return x!=p_point.x || y!=p_point.y; }

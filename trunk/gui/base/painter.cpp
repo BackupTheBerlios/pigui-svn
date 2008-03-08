@@ -247,7 +247,7 @@ void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_ch
 
 	PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_char);
 	
-	draw_bitmap( c->bitmap, p_pos-Point(0,p->fonts[p_font].ascent), c->rect, p_color );
+	draw_bitmap( c->bitmap, p_pos + Point(0,-p->fonts[p_font].ascent+c->valign), c->rect, p_color );
 }
 
 

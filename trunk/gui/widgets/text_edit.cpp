@@ -266,7 +266,7 @@ bool TextEdit::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_pre
 				if (readonly)
 					break;
 
-				append_at_cursor(String(p_unicode));
+				append_at_cursor(String::chr(p_unicode));
 			} else {
 
 				return false;
@@ -359,7 +359,7 @@ void TextEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 			if ( (char_x+char_w)>=xmargin_end)
 				break;
 			
-			get_painter()->draw_text( font(FONT_TEXT_EDIT), Point( char_x, ofs_y+ascent),str[j],color(COLOR_TEXT_EDIT_FONT) );
+			get_painter()->draw_text( font(FONT_TEXT_EDIT), Point( char_x, ofs_y+ascent),String::chr(str[j]),color(COLOR_TEXT_EDIT_FONT) );
 
 
 			if (cursor.x==j && cursor.y==line) {

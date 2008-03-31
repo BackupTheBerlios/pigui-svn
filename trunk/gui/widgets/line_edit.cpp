@@ -218,7 +218,8 @@ bool LineEdit::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_pre
 				
 				if (editable) {
 					selection_delete();
-					append_at_cursor(p_unicode);
+					String::CharType ucodestr[2]={p_unicode,0};
+					append_at_cursor(ucodestr);
 					text_changed_signal.call( text );
 				}
 				
@@ -516,7 +517,7 @@ void LineEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 			
 	
 		
-		get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), text[char_ofs], color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
+		get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), String::chr(text[char_ofs]), color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
 		
 		if (char_ofs==cursor_pos && has_focus())
 			get_painter()->draw_fill_rect( Point( ofs , y_ofs ), Size( 1, y_area ), color( COLOR_LINE_EDIT_CURSOR ) );

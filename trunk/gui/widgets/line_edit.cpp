@@ -516,8 +516,8 @@ void LineEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 			get_painter()->draw_fill_rect( Point( ofs , y_ofs ), Size( char_width, y_area ), color( COLOR_LINE_EDIT_SELECTION ) );
 			
 	
-		
-		get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), String::chr(text[char_ofs]), color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
+		const char chr[2] = {text[char_ofs], 0};
+		get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), chr, color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
 		
 		if (char_ofs==cursor_pos && has_focus())
 			get_painter()->draw_fill_rect( Point( ofs , y_ofs ), Size( 1, y_area ), color( COLOR_LINE_EDIT_CURSOR ) );

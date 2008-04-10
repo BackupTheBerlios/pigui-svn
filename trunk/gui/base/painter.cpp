@@ -827,6 +827,179 @@ Size Painter::get_stylebox_min_size(const StyleBox& p_stylebox,bool p_with_cente
 	return min;
 }
 
+BitmapID Painter::load_xpm(const char **p_xpm) {
+	
+	Size size;
+	int pixelchars=0;
+	bool has_alpha=false;
+	BitmapID bitmap=-1;
+	
+	enum Status {
+		READING_HEADER,
+  		READING_COLORS,
+    		READING_PIXELS,
+      		DONE
+	};
+		
+	Status status = READING_HEADER;
+	int line=0;
+	
+	struct ColorMap {
+			
+		String chr;
+		Color color;	
+		Uint8 alpha;
+		ColorMap() { alpha=255; }
+	};
+	
+	ColorMap * colormap;
+	int colormap_size;
+	
+	while (status!=DONE) {
+		
+		const char * line_ptr = p_xpm[line];
+				
+		switch (status) {
+			
+			case READING_HEADER: {
+				
+				String line_str=line_ptr;
+				size.width=line_str.get_slice(" ",0).to_int();
+				size.height=line_str.get_slice(" ",1).to_int();
+				colormap_size=line_str.get_slice(" ",2).to_int();
+				pixelchars=line_str.get_slice(" ",3).to_int();
+				if (colormap_size > 32766) {
+					PRINT_ERROR("XPM data wth colors > 32766 not supported");
+					return -1;
+				}
+				if (pixelchars > 5) {
+					PRINT_ERROR("XPM data with characters per pixel > 5 ");
+					return -1;
+				}
+				if (size.width > 32767) {
+					PRINT_ERROR("Image width > 32767 pixels for data\n");
+					return -1;
+				}
+				if (size.height > 32767) {
+					PRINT_ERROR("Image height > 32767 pixels for data\n");
+					return -1;
+				}
+				colormap = GUI_NEW_ARRAY( ColorMap, colormap_size );
+
+				if (!colormap) {
+					return -1;
+				}				
+				status=READING_COLORS;
+			} break;
+			case READING_COLORS: {
+				
+				for (int i=0;i<pixelchars;i++) {
+							
+					colormap[line-1].chr+=*line_ptr;
+					line_ptr++;
+				}
+				//skip spaces
+				while (*line_ptr==' ' || *line_ptr==0) {
+					if (*line_ptr==0)
+						break;
+					line_ptr++;
+				}
+				if (*line_ptr!='c') {
+					
+					PRINT_ERROR("XPM - Unsupported color mode.");			
+					break;
+				}	
+				line_ptr++;
+				while (*line_ptr==' ' || *line_ptr==0) {
+					if (*line_ptr==0)
+						break;
+					line_ptr++;
+				}
+				
+				if (*line_ptr!='#') {
+					PRINT_ERROR("XPM - Only hex color types supported.");				
+				}
+				line_ptr++;					
+				Color col;
+				for (int i=0;i<6;i++) {
+					
+					char v = line_ptr[i];
+					if (v>='0' && v<='9')
+						v-='0';
+					else if (v>='A' && v<='F')
+						v=(v-'A')+10;
+					else if (v>='a' && v<='f')
+						v=(v-'a')+10;
+					else v=0;
+					
+					switch(i) {
+						case 0: col.r=v<<4; break;
+						case 1: col.r|=v; break;
+						case 2: col.g=v<<4; break;
+						case 3: col.g|=v; break;
+						case 4: col.b=v<<4; break;
+						case 5: col.b|=v; break;
+					};
+						
+					// magenta mask
+					if (col.r==255 && col.g==0 && col.b==255) {
+						
+						colormap[line-1].color=Color(0);
+						colormap[line-1].alpha=0;
+						has_alpha=true;
+					} else {
+						
+						colormap[line-1].color=col;
+					}
+				}
+				if (line==colormap_size) {
+					
+					status=READING_PIXELS;
+					bitmap=create_bitmap(size,MODE_PIXMAP,has_alpha);
+					if (bitmap<0) {
+						
+						GUI_DELETE_ARRAY( colormap );
+						return bitmap;
+					}
+				} 
+			} break;
+			case READING_PIXELS: {
+				
+				int y=line-colormap_size-1;
+				for (int x=0;x<size.width;x++) {
+					
+					char pixelstr[6]={0,0,0,0,0,0};
+					for (int i=0;i<pixelchars;i++)
+						pixelstr[i]=line_ptr[x*pixelchars+i];
+					
+					Color pixel; Uint8 alpha=255;
+					for (int i=0;i<colormap_size;i++) {
+						
+						if (colormap[i].chr==pixelstr) {
+							
+							pixel=colormap[i].color;
+							alpha=colormap[i].alpha;
+							break;
+						}
+					}
+					
+					 set_bitmap_pixel(bitmap,Point(x,y), pixel, alpha );
+							
+				}
+				
+				if (y==(size.height-1))
+					status=DONE;
+			} break;
+		}
+		
+		line++;		
+	};
+	
+	GUI_DELETE_ARRAY(colormap);
+	
+	return bitmap;
+}
+
 void Painter::draw_arrow( const Point& p_pos, const Size& p_size, Direction p_dir, const Color& p_color,bool p_trianglify) {
 	
 	if (p_size.width<=0 || p_size.height<=0)

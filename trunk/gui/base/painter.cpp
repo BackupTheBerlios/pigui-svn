@@ -853,8 +853,8 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 	int line=0;
 
 
-	__Painter__ColorMap * __Painter__ColorMap;
-	int __Painter__ColorMap_size;
+	__Painter__ColorMap * colormap;
+	int colormap_size;
 
 	while (status!=DONE) {
 
@@ -870,9 +870,9 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 
 				size.width=line_str.get_slice(" ",0).to_int();
 				size.height=line_str.get_slice(" ",1).to_int();
-				__Painter__ColorMap_size=line_str.get_slice(" ",2).to_int();
+				colormap_size=line_str.get_slice(" ",2).to_int();
 				pixelchars=line_str.get_slice(" ",3).to_int();
-				if (__Painter__ColorMap_size > 32766) {
+				if (colormap_size > 32766) {
 					PRINT_ERROR("XPM data wth colors > 32766 not supported");
 					return -1;
 				}
@@ -888,9 +888,9 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 					PRINT_ERROR("Image height > 32767 pixels for data\n");
 					return -1;
 				}
-				__Painter__ColorMap = GUI_NEW_ARRAY( __Painter__ColorMap, __Painter__ColorMap_size );
+				colormap = GUI_NEW_ARRAY( __Painter__ColorMap, colormap_size );
 
-				if (!__Painter__ColorMap) {
+				if (!colormap) {
 					return -1;
 				}
 				status=READING_COLORS;
@@ -899,7 +899,7 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 
 				for (int i=0;i<pixelchars;i++) {
 
-					__Painter__ColorMap[line-1].chr+=*line_ptr;
+					colormap[line-1].chr+=*line_ptr;
 					line_ptr++;
 				}
 				//skip spaces
@@ -945,30 +945,30 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 							// magenta mask
 							if (col.r==255 && col.g==0 && col.b==255) {
 
-								__Painter__ColorMap[line-1].color=Color(0);
-								__Painter__ColorMap[line-1].alpha=0;
+								colormap[line-1].color=Color(0);
+								colormap[line-1].alpha=0;
 								has_alpha=true;
 							} else {
 
-								__Painter__ColorMap[line-1].color=col;
+								colormap[line-1].color=col;
 							}
 						}
 					}
 				}
-				if (line==__Painter__ColorMap_size) {
+				if (line==colormap_size) {
 
 					status=READING_PIXELS;
 					bitmap=create_bitmap(size,MODE_PIXMAP,has_alpha);
 					if (bitmap<0) {
 
-						GUI_DELETE_ARRAY( __Painter__ColorMap );
+						GUI_DELETE_ARRAY( colormap );
 						return bitmap;
 					}
 				}
 			} break;
 			case READING_PIXELS: {
 
-				int y=line-__Painter__ColorMap_size-1;
+				int y=line-colormap_size-1;
 				for (int x=0;x<size.width;x++) {
 
 					char pixelstr[6]={0,0,0,0,0,0};
@@ -976,12 +976,12 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 						pixelstr[i]=line_ptr[x*pixelchars+i];
 
 					Color pixel; Uint8 alpha=255;
-					for (int i=0;i<__Painter__ColorMap_size;i++) {
+					for (int i=0;i<colormap_size;i++) {
 
-						if (__Painter__ColorMap[i].chr==pixelstr) {
+						if (colormap[i].chr==pixelstr) {
 
-							pixel=__Painter__ColorMap[i].color;
-							alpha=__Painter__ColorMap[i].alpha;
+							pixel=colormap[i].color;
+							alpha=colormap[i].alpha;
 							break;
 						}
 					}
@@ -998,7 +998,7 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 		line++;
 	};
 
-	GUI_DELETE_ARRAY(__Painter__ColorMap);
+	GUI_DELETE_ARRAY(colormap);
 
 	return bitmap;
 }

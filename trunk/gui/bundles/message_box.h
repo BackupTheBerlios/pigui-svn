@@ -1,7 +1,7 @@
 //
 // C++ Interface: message_box
 //
-// Description: 
+// Description:
 //
 //
 // Author: Juan Linietsky <reduzio@gmail.com>, (C) 2006
@@ -21,11 +21,16 @@ namespace GUI {
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
+
+class WindowBox;
+
 class MessageBox : public Window{
-	
+
 	VBoxContainer *custom_vb;
 	Label *text;
+	WindowBox *window_box;
 public:
+	WindowBox *get_window_box() { return window_box; }
 	VBoxContainer *get_custom_vb() { return custom_vb; }
 	void show(String p_text);
 	MessageBox(Window *p_parent,SizeMode p_size_mode=SIZE_CENTER);

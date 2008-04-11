@@ -1,7 +1,7 @@
 //
 // C++ Implementation: bitmap_button
 //
-// Description: 
+// Description:
 //
 //
 // Author: Juan,,, <red@hororo>, (C) 2007
@@ -23,25 +23,25 @@ Size BitmapButton::get_minimum_size_internal() {
 void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 
 	switch( get_draw_mode() ) {
-	
+
 		case DRAW_NORMAL: {
-		
+
 			if (normal)
 				get_painter()->draw_bitmap( normal, Point() );
 		} break;
 		case DRAW_PRESSED: {
-		
+
 			BitmapID bm = pressed>=0 ? pressed : normal;
 			if (bm)
 				get_painter()->draw_bitmap( bm, Point() );
-		
+
 		} break;
 		case DRAW_HOVER: {
 			BitmapID bm = hover>=0 ? hover : normal;
 			if (bm)
 				get_painter()->draw_bitmap( bm, Point() );
 		} break;
-	
+
 	}
 
 	if (icon>=0)
@@ -72,10 +72,11 @@ void BitmapButton::set_icon_bitmap(BitmapID p_bitmap) {
 
 BitmapButton::BitmapButton(BitmapID p_normal, BitmapID p_pressed, BitmapID p_hover,BitmapID p_icon) {
 
-	normal=p_normal;	
+	normal=p_normal;
 	pressed=p_pressed;
 	hover=p_hover;
 	icon=p_icon;
+	set_fill_vertical( false );
 }
 
 

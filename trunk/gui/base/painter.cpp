@@ -859,11 +859,14 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 		
 		const char * line_ptr = p_xpm[line];
 				
+
 		switch (status) {
 			
 			case READING_HEADER: {
 				
 				String line_str=line_ptr;
+				line_str.replace("\t"," ");
+				
 				size.width=line_str.get_slice(" ",0).to_int();
 				size.height=line_str.get_slice(" ",1).to_int();
 				colormap_size=line_str.get_slice(" ",2).to_int();
@@ -899,57 +902,56 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 					line_ptr++;
 				}
 				//skip spaces
-				while (*line_ptr==' ' || *line_ptr==0) {
+				while (*line_ptr==' ' ||  *line_ptr=='\t' || *line_ptr==0) {
 					if (*line_ptr==0)
 						break;
 					line_ptr++;
 				}
-				if (*line_ptr!='c') {
+				if (*line_ptr=='c') {
 					
-					PRINT_ERROR("XPM - Unsupported color mode.");			
-					break;
-				}	
-				line_ptr++;
-				while (*line_ptr==' ' || *line_ptr==0) {
-					if (*line_ptr==0)
-						break;
 					line_ptr++;
-				}
-				
-				if (*line_ptr!='#') {
-					PRINT_ERROR("XPM - Only hex color types supported.");				
-				}
-				line_ptr++;					
-				Color col;
-				for (int i=0;i<6;i++) {
+					while (*line_ptr==' ' ||  *line_ptr=='\t' || *line_ptr==0) {
+						if (*line_ptr==0)
+							break;
+						line_ptr++;
+					}
 					
-					char v = line_ptr[i];
-					if (v>='0' && v<='9')
-						v-='0';
-					else if (v>='A' && v<='F')
-						v=(v-'A')+10;
-					else if (v>='a' && v<='f')
-						v=(v-'a')+10;
-					else v=0;
-					
-					switch(i) {
-						case 0: col.r=v<<4; break;
-						case 1: col.r|=v; break;
-						case 2: col.g=v<<4; break;
-						case 3: col.g|=v; break;
-						case 4: col.b=v<<4; break;
-						case 5: col.b|=v; break;
-					};
-						
-					// magenta mask
-					if (col.r==255 && col.g==0 && col.b==255) {
-						
-						colormap[line-1].color=Color(0);
-						colormap[line-1].alpha=0;
-						has_alpha=true;
-					} else {
-						
-						colormap[line-1].color=col;
+					if (*line_ptr=='#') {
+						line_ptr++;					
+						Color col;
+						for (int i=0;i<6;i++) {
+							
+							char v = line_ptr[i];
+												
+							if (v>='0' && v<='9')
+								v-='0';
+							else if (v>='A' && v<='F')
+								v=(v-'A')+10;
+							else if (v>='a' && v<='f')
+								v=(v-'a')+10;
+							else
+								break;
+							
+							switch(i) {
+								case 0: col.r=v<<4; break;
+								case 1: col.r|=v; break;
+								case 2: col.g=v<<4; break;
+								case 3: col.g|=v; break;
+								case 4: col.b=v<<4; break;
+								case 5: col.b|=v; break;
+							};
+								
+							// magenta mask
+							if (col.r==255 && col.g==0 && col.b==255) {
+								
+								colormap[line-1].color=Color(0);
+								colormap[line-1].alpha=0;
+								has_alpha=true;
+							} else {
+								
+								colormap[line-1].color=col;
+							}
+						}
 					}
 				}
 				if (line==colormap_size) {

@@ -411,6 +411,7 @@ PopUpMenu::PopUpMenu(Window *p_parent) : Window(p_parent,MODE_POPUP) {
 	set_root_frame( main_vbc );
 	
 	vbc = main_vbc->add( GUI_NEW( VBoxContainer ) );
+	vbc->set_separation(1);
 
 	
 }

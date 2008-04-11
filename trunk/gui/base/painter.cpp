@@ -9,24 +9,24 @@ namespace GUI {
 
 struct PainterPrivate {
 
-	
+
 	enum {
-		
+
 		MAX_FONTS=32,
 		MAX_LOCAL_RECT_STACK=128,
   		MAX_CLIP_RECT_STACK=128,
 	};
-	
+
 	struct Font {
-		
+
 		enum {
 			HASHTABLE_BITS=8,
 			HASHTABLE_SIZE=(1<<HASHTABLE_BITS),
 			HASHTABLE_MASK=HASHTABLE_SIZE-1
 		};
-		
+
 		struct Character {
-			
+
 			unsigned int valign;
 			BitmapID bitmap;
 			unsigned int unicode;
@@ -34,16 +34,16 @@ struct PainterPrivate {
 			Character *next;
 			Character() { next=0; unicode=0; bitmap=0; valign=0; }
 		};
-		
+
 		Character *characters[HASHTABLE_SIZE];
-		
+
 		int height;
 		int ascent;
 		bool in_use;
-		
-		void cleanup() { 
+
+		void cleanup() {
 			for (int i=0;i<HASHTABLE_SIZE;i++) {
-				
+
 				while(characters[i]) {
 					Character *c=characters[i];
 					characters[i]=c->next;
@@ -54,64 +54,64 @@ struct PainterPrivate {
 			ascent=0;
 			in_use=false;
 		}
-		
+
 		void add_char(unsigned int p_char,BitmapID p_bitmap,const Rect& p_rect,unsigned int p_valign=0) {
-			
+
 			Character *c=find_char( p_char);
-			
+
 			if ( !c ) {
-				
+
 				c = GUI_NEW( Character );
 				int bucket=p_char&HASHTABLE_MASK;
 				c->next=characters[bucket]; //should be added at the end for speed...
-				characters[bucket]=c;			
+				characters[bucket]=c;
 			}
-			
-			
+
+
 			c->bitmap=p_bitmap;
 			c->unicode=p_char;
 			c->rect=p_rect;
-			c->valign=p_valign;		
+			c->valign=p_valign;
 		}
-		
+
 		Font() { in_use=false; ascent=0; height=0; for (int i=0;i<HASHTABLE_SIZE;i++) characters[i]=0; }
-		
-		
+
+
 		inline Character * find_char(unsigned int p_unicode) {
-			
-						
+
+
 			unsigned int bucket=p_unicode&HASHTABLE_MASK;
-			
+
 			if (bucket>HASHTABLE_SIZE) {
-				
+
 				printf("MUUH\n");
 			}
 			Character *c=characters[bucket];
-			
+
 			while (c) {
-				
+
 				if (c->unicode==p_unicode)
 					return c;
-				c=c->next;				
+				c=c->next;
 			}
-			
+
 			return 0; // should change this to some default
 		}
 	};
-	
+
 	Font fonts[MAX_FONTS];
 	Rect clip_rect_stack[MAX_CLIP_RECT_STACK];
 	int clip_rect_count;
 	Rect local_rect_stack[MAX_CLIP_RECT_STACK];
 	int local_rect_count;
-	
-	PainterPrivate() { 
+
+	PainterPrivate() {
 		clip_rect_count=0;
 		local_rect_count=0;
 	}
-	
-	~PainterPrivate() { 
-	
+
+	~PainterPrivate() {
+
 		for (int i=0;i<MAX_FONTS;i++)
 			fonts[i].cleanup();
 	}
@@ -120,119 +120,119 @@ struct PainterPrivate {
 
 
 void Painter::push_clip_rect(const Rect &p_rect) {
-	
+
 	if (p->clip_rect_count>=PainterPrivate::MAX_CLIP_RECT_STACK) {
-		
+
 		PRINT_ERROR("Clip Rect stack is Full!");
 		return;
 	}
-	
+
 	Rect local_rect = p->local_rect_count ? p->local_rect_stack[ p->local_rect_count -1 ] : Rect( Point() , get_display_size() );
-	
+
 	Rect clip_rect = p_rect;
 	clip_rect.pos += local_rect.pos;
 	clip_rect = local_rect.clip( clip_rect );
-	
+
 	set_clip_rect(true, clip_rect);
-	
+
 	p->clip_rect_stack[ p->clip_rect_count++ ] = clip_rect;
-	
+
 }
 void Painter::pop_clip_rect()  {
-	
+
 	if (p->clip_rect_count==0) {
-		
+
 		PRINT_ERROR("Clip Rect stack is Empty!");
 		return;
 	}
-	
+
 	p->clip_rect_count--;
-	
+
 	if ( p->clip_rect_count ) {
-		
+
 		Rect clip_rect = p->clip_rect_stack[ p->clip_rect_count - 1 ];
 		set_clip_rect(true, clip_rect);
-		
+
 	} else {
-		
+
 		set_clip_rect(false);
 	}
-	
+
 }
 
 void Painter::reset_clip_rect_stack()  {
-	
+
 	p->clip_rect_count=0;
 	set_clip_rect(false);
 }
 
 void Painter::push_local_rect(const Rect &p_rect)  {
-	
+
 	if (p->local_rect_count>=PainterPrivate::MAX_LOCAL_RECT_STACK) {
-		
+
 		PRINT_ERROR("Clip Rect stack is Full!");
 		return;
 	}
-	
+
 	Rect local_rect = p->local_rect_count ? p->local_rect_stack[ p->local_rect_count -1 ] : Rect( Point() , get_display_size() );
-	
+
 	Rect new_local_rect=p_rect;
 	new_local_rect.pos+=local_rect.pos;
-	
-	
+
+
 	set_local_rect( new_local_rect );
-	
+
 	p->local_rect_stack[ p->local_rect_count++ ] = new_local_rect;
-	
+
 }
 void Painter::pop_local_rect()  {
-	
+
 	if (p->local_rect_count==0) {
-		
+
 		PRINT_ERROR("Local Rect stack is Empty!");
 		return;
 	}
-	
+
 	p->local_rect_count--;
-	
+
 	if ( p->local_rect_count ) {
-		
+
 		Rect local_rect = p->local_rect_stack[ p->local_rect_count - 1 ];
 		set_local_rect(local_rect);
-		
+
 	} else {
-		
+
 		set_local_rect(Rect( Point() , get_display_size() ));
 	}
-	
+
 }
 void Painter::reset_local_rect_stack()  {
-	
+
 	p->local_rect_count=0;
 	set_local_rect(Rect( Point() , get_display_size() ));
-}	
+}
 
 
 
 int Painter::get_font_string_width(FontID p_font,const String& p_string) {
-	
+
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return 0;
-	}	
-	
+	}
+
 	int width=0;
-	
+
 	for (int i=0;i<p_string.length();i++) {
-		
+
 		PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_string[i]);
-		
+
 		if (!c)
 			continue;
-		
+
 		width+=c->rect.size.width;
-	}	
+	}
 
 	return width;
 }
@@ -240,43 +240,43 @@ int Painter::get_font_string_width(FontID p_font,const String& p_string) {
 void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color) {
 
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return ;
-	}	
+	}
 
 	PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_char);
-	
+
 	draw_bitmap( c->bitmap, p_pos + Point(0,-p->fonts[p_font].ascent+c->valign), c->rect, p_color );
 }
 
 
 void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string,const Color&p_color,int p_clip_w) {
-	
+
 	draw_text(p_font,p_pos,p_string,RIGHT,p_color,p_clip_w);
 }
 
 void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string,Direction p_dir,const Color&p_color,int p_clip_w) {
-	
+
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return ;
-	}	
+	}
 	Point pos=p_pos;
 	int ofs=0;
 	for (int i=0;i<p_string.length();i++) {
-		
+
 		PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_string[i]);
-		
+
 		if (!c)
 			continue;
 
 		if (p_clip_w>=0 && (ofs+c->rect.size.width)>(p_clip_w))
 			break; //width exceeded
-		
+
 		switch (p_dir) {
-			
+
 			case RIGHT: {
 				Point cpos=pos;
 				cpos.x+=ofs;
@@ -292,79 +292,79 @@ void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string
 				draw_bitmap( c->bitmap, cpos, c->rect, DOWN, p_color );
 			} break;
 			default: {
-				
+
 				PRINT_ERROR("Only drawing text right and down is supported as for now");
 			} break;
 		}
 		ofs+=c->rect.size.width;
-		
-		
+
+
 	}
 }
 
 int Painter::get_font_char_width(FontID p_font,unsigned int p_char) {
-	
+
 	if (!is_font_valid(p_font))
 		return -1;
 	PainterPrivate::Font::Character * c = p->fonts[p_font].find_char(p_char);
 	if (!c)
 		return 0;
 	return c->rect.size.width;
-	
+
 }
 int Painter::get_font_height(FontID p_font) {
-	
+
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return -1;
 	}
-	
+
 	return p->fonts[p_font].height;
-	
+
 }
 int Painter::get_font_ascent(FontID p_font) {
-	
+
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return -1;
 	}
-	
+
 	return p->fonts[p_font].ascent;
-	
+
 }
 int Painter::get_font_descent(FontID p_font) {
-	
+
 	if (!is_font_valid( p_font )) {
-		
+
 		PRINT_ERROR("Invalid Font");
 		return -1;
 	}
-	
+
 	return p->fonts[p_font].height-p->fonts[p_font].ascent;
 }
 
 FontID Painter::create_font(int p_height,int p_ascent)  {
-	
+
 	for (int i=0;i<PainterPrivate::MAX_FONTS;i++) {
-		
+
 		if (p->fonts[i].in_use)
 			continue;
-		
+
 		p->fonts[i].cleanup();
 		p->fonts[i].in_use=true;
 		p->fonts[i].height=p_height;
 		p->fonts[i].ascent=p_ascent;
-		
+
 		return i;
 	}
-	
+
 	return -1;
 }
 
 bool Painter::is_font_valid(FontID p_font) {
-	
+
 	return (p_font>=0 && p_font <PainterPrivate::MAX_FONTS && p->fonts[p_font].in_use );
 }
 
@@ -373,32 +373,32 @@ void Painter::erase_font_and_bitmaps(FontID p_font) {
 	if (!is_font_valid( p_font ))
 		return;
 	for (int i=0;i<PainterPrivate::Font::HASHTABLE_SIZE;i++) {
-	
+
 		PainterPrivate::Font::Character *c=p->fonts[p_font].characters[i];
-		
+
 		while (c) {
-		
+
 			if (is_bitmap_valid(c->bitmap))
 				remove_bitmap(  c->bitmap );
-			
+
 			c=c->next;
 		}
 	}
-	
+
 	p->fonts[p_font].cleanup();
 
 }
 
 void Painter::erase_font(FontID p_font)  {
-	
+
 	if (!is_font_valid( p_font ))
 		return;
 	p->fonts[p_font].cleanup();
-	
-	
+
+
 }
 void Painter::font_add_char(FontID p_font,unsigned int p_char,BitmapID p_bitmap,const Rect& p_rect,unsigned int p_valign) {
-	
+
 	if (!is_font_valid( p_font )) {
 		PRINT_ERROR("Invalid font");
 		return;
@@ -407,13 +407,13 @@ void Painter::font_add_char(FontID p_font,unsigned int p_char,BitmapID p_bitmap,
 		PRINT_ERROR("Invalid bitmap");
 		return;
 	}
-	
+
 	p->fonts[p_font].add_char(p_char,p_bitmap,p_rect,p_valign);
-//	printf("adding ucode: %i\n",p_char);	
+//	printf("adding ucode: %i\n",p_char);
 }
 
 void Painter::draw_fill_rect(const Point & p_from,const Size & p_size,const Color& p_color,const Rect& p_clip) {
-	
+
 	Rect final = p_clip.clip( Rect( p_from, p_size ) );
 	if (final.size.width<=0 ||final.size.height<=0 )
 		return;
@@ -422,9 +422,9 @@ void Painter::draw_fill_rect(const Point & p_from,const Size & p_size,const Colo
 
 
 void Painter::draw_tiled_bitmap(BitmapID p_bitmap,const Rect& p_rect,const Color&p_color) {
-	
+
 	draw_tiled_bitmap( p_bitmap,p_rect,p_rect.pos,p_color );
-	
+
 }
 
 
@@ -433,95 +433,95 @@ void Painter::draw_tiled_bitmap_region(BitmapID p_bitmap,const Rect& p_region,co
 
 	if (!is_bitmap_valid(p_bitmap))
 		return;
-	
+
 	if (p_rect.size.width<=0 || p_rect.size.height<=0)
 		return;
-	
+
 	Size bm_size=p_region.size;
-	
+
 	Size ofs=p_rect.pos;
-	
+
 	if (p_origin.x < p_rect.pos.x) {
 		ofs.x-=(p_rect.pos.x-p_origin.x)%bm_size.width;
 	} else if (p_origin.x > p_rect.pos.x) {
-		
+
 		ofs.x-=bm_size.width-(p_origin.x-p_rect.pos.x)%bm_size.width;
 	}
-	
+
 	if (p_origin.y < p_rect.pos.y) {
 		ofs.y-=(p_rect.pos.y-p_origin.y)%bm_size.height;
 	} else if (p_origin.y > p_rect.pos.y) {
-		
+
 		ofs.y-=bm_size.height-(p_origin.y-p_rect.pos.y)%bm_size.height;
 	}
-	
-	
-	
+
+
+
 	while (ofs.y<(p_rect.pos.y+p_rect.size.height)) {
-		
+
 		Point ofsh=ofs;
-		
+
 		while(ofsh.x<(p_rect.pos.x+p_rect.size.width)) {
-			
-			
+
+
 			Point point=ofsh;
 			Rect lrect=Rect(Point(),bm_size);
-			
+
 			if (ofsh.x<p_rect.pos.x) {
-				
+
 				point.x=p_rect.pos.x;
 				lrect.pos.x=p_rect.pos.x-ofsh.x;
 				lrect.size.width-=lrect.pos.x;
 			}
-			
+
 			if ( (ofsh.x+bm_size.width) > (p_rect.pos.x+p_rect.size.width) ) {
-				
+
 				lrect.size.width-=(ofsh.x+bm_size.width)-(p_rect.pos.x+p_rect.size.width);
 			}
-			
+
 			if (ofsh.y<p_rect.pos.y) {
-				
+
 				point.y=p_rect.pos.y;
 				lrect.pos.y=p_rect.pos.y-ofsh.y;
 				lrect.size.height-=lrect.pos.y;
 			}
-			
+
 			if ( (ofsh.y+bm_size.height) > (p_rect.pos.y+p_rect.size.height) ) {
-				
+
 				lrect.size.height-=(ofsh.y+bm_size.height)-(p_rect.pos.y+p_rect.size.height);
 			}
-			
+
 			Rect r=lrect;
 			r.pos+=p_region.pos;
 			draw_bitmap( p_bitmap, point, r,p_color );
-			
+
 			ofsh.x+=bm_size.width;
-			
+
 		}
-		
+
 		ofs.y+=bm_size.height;
-		
+
 	}
 
 }
 
 void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const Size& p_size) {
-	
+
 	draw_stylebox( p_stylebox, p_pos, p_size, Rect( p_pos, p_size ));
 }
 void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const Size& p_size,const Rect &p_clip) {
-	
-	
-	switch(p_stylebox.mode) {
-		
-		case StyleBox::MODE_FLAT: {
-			
-			Rect r( p_pos, p_size );
-			
-			for (int i=0;i<p_stylebox.flat.margin;i++) {
-				
 
-				
+
+	switch(p_stylebox.mode) {
+
+		case StyleBox::MODE_FLAT: {
+
+			Rect r( p_pos, p_size );
+
+			for (int i=0;i<p_stylebox.flat.margin;i++) {
+
+
+
 				Color color_upleft=p_stylebox.flat.border_upleft;
 				Color color_downright=p_stylebox.flat.border_downright;
 
@@ -534,38 +534,38 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 					color_downright.r=(p_stylebox.flat.margin-i)*(int)color_downright.r/p_stylebox.flat.margin + i*(int)p_stylebox.flat.center.r/p_stylebox.flat.margin;
 					color_downright.g=(p_stylebox.flat.margin-i)*(int)color_downright.g/p_stylebox.flat.margin + i*(int)p_stylebox.flat.center.g/p_stylebox.flat.margin;
 					color_downright.b=(p_stylebox.flat.margin-i)*(int)color_downright.b/p_stylebox.flat.margin + i*(int)p_stylebox.flat.center.b/p_stylebox.flat.margin;
-					
+
 				}
-				
+
 				draw_fill_rect( Point( r.pos.x,r.pos.y+r.size.y-1), Size(r.size.x ,1 ), color_downright,p_clip);
 				draw_fill_rect( Point( r.pos.x+r.size.x-1,r.pos.y ), Size( 1 ,r.size.y ), color_downright,p_clip);
-				
+
 				draw_fill_rect( r.pos, Size(r.size.x ,1 ), color_upleft,p_clip);
 				draw_fill_rect( r.pos, Size( 1 ,r.size.y ), color_upleft,p_clip);
-				
-				
+
+
 				r.pos.x++;
 				r.pos.y++;
 				r.size.x-=2;
 				r.size.y-=2;
 			}
-			
+
 			if (p_stylebox.draw_center)
 				draw_fill_rect( r.pos, r.size , p_stylebox.flat.center, p_clip );
-			
+
 		} break;
 		case StyleBox::MODE_FLAT_BITMAP:
 		case StyleBox::MODE_BITMAP: {
-			
+
 			if (!is_bitmap_valid(p_stylebox.bitmap))
 				break;
-				
+
 			const int *m=p_stylebox.bitmap_margins;
 			Point btopleft=Point( m[MARGIN_LEFT] , m[MARGIN_TOP] );
 			Point bbottomright=Point( m[MARGIN_RIGHT] , m[MARGIN_BOTTOM] );
-			
+
 			Size bsize = get_bitmap_size( p_stylebox.bitmap );
-			
+
 			Rect rect_topleft=Rect( Point(), btopleft);
 			Rect rect_center=Rect( btopleft, bsize-btopleft-bbottomright );
 			Rect rect_bottomright=Rect( bsize-bbottomright, bbottomright );
@@ -575,202 +575,202 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 			Rect rect_top = Rect( Point(m[MARGIN_LEFT],0), Size( rect_center.size.x,m[MARGIN_TOP] ));
 			Rect rect_right = Rect( Point(rect_center.size.x+m[MARGIN_LEFT],m[MARGIN_TOP]), Size( m[MARGIN_RIGHT],rect_center.size.y ));
 			Rect rect_bottom = Rect( Point(m[MARGIN_LEFT],rect_center.size.y+m[MARGIN_TOP]), Size( rect_center.size.x,m[MARGIN_BOTTOM] ));
-			
+
 			if (!rect_topleft.has_no_area()) {
-			
+
 				draw_bitmap(p_stylebox.bitmap,p_pos, rect_topleft);
 			}
 			//fixed
-			
+
 			if (!rect_topright.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.x+=p_size.x-m[MARGIN_RIGHT];
 				draw_bitmap(p_stylebox.bitmap,pos, rect_topright);
 
 			}
-			
-			 
+
+
 			if (!rect_bottomleft.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.y+=p_size.y-m[MARGIN_BOTTOM];
 				draw_bitmap(p_stylebox.bitmap,pos, rect_bottomleft);
 
 			}
-			
+
 			if (!rect_bottomright.has_no_area()) {
-			
+
 				Point pos=p_pos+p_size-Size(m[MARGIN_RIGHT],m[MARGIN_BOTTOM]);
 				draw_bitmap(p_stylebox.bitmap,pos, rect_bottomright);
 			}
-			
-			
+
+
 			if (!rect_top.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.x+=m[MARGIN_LEFT];
-				
+
 				Size size=p_size;
-				
+
 				size.width-=m[MARGIN_LEFT]+m[MARGIN_RIGHT];
 				size.height=m[MARGIN_TOP];
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
-				
-				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_top,dest,pos); 			
+
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_top,dest,pos);
 			}
-			
+
 			if (!rect_bottom.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.y+=p_size.y-m[MARGIN_BOTTOM];
 				pos.x+=m[MARGIN_LEFT];
 				Size size=p_size;
-				
+
 				size.width-=m[MARGIN_LEFT]+m[MARGIN_RIGHT];
 				size.height=m[MARGIN_BOTTOM];
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
-				
-				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_bottom,dest,pos); 			
+
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_bottom,dest,pos);
 			}
-			
+
 			if (!rect_left.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.y+=m[MARGIN_TOP];
-				
+
 				Size size=p_size;
-				
+
 				size.height-=m[MARGIN_TOP]+m[MARGIN_BOTTOM];
 				size.width=m[MARGIN_LEFT];
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
-				
-				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_left,dest,pos); 			
+
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_left,dest,pos);
 			}
-			
+
 			if (!rect_right.has_no_area()) {
-			
+
 				Point pos=p_pos;
 				pos.x+=p_size.x-m[MARGIN_RIGHT];
 				pos.y+=m[MARGIN_TOP];
-				
+
 				Size size=p_size;
-				
+
 				size.height-=m[MARGIN_TOP]+m[MARGIN_BOTTOM];
 				size.width=m[MARGIN_RIGHT];
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
-				
-				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_right,dest,pos); 			
+
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_right,dest,pos);
 			}
-			
+
 			if (!rect_center.has_no_area()) {
-			
+
 				Point pos=p_pos+rect_topleft.size;
 				Size size=p_size;
 				size-=rect_topleft.size+rect_bottomright.size;
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
-				
-				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_center,dest,pos); 			
-			
+
+				draw_tiled_bitmap_region(p_stylebox.bitmap,rect_center,dest,pos);
+
 			}
-			
+
 			/*
 			//expandable
 			if (p_draw_center && p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_BITMAP && is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_CENTER] )) {
-			
-				
+
+
 				Point pos=p_pos+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] );
 				Size size=p_size;
 				size-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] )+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] );
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_CENTER] , dest,pos );
-				
-			}			
-			
+
+			}
+
 			if (p_draw_center && p_stylebox.draw_center && p_stylebox.mode==StyleBox::MODE_FLAT_BITMAP) {
-			
-				
+
+
 				Point pos=p_pos+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] );
 				Size size=p_size;
 				size-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] )+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] );
-				
-				
+
+
 				draw_fill_rect( pos, size, p_stylebox.flat.center, p_clip );
-				
-			}			
-			
+
+			}
+
 			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_LEFT] )) {
-			
-				
+
+
 				Point pos=p_pos;
 				pos.y+=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] ).height;
-				
+
 				Size size=p_size;
-				
+
 				size.height-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] ).height+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] ).height;
 				size.width=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_LEFT] ).width;
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_LEFT] ,dest,pos );
-				
-			
-			}			
-			
+
+
+			}
+
 			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_TOP] )) {
-			
-				
+
+
 				Point pos=p_pos;
 				pos.x+=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] ).width;
-				
+
 				Size size=p_size;
-				
+
 				size.width-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPLEFT] ).width+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] ).width;
 				size.height=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOP] ).height;
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_TOP] ,dest,pos );
-				
-			}						
+
+			}
 			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_RIGHT] )) {
-			
-				
+
+
 				Point pos=p_pos;
 				pos.x+=p_size.x-get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_RIGHT] ).width;
 				pos.y+=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPRIGHT] ).height;
 				Size size=p_size;
-				
+
 				size.height-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_TOPRIGHT] ).height+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] ).height;
 				size.width=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_RIGHT] ).width;
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_RIGHT] ,dest,pos );
-				
-			}						
+
+			}
 			if (is_bitmap_valid( p_stylebox.bitmaps[StyleBox::POS_BOTTOM] )) {
-			
-				
+
+
 				Point pos=p_pos;
 				pos.y+=p_size.y-get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOM] ).height;
 				pos.x+=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMLEFT] ).width;
 				Size size=p_size;
-				
+
 				size.width-=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMRIGHT] ).width+get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOMLEFT] ).width;
 				size.height=get_bitmap_size( p_stylebox.bitmaps[StyleBox::POS_BOTTOM] ).height;
-				
+
 				Rect dest=Rect(pos,size).clip(p_clip);
 				draw_tiled_bitmap( p_stylebox.bitmaps[StyleBox::POS_BOTTOM] ,dest,pos );
-				
-			}						
-			
+
+			}
+
 			*/
 		} break;
-		
+
 		default: {}
 	}
 
@@ -779,17 +779,17 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 
 int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_margin) {
 
-	
+
 	if (p_stylebox.margins[p_margin]>=0)
 		return p_stylebox.margins[p_margin];
 	else {
-		
+
 		int res=0;
-		
+
 		switch(p_stylebox.mode) {
-			
+
 			case StyleBox::MODE_FLAT: {
-				
+
 				res=p_stylebox.flat.margin;
 			} break;
 			case StyleBox::MODE_FLAT_BITMAP:
@@ -797,12 +797,12 @@ int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_marg
 				res=p_stylebox.bitmap_margins[p_margin];
 			} break;
 			default: res=0;
-	
+
 		}
-	
+
 		if (res<0)
 			res=0;
-		
+
 		return res;
 	}
 
@@ -810,68 +810,69 @@ int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_marg
 
 
 Size Painter::get_stylebox_min_size(const StyleBox& p_stylebox,bool p_with_center) {
-	
-	Size min=Size( 	get_stylebox_margin( p_stylebox, MARGIN_LEFT) + 
-			get_stylebox_margin( p_stylebox, MARGIN_RIGHT), 
-			get_stylebox_margin( p_stylebox, MARGIN_TOP) + 
+
+	Size min=Size( 	get_stylebox_margin( p_stylebox, MARGIN_LEFT) +
+			get_stylebox_margin( p_stylebox, MARGIN_RIGHT),
+			get_stylebox_margin( p_stylebox, MARGIN_TOP) +
 			get_stylebox_margin( p_stylebox, MARGIN_BOTTOM ) );
-	
+
 	if (p_stylebox.mode==StyleBox::MODE_BITMAP && p_with_center) {
-		
+
 		Size center_size=get_bitmap_size( p_stylebox.bitmap);
 		center_size-=Point( p_stylebox.bitmap_margins[MARGIN_LEFT]+p_stylebox.bitmap_margins[MARGIN_RIGHT],p_stylebox.bitmap_margins[MARGIN_TOP]+p_stylebox.bitmap_margins[MARGIN_BOTTOM]);
 		min+=center_size;
 	}
-		     
-		     
+
+
 	return min;
 }
 
+struct __Painter__ColorMap {
+
+    String chr;
+    Color color;
+    Uint8 alpha;
+    __Painter__ColorMap() { alpha=255; }
+};
+
 BitmapID Painter::load_xpm(const char **p_xpm) {
-	
+
 	Size size;
 	int pixelchars=0;
 	bool has_alpha=false;
 	BitmapID bitmap=-1;
-	
+
 	enum Status {
 		READING_HEADER,
   		READING_COLORS,
     		READING_PIXELS,
       		DONE
 	};
-		
+
 	Status status = READING_HEADER;
 	int line=0;
-	
-	struct ColorMap {
-			
-		String chr;
-		Color color;	
-		Uint8 alpha;
-		ColorMap() { alpha=255; }
-	};
-	
-	ColorMap * colormap;
-	int colormap_size;
-	
+
+
+	__Painter__ColorMap * __Painter__ColorMap;
+	int __Painter__ColorMap_size;
+
 	while (status!=DONE) {
-		
+
 		const char * line_ptr = p_xpm[line];
-				
+
 
 		switch (status) {
-			
+
 			case READING_HEADER: {
-				
+
 				String line_str=line_ptr;
 				line_str.replace("\t"," ");
-				
+
 				size.width=line_str.get_slice(" ",0).to_int();
 				size.height=line_str.get_slice(" ",1).to_int();
-				colormap_size=line_str.get_slice(" ",2).to_int();
+				__Painter__ColorMap_size=line_str.get_slice(" ",2).to_int();
 				pixelchars=line_str.get_slice(" ",3).to_int();
-				if (colormap_size > 32766) {
+				if (__Painter__ColorMap_size > 32766) {
 					PRINT_ERROR("XPM data wth colors > 32766 not supported");
 					return -1;
 				}
@@ -887,18 +888,18 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 					PRINT_ERROR("Image height > 32767 pixels for data\n");
 					return -1;
 				}
-				colormap = GUI_NEW_ARRAY( ColorMap, colormap_size );
+				__Painter__ColorMap = GUI_NEW_ARRAY( __Painter__ColorMap, __Painter__ColorMap_size );
 
-				if (!colormap) {
+				if (!__Painter__ColorMap) {
 					return -1;
-				}				
+				}
 				status=READING_COLORS;
 			} break;
 			case READING_COLORS: {
-				
+
 				for (int i=0;i<pixelchars;i++) {
-							
-					colormap[line-1].chr+=*line_ptr;
+
+					__Painter__ColorMap[line-1].chr+=*line_ptr;
 					line_ptr++;
 				}
 				//skip spaces
@@ -908,21 +909,21 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 					line_ptr++;
 				}
 				if (*line_ptr=='c') {
-					
+
 					line_ptr++;
 					while (*line_ptr==' ' ||  *line_ptr=='\t' || *line_ptr==0) {
 						if (*line_ptr==0)
 							break;
 						line_ptr++;
 					}
-					
+
 					if (*line_ptr=='#') {
-						line_ptr++;					
+						line_ptr++;
 						Color col;
 						for (int i=0;i<6;i++) {
-							
+
 							char v = line_ptr[i];
-												
+
 							if (v>='0' && v<='9')
 								v-='0';
 							else if (v>='A' && v<='F')
@@ -931,7 +932,7 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 								v=(v-'a')+10;
 							else
 								break;
-							
+
 							switch(i) {
 								case 0: col.r=v<<4; break;
 								case 1: col.r|=v; break;
@@ -940,147 +941,147 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 								case 4: col.b=v<<4; break;
 								case 5: col.b|=v; break;
 							};
-								
+
 							// magenta mask
 							if (col.r==255 && col.g==0 && col.b==255) {
-								
-								colormap[line-1].color=Color(0);
-								colormap[line-1].alpha=0;
+
+								__Painter__ColorMap[line-1].color=Color(0);
+								__Painter__ColorMap[line-1].alpha=0;
 								has_alpha=true;
 							} else {
-								
-								colormap[line-1].color=col;
+
+								__Painter__ColorMap[line-1].color=col;
 							}
 						}
 					}
 				}
-				if (line==colormap_size) {
-					
+				if (line==__Painter__ColorMap_size) {
+
 					status=READING_PIXELS;
 					bitmap=create_bitmap(size,MODE_PIXMAP,has_alpha);
 					if (bitmap<0) {
-						
-						GUI_DELETE_ARRAY( colormap );
+
+						GUI_DELETE_ARRAY( __Painter__ColorMap );
 						return bitmap;
 					}
-				} 
+				}
 			} break;
 			case READING_PIXELS: {
-				
-				int y=line-colormap_size-1;
+
+				int y=line-__Painter__ColorMap_size-1;
 				for (int x=0;x<size.width;x++) {
-					
+
 					char pixelstr[6]={0,0,0,0,0,0};
 					for (int i=0;i<pixelchars;i++)
 						pixelstr[i]=line_ptr[x*pixelchars+i];
-					
+
 					Color pixel; Uint8 alpha=255;
-					for (int i=0;i<colormap_size;i++) {
-						
-						if (colormap[i].chr==pixelstr) {
-							
-							pixel=colormap[i].color;
-							alpha=colormap[i].alpha;
+					for (int i=0;i<__Painter__ColorMap_size;i++) {
+
+						if (__Painter__ColorMap[i].chr==pixelstr) {
+
+							pixel=__Painter__ColorMap[i].color;
+							alpha=__Painter__ColorMap[i].alpha;
 							break;
 						}
 					}
-					
+
 					 set_bitmap_pixel(bitmap,Point(x,y), pixel, alpha );
-							
+
 				}
-				
+
 				if (y==(size.height-1))
 					status=DONE;
 			} break;
 		}
-		
-		line++;		
+
+		line++;
 	};
-	
-	GUI_DELETE_ARRAY(colormap);
-	
+
+	GUI_DELETE_ARRAY(__Painter__ColorMap);
+
 	return bitmap;
 }
 
 void Painter::draw_arrow( const Point& p_pos, const Size& p_size, Direction p_dir, const Color& p_color,bool p_trianglify) {
-	
+
 	if (p_size.width<=0 || p_size.height<=0)
 		return;
-	
+
 	Point pos=p_pos;
 	Size size=p_size;
-	
+
 	if (p_trianglify) {
-		
+
 		if (p_dir==UP || p_dir==DOWN ) {
-			
+
 			int desired_height=(p_size.width+1)/2;
-			
-			
+
+
 			if (desired_height < p_size.height ) {
 				//good, let's do it
-				
+
 				pos.y+=(p_size.height-desired_height)/2;
 				size.height=desired_height;
-				
+
 			}
 		}
-		
+
 		if (p_dir==LEFT || p_dir==RIGHT ) {
-			
+
 			int desired_width=(p_size.height+1)/2;
-			
-			
+
+
 			if (desired_width < p_size.width ) {
 				//good, let's do it
-				
+
 				pos.x+=(p_size.width-desired_width)/2;
 				size.width=desired_width;
-				
+
 			}
 		}
 	}
 	size.height &= ~1;
 	size.width &= ~1;
 	for (int i=0;i<size.height;i++) {
-		
+
 		int begin,end;
 		switch (p_dir) {
-					
+
 			case UP:
 			case DOWN: {
-				
+
 				int idx=i;
-				
+
 				if (p_dir==UP) {
-					
+
 					idx=size.height-i-1;
 				}
-				
+
 				int ofsm=idx*(size.width/2)/size.height;
 				begin=ofsm;
 				end=size.width-ofsm-1;
-				
-				
+
+
 			} break;
 			case RIGHT:
 			case LEFT: {
-				
+
 				int ofs=(i%(size.height/2))*(size.width)/(size.height/2);
 				end=size.width-1;
 				begin=(i>=(size.height/2))?ofs:(size.width-ofs);
-				
+
 				if (p_dir==RIGHT) {
-					
+
 					int auxbeg=size.width-end;
 					end=size.width-begin;
 					begin=auxbeg;
 				}
-				
+
 			} break;
-			
+
 		};
-		
+
 		Point from( pos.x + begin , pos.y + i );
 		Size rsize( end-begin , 1 );
 		draw_fill_rect( from, rsize, p_color );
@@ -1088,11 +1089,11 @@ void Painter::draw_arrow( const Point& p_pos, const Size& p_size, Direction p_di
 }
 
 Painter::Painter() {
-	
+
 	p = GUI_NEW( PainterPrivate );
 }
 Painter::~Painter() {
-	
+
 	GUI_DELETE( p );
 }
 

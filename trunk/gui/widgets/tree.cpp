@@ -716,10 +716,19 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 			
 		TreeItem::Cell &c = p_item->cells[col];
 			
+		
 		bool already_selected=c.selected;
 			
 		if (p_button==1) {
 			/* process selection */
+			
+			printf("doubleclick? %i\n",p_doubleclick);
+			if (p_doubleclick) {
+			
+				p_item->double_click_signal.call(col);
+				return -1;
+			}
+			
 			if (allow_multi && p_mod_state&KEY_MASK_CTRL && c.selectable) {
 	
 				if (!c.selected) {
@@ -926,12 +935,24 @@ void Tree::popup_select_slot(int p_option) {
 	update();
 }
 
+
+void Tree::mouse_doubleclick(const Point& p_pos,int p_modifier_mask) {
+
+	if (!root)
+		return;
+
+	propagate_mouse_event(p_pos,0,0,true,root,BUTTON_LEFT,p_modifier_mask);
+
+}
+
 void Tree::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
 
 
 	if (!p_press)
 		return;
-
+	
+	if (!root)
+		return;
 
 	propagate_mouse_event(p_pos,0,0,false,root,p_button,p_modifier_mask);
 

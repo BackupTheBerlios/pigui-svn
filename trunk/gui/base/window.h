@@ -158,6 +158,7 @@ public:
 	void set_root_frame(Container *p_root);
 	Frame * get_root_frame();
 	Window *get_root();
+	Window *get_parent();
 
 	void set_pos(const Point &p_pos);
 	Point get_pos();

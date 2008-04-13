@@ -90,6 +90,7 @@ friend class Tree;
 	
 public:
 
+	Signal< Method1<int> > double_click_signal;
 	Signal< Method1<int> > selected_signal;
 	Signal< Method1<int> > deselected_signal;
 	Signal< Method1<int> > changed_signal; ///< Called when changing editability/color/etc
@@ -166,7 +167,7 @@ private:
 	int compute_item_height(TreeItem *p_item);
 	int propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_doubleclick,TreeItem *p_item,int p_button,int p_mod_state); //return true on handled
 	virtual void mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask);
-	
+	virtual void mouse_doubleclick(const Point& p_pos,int p_modifier_mask);
 
 	bool allow_multi; //allow multiple item selection
 

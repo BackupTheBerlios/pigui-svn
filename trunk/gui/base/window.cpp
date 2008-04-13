@@ -130,6 +130,12 @@ Window *Window::get_root() {
 
 	return root;
 }
+
+Window *Window::get_parent() {
+
+	return parent;
+}
+
 Frame * Window::get_root_frame() {
 
 	return root_frame;

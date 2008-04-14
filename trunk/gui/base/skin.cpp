@@ -488,7 +488,8 @@ void Skin::set_default() {
 	
 	/* Menu Box */
 
-	SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox( 1, Color( 190,190,190  ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
+	//SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox( 1, Color( 190,190,190  ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
+	SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox() );
 	SET_STYLEBOX( SB_MENUBOX_PRESSED, StyleBox( 1, Color( 110,110,110 ), Color( 50,50,50 ), Color( 200,200,200 ) ) );
 	SET_STYLEBOX( SB_MENUBOX_HOVER, StyleBox( 1, Color( 220,220,220 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
 	SET_STYLEBOX( SB_MENUBOX_FOCUS, StyleBox( 1,  Color( 255,50,50 ), Color( 255,50,50 ) ) );

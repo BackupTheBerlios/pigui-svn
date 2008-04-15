@@ -1,7 +1,7 @@
 //
 // C++ Interface: arrow_button
 //
-// Description: 
+// Description:
 //
 //
 // Author: Juan Linietsky <reduzio@gmail.com>, (C) 2006
@@ -13,6 +13,7 @@
 #define PIGUIARROWBUTTON_H
 
 #include "widgets/base_button.h"
+#include "base/range.h"
 
 
 namespace GUI {
@@ -21,19 +22,21 @@ namespace GUI {
 	@author Juan Linietsky <reduzio@gmail.com>
 */
 class ArrowButton : public BaseButton {
-	
+
 	Direction dir;
 	bool no_minsize;
+	RangeBase *range;
 
 	Size get_minimum_size_internal();
 	void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
 
 	virtual String get_type();
-	
+    void press_slot();
 public:
 	void set_dir(Direction p_dir);
 	Direction get_dir () const;
-	
+	void set_range( RangeBase *p_range );
+
 	ArrowButton(Direction p_dir,bool p_no_minsize=false);
 	~ArrowButton();
 

@@ -517,7 +517,13 @@ void LineEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 
 
 		const char chr[2] = {text[char_ofs], 0};
-		get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), chr, color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
+
+		if ( !pass ){
+            get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent ), chr, color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
+		}
+        else{
+            get_painter()->draw_text( font( FONT_LINE_EDIT ) , Point( ofs , y_ofs+font_ascent), "*", color( selected?COLOR_LINE_EDIT_FONT_SELECTED:COLOR_LINE_EDIT_FONT ) );
+		}
 
 		if (char_ofs==cursor_pos && has_focus())
 			get_painter()->draw_fill_rect( Point( ofs , y_ofs ), Size( 1, y_area ), color( COLOR_LINE_EDIT_CURSOR ) );
@@ -610,12 +616,13 @@ void LineEdit::set_editable(bool p_editable) {
 }
 
 
-LineEdit::LineEdit(String p_text) {
+LineEdit::LineEdit(String p_text, bool p_pass) {
 
 	cursor_pos=0;
 	window_pos=0;
 	max_length = 0;
 
+    pass = p_pass;
 	text=p_text;
 	selection_clear();
 	set_focus_mode( FOCUS_ALL );

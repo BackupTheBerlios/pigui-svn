@@ -101,6 +101,7 @@ public:
 	String get_dir();
 		
 	VBoxContainer *get_extra_vb() { return extra_vb; }
+	WindowBox *get_window_box() { return wb; }
 	
 	void add_filter(String p_description,String p_extension);
 	void clear_filter_list();

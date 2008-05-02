@@ -354,8 +354,13 @@ void Skin::set_default() {
 	
 	
 	SET_STYLEBOX( SB_POPUP_BG, StyleBox( 2, Color(200,200,200),Color(250,250,250),Color(90,90,90) ) );
-	for(int i=0;i<4;i++)
+	SET_STYLEBOX( SB_POPUP_MENU_BG, StyleBox( 2, Color(200,200,200),Color(250,250,250),Color(90,90,90) ) );
+	
+	for(int i=0;i<4;i++) {
 		stylebox_array[SB_POPUP_BG].margins[i]=10;
+		stylebox_array[SB_POPUP_MENU_BG].margins[i]=10;
+	}
+	
 	
 	
 	/* WindowTop */

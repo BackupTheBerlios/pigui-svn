@@ -403,6 +403,11 @@ void PopUpMenu::popup(const Point &p_pos) {
 	
 }
 
+void PopUpMenu::skin_changed() {
+	
+	main_vbc->set_stylebox_override( get_skin()->get_stylebox( SB_POPUP_MENU_BG ) );
+	
+}
 
 PopUpMenu::PopUpMenu(Window *p_parent) : Window(p_parent,MODE_POPUP) {
 	
@@ -412,6 +417,7 @@ PopUpMenu::PopUpMenu(Window *p_parent) : Window(p_parent,MODE_POPUP) {
 	
 	vbc = main_vbc->add( GUI_NEW( VBoxContainer ) );
 	vbc->set_separation(1);
+	main_vbc->set_stylebox_override( get_skin()->get_stylebox( SB_POPUP_MENU_BG ) );
 
 	
 }

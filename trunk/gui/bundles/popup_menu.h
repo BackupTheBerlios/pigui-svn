@@ -31,6 +31,7 @@ class PopUpMenu : public Window {
 	void menu_button_selected(MenuButton*);
 	void menu_button_toggled(MenuButton*,bool p_toggle);
 	
+	virtual void skin_changed();
 	
 public:
 	

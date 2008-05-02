@@ -210,6 +210,9 @@ public:
 
 	TreeItem* get_root_item();
 	
+	void set_column_min_width(int p_column,int p_min_width);
+	void set_column_expand(int p_column,bool p_expand);
+	
 	void set_multi_mode(bool p_enabled);
 	Tree(int p_columns=1);
 	~Tree();

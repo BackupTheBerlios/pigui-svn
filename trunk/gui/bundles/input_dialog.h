@@ -17,6 +17,7 @@
 #include "widgets/label.h"
 #include "base/window.h"
 #include "bundles/margin_group.h"
+#include "bundles/combo_box.h"
 
 
 namespace GUI {
@@ -78,6 +79,24 @@ public:
 
 	QuestionInputDialog(Window* p_parent);
 };
+
+class OptionInputDialog : public Window {
+
+	MarginGroup *question;
+	ComboBox *combo;
+	
+	void option_select_callback();
+public:
+
+	Signal< Method2<int,String> > option_selected_signal;
+
+	void clear();
+	void add_option(String p_option);
+	void show(String p_question);
+
+	OptionInputDialog(Window* p_parent);
+};
+
 
 }
 

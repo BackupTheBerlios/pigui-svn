@@ -1180,6 +1180,28 @@ void Tree::set_in_window() {
 	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );
 }
 
+void Tree::set_column_min_width(int p_column,int p_min_width) {
+
+	if (p_column<0 || p_column>=columns)
+		return;
+	if (p_min_width<1)
+		return;
+	column_min_size[p_column]=p_min_width;
+	compute_column_size_caches();
+	update();
+
+}
+void Tree::set_column_expand(int p_column,bool p_expand) {
+
+	if (p_column<0 || p_column>=columns)
+		return;
+	column_expand[p_column]=p_expand;
+	compute_column_size_caches();
+	update();
+
+}
+
+
 Tree::Tree(int p_columns) {
 
 	

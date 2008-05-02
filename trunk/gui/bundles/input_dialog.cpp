@@ -117,4 +117,40 @@ QuestionInputDialog::QuestionInputDialog(Window* p_parent) : Window(p_parent,MOD
 };
 
 
+void OptionInputDialog::clear() {
+
+	combo->clear();
+	
+}
+void OptionInputDialog::add_option(String p_option) {
+
+	combo->add_string(p_option);
+	
+}
+void OptionInputDialog::show(String p_question) {
+
+	question->set_label_text(p_question);
+	Window::show();
+}
+
+void OptionInputDialog::option_select_callback() {
+
+	int selected = combo->get_selected();
+	if ( selected<0 || selected>=combo->get_size() )
+		return;
+		
+	option_selected_signal.call( selected, combo->get_string(selected) );
+	hide();
+}
+
+OptionInputDialog::OptionInputDialog(Window* p_parent) : Window(p_parent,MODE_POPUP,SIZE_CENTER) {
+
+	question = GUI_NEW( MarginGroup("Choose:" ) );
+	combo=question->add( GUI_NEW( ComboBox ) );
+	((VBoxContainer*)question)->add( GUI_NEW( CenterContainer ) )->set( GUI_NEW( Button("Ok") ) )->pressed_signal.connect( this, &OptionInputDialog::option_select_callback );
+	set_root_frame( question );
+	
+}
+
+
 }

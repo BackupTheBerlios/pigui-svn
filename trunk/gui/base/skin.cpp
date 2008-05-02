@@ -652,7 +652,7 @@ void Skin::set_default() {
 	
 	/* Combo Box */
 	
-	SET_CONSTANT(C_COMBOBOX_POPUP_MAX_HEIGHT,100);
+	SET_CONSTANT(C_COMBOBOX_POPUP_MAX_HEIGHT,200);
 	SET_STYLEBOX(SB_COMBO_POPUP,StyleBox( 2, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ));
 	
 	

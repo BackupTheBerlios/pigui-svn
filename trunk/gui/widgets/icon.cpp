@@ -39,6 +39,10 @@ String Icon::get_type() {
 	return "Icon";
 }
 
+GUI::BitmapID Icon::get_bitmap() {
+	
+	return bitmap;
+};
 
 void Icon::set_bitmap(BitmapID p_bitmap) {
 	

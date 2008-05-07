@@ -32,7 +32,7 @@ protected:
 	
 public:
 	
-	
+	BitmapID get_bitmap();
 	void set_bitmap(BitmapID p_bitmap);
 	Icon(BitmapID p_bitmap=-1);
 

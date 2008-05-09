@@ -25,8 +25,7 @@ void MessageBox::show(String p_text) {
 
 MessageBox::MessageBox(Window *p_parent,SizeMode p_size_mode) : Window(p_parent,Window::MODE_POPUP, p_size_mode) {
 
-
-    window_box = GUI_NEW( WindowBox("!!") );
+	window_box = GUI_NEW( WindowBox("!!") );
 	set_root_frame( window_box );
 	custom_vb= window_box->add(GUI_NEW( VBoxContainer),1);
 	text = window_box->add(GUI_NEW(Label));

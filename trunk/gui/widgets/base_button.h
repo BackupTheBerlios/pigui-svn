@@ -80,6 +80,7 @@ public:
 	
 	Signal<> pressed_signal;
 	Signal< Method1<bool> > toggled_signal;
+	Signal< Method1<bool> > hover_signal;
 
 	bool is_pressed(); ///< return wether button is pressed (toggled in)
 	void set_pressed(bool p_pressed); ///only works in toggle mode

@@ -81,6 +81,7 @@ void BaseButton::mouse_enter() {
 		status.pressing_inside=true;
 	status.hovering=true;
 	update();
+	hover_signal.call(true);
 	
 
 	
@@ -92,6 +93,7 @@ void BaseButton::mouse_leave() {
 	
 	status.hovering=false;
 	update();
+	hover_signal.call(false);
 	
 	
 }

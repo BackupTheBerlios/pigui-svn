@@ -128,6 +128,16 @@ void ButtonGroup::remove(BaseButton *p_button){
 
 }
 
+void ButtonGroup::clear() {
+
+	while (button_list) {
+
+		ButtonList*aux=button_list;
+		button_list=button_list->next;
+		GUI_DELETE( aux );
+	}
+};
+
 ButtonGroup::ButtonGroup() {
 
 	button_list=0;
@@ -137,12 +147,7 @@ ButtonGroup::ButtonGroup() {
 
 ButtonGroup::~ButtonGroup() {
 
-	while (button_list) {
-
-		ButtonList*aux=button_list;
-		button_list=button_list->next;
-		GUI_DELETE( aux );
-	}
+	clear();
 }
 
 

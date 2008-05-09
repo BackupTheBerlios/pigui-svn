@@ -46,7 +46,8 @@ private:
 public:
 	
 	Signal< Method1<int> > current_button_changed_signal;
-	
+
+	void clear();	
 
 	void set_current(int p_idx);
 	int get_current();

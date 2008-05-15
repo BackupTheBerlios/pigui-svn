@@ -1062,6 +1062,7 @@ TreeItem *Tree::create_item(TreeItem *p_parent) {
 
 			p_parent->childs=ti;
 		}
+		ti->parent=p_parent;
 
 	} else {
 

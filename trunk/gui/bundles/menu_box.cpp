@@ -115,10 +115,11 @@ void MenuBox::add_item(BitmapID p_ID,const String& p_str,int p_id,unsigned int p
 	
 	
 	
+	
 	if (p_id!=-1)
-		popup->add_item( p_ID, p_str,NULL,p_shortcut,p_shortcut_active);
+		popup->add_item( p_ID, p_str,p_id,NULL,p_shortcut,p_shortcut_active);
 	else
-		popup->add_item( p_ID, p_str,p_id,NULL,p_shortcut,p_shortcut_active );
+		popup->add_item( p_ID, p_str,NULL,p_shortcut,p_shortcut_active );
 
 }
 void MenuBox::add_separator() {

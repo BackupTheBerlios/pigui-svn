@@ -39,15 +39,10 @@ set_color(m_which,m_color);
 
 int Skin::find_stylebox(String p_by_name) {
 
-	String upper_name=p_by_name.to_upper();
-
 
 	for (int i=0;i<stylebox_count;i++) {
 
-		if (!stylebox_name[i])
-			continue;
-
-		if (stylebox_name[i]==upper_name)
+		if (stylebox_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}
@@ -57,14 +52,9 @@ int Skin::find_stylebox(String p_by_name) {
 }
 int Skin::find_constant(String p_by_name) {
 
-	String upper_name=p_by_name.to_upper();
-
 	for (int i=0;i<constant_count;i++) {
 
-		if (!constant_name[i])
-			continue;
-
-		if (constant_name[i]==upper_name)
+		if (constant_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}
@@ -74,14 +64,9 @@ int Skin::find_constant(String p_by_name) {
 }
 int Skin::find_bitmap(String p_by_name) {
 
-	String upper_name=p_by_name.to_upper();
-
 	for (int i=0;i<bitmap_count;i++) {
 
-		if (!bitmap_name[i])
-			continue;
-
-		if (bitmap_name[i]==upper_name)
+		if (bitmap_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}
@@ -91,14 +76,9 @@ int Skin::find_bitmap(String p_by_name) {
 }
 int Skin::find_font(String p_by_name) {
 
-	String upper_name=p_by_name.to_upper();
-
 	for (int i=0;i<font_count;i++) {
 
-		if (!font_name[i])
-			continue;
-
-		if (font_name[i]==upper_name)
+		if (font_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}
@@ -108,14 +88,9 @@ int Skin::find_font(String p_by_name) {
 }
 int Skin::find_color(String p_by_name) {
 
-	String upper_name=p_by_name.to_upper();
+	for (int i=0;i<constant_count;i++) {
 
-	for (int i=0;i<color_count;i++) {
-
-		if (!color_name[i])
-			continue;
-
-		if (color_name[i]==upper_name)
+		if (constant_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}
@@ -124,14 +99,14 @@ int Skin::find_color(String p_by_name) {
 
 }
 
-void Skin::set_stylebox_name(int p_which,const char* p_name) {
+void Skin::set_stylebox_name(int p_which,String p_name) {
 
 	if (p_which<0 || p_which>=stylebox_count)
 		return;
 
 	stylebox_name[p_which]=p_name;
 }
-void Skin::set_constant_name(int p_which,const char* p_name){
+void Skin::set_constant_name(int p_which,String p_name){
 
 	if (p_which<0 || p_which>=constant_count)
 		return;
@@ -139,7 +114,7 @@ void Skin::set_constant_name(int p_which,const char* p_name){
 	constant_name[p_which]=p_name;
 
 }
-void Skin::set_bitmap_name(int p_which,const char* p_name){
+void Skin::set_bitmap_name(int p_which,String p_name){
 
 	if (p_which<0 || p_which>=bitmap_count)
 		return;
@@ -148,7 +123,7 @@ void Skin::set_bitmap_name(int p_which,const char* p_name){
 
 
 }
-void Skin::set_font_name(int p_which,const char* p_name){
+void Skin::set_font_name(int p_which,String p_name){
 
 	if (p_which<0 || p_which>=font_count)
 		return;
@@ -156,7 +131,7 @@ void Skin::set_font_name(int p_which,const char* p_name){
 	font_name[p_which]=p_name;
 
 }
-void Skin::set_color_name(int p_which,const char* p_name){
+void Skin::set_color_name(int p_which,String p_name){
 
 	if (p_which<0 || p_which>=color_count)
 		return;
@@ -275,41 +250,34 @@ Skin::Skin(int p_stylebox_max,int p_constant_max,int p_bitmap_max,int p_font_max
 
 
 	stylebox_array = GUI_NEW_ARRAY(StyleBox,p_stylebox_max);
-	stylebox_name = GUI_NEW_ARRAY(const char*,p_stylebox_max);
-	for (int i=0;i<p_stylebox_max;i++) {
-		stylebox_name[i]=0;
-	}
+	stylebox_name = GUI_NEW_ARRAY(String,p_stylebox_max);
 	stylebox_count=p_stylebox_max;
 
 
 	constant_array = GUI_NEW_ARRAY(int,p_constant_max);
-	constant_name = GUI_NEW_ARRAY(const char*,p_constant_max);
+	constant_name = GUI_NEW_ARRAY(String,p_constant_max);
 	for (int i=0;i<p_constant_max;i++) {
-		constant_name[i]=0;
 		constant_array[i]=0;
 	}
 	constant_count=p_constant_max;
 
 	bitmap_array = GUI_NEW_ARRAY(BitmapID,p_bitmap_max);
-	bitmap_name = GUI_NEW_ARRAY(const char*,p_bitmap_max);
+	bitmap_name = GUI_NEW_ARRAY(String,p_bitmap_max);
 	for (int i=0;i<p_bitmap_max;i++) {
-		bitmap_name[i]=0;
 		bitmap_array[i]=-1;
 	}
 	bitmap_count = p_bitmap_max;
 
 	font_array = GUI_NEW_ARRAY(FontID,p_font_max);
-	font_name = GUI_NEW_ARRAY(const char*,p_font_max);
+	font_name = GUI_NEW_ARRAY(String,p_font_max);
 	for (int i=0;i<p_font_max;i++) {
-		font_name[i]=0;
 		font_array[i]=-1;
 	}
 	font_count = p_font_max;
 
 	color_array = GUI_NEW_ARRAY(Color,p_color_max);
-	color_name = GUI_NEW_ARRAY(const char*,p_color_max);
-	for (int i=0;i<p_color_max;i++)
-		color_name[i]=0;
+	color_name = GUI_NEW_ARRAY(String,p_color_max);
+	
 	color_count = p_color_max;
 
 	set_default();

@@ -258,34 +258,29 @@ class Color;
 class Skin{
 
 	StyleBox *stylebox_array;
-	const char **stylebox_name;
+	String*stylebox_name;
 	int stylebox_count;
 
 	int *constant_array;
-	const char **constant_name;
+	String*constant_name;
 	int constant_count;
 
 	BitmapID *bitmap_array;
-	const char **bitmap_name;
+	String*bitmap_name;
 	int bitmap_count;
 
 	FontID *font_array;
-	const char **font_name;
+	String*font_name;
 	int font_count;
 
 	Color *color_array;
-	const char **color_name;
+	String* color_name;
 	int color_count;
 protected:
-	void set_stylebox_name(int p_which,const char* p_name);
-	void set_constant_name(int p_which,const char* p_name);
-	void set_bitmap_name(int p_which,const char* p_name);
-	void set_font_name(int p_which,const char* p_name);
-	void set_color_name(int p_which,const char* p_name);
 
 	virtual void set_default_extra() {};
 public:
-
+	
 	const StyleBox& get_stylebox(unsigned int p_which);
 	int get_constant(unsigned int p_which);
 	BitmapID get_bitmap(unsigned int p_which);
@@ -310,6 +305,12 @@ public:
 	int get_font_count() { return font_count; }
 	int get_color_count() { return color_count; }
 
+	void set_stylebox_name(int p_which,String p_name);
+	void set_constant_name(int p_which,String p_name);
+	void set_bitmap_name(int p_which,String p_name);
+	void set_font_name(int p_which,String p_name);
+	void set_color_name(int p_which,String p_name);
+	
 	void set_default();
 
 	Skin(int p_stylebox_max=SB_MAX,int p_constant_max=C_MAX,int p_bitmap_max=BITMAP_MAX,int p_font_max=FONT_MAX,int p_color_max=COLOR_MAX);

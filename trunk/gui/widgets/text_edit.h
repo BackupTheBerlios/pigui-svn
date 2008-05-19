@@ -2,9 +2,9 @@
 #ifndef GUI_TEXT_AREA_H
 #define GUI_TEXT_AREA_H
 
-#include <deque>
+#include <vector>
 #include "widgets/range_owner.h"
-    
+
 namespace GUI {
 
 class TextEdit : public RangeOwner  { // tolua_export
@@ -19,7 +19,7 @@ class TextEdit : public RangeOwner  { // tolua_export
 
 	bool readonly;
 	Size size;
-	std::deque<String> text; //needs to be removed
+	std::vector<String> text; //needs to be removed
 	bool setting_row;
 
 	int get_visible_rows();
@@ -42,8 +42,8 @@ class TextEdit : public RangeOwner  { // tolua_export
 	bool key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask);
 	void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
 	void resize(const Size& p_new_size);
-	Size get_minimum_size_internal();	
-	
+	Size get_minimum_size_internal();
+
 	int get_row_height();
 public:
 
@@ -66,7 +66,7 @@ public:
 
 	void set_readonly(bool p_readonly);
 
-	
+
 	void append_at_cursor(String p_text);
 	void clear();
 

@@ -165,7 +165,9 @@ void MenuBox::clear_deferred_list() {
 
 void MenuBox::clear() {
 	
-	popup->clear();
+	if (popup){
+		popup->clear();
+	}
 	clear_deferred_list();
 
 }

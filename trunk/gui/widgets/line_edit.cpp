@@ -506,6 +506,10 @@ void LineEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 
 		int char_width=get_painter()->get_font_char_width( font( FONT_LINE_EDIT ) , text[char_ofs] );
 
+		if (pass){
+			char_width=get_painter()->get_font_char_width( font( FONT_LINE_EDIT ), '*' );
+		}
+
 		// end of widget, break!
 		if ( (ofs+char_width) > ofs_max )
 			break;

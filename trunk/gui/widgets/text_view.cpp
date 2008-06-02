@@ -24,7 +24,8 @@ void TextView::regenerate_word_cache() {
 
 		WordCache *current=word_cache;
 		word_cache=current->next;
-		GUI_DELETE( word_cache );
+		if (word_cache)
+			GUI_DELETE( word_cache );
 	}
 
 

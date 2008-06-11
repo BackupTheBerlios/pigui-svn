@@ -722,7 +722,6 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		if (p_button==1) {
 			/* process selection */
 			
-			printf("doubleclick? %i\n",p_doubleclick);
 			if (p_doubleclick) {
 			
 				p_item->double_click_signal.call(col);

@@ -164,12 +164,11 @@ void MenuBox::clear_deferred_list() {
 }
 
 void MenuBox::clear() {
-	
-	if (popup){
-		popup->clear();
-	}
-	clear_deferred_list();
 
+	if (popup)
+		popup->clear();
+
+	clear_deferred_list();
 }
 
 void MenuBox::set_in_window() {

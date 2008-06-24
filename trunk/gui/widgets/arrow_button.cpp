@@ -17,6 +17,30 @@
 
 namespace GUI {
 
+
+
+void ArrowButton::_check_auto_hide() {
+
+	if (!range)
+		return;
+
+	if (auto_hide) {
+		if ( ((range->get_max()-range->get_min())-range->get_page()) <=0 )
+			hide();
+		else {
+			show();
+		}
+	}
+
+}
+
+void ArrowButton::_range_changed() {
+
+	_check_auto_hide();
+	update();
+
+}
+
 void ArrowButton::press_slot(){
 
     switch( dir )
@@ -60,6 +84,8 @@ Size ArrowButton::get_minimum_size_internal() {
 void ArrowButton::set_range( RangeBase *p_range ){
 
     range = p_range;
+    if (range)
+        range->range_changed_signal.connect( this, &ArrowButton::_range_changed );
     pressed_signal.connect( this, &ArrowButton::press_slot );
 }
 void ArrowButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
@@ -128,6 +154,11 @@ void ArrowButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expos
 
 }
 
+void ArrowButton::set_auto_hide( bool p_enabled ) {
+
+    auto_hide=p_enabled;
+}
+
 Direction ArrowButton::get_dir () const {
 
 	return dir;
@@ -145,6 +176,7 @@ ArrowButton::ArrowButton(Direction p_dir,bool p_no_minsize)
 	range=NULL;
 	no_minsize=p_no_minsize;
 	dir=p_dir;
+	auto_hide=false;
 
 }
 

@@ -92,15 +92,21 @@ ScrollBox::ScrollBox( bool p_buttons ) : GridContainer(2)
 		vbar_button_up = vbox->add( GUI_NEW( ArrowButton( GUI::UP ) ), 0 );
 		vbar = vbox->add( GUI_NEW( VScrollBar), 1 );
 		vbar_button_down = vbox->add( GUI_NEW( ArrowButton( GUI::DOWN ) ), 0 );
-		
+
 		hbar_button_left = hbox->add( GUI_NEW( ArrowButton( GUI::LEFT ) ), 0 );
 		hbar = hbox->add( GUI_NEW( HScrollBar), 1 );
 		hbar_button_right = hbox->add( GUI_NEW( ArrowButton( GUI::RIGHT ) ), 0 );
-		
+
 		vbar_button_up->set_range(scroll->get_v_range());
 		vbar_button_down->set_range(scroll->get_v_range());
 		hbar_button_left->set_range(scroll->get_h_range());
 		hbar_button_right->set_range(scroll->get_h_range());
+
+		vbar_button_up->set_auto_hide(true);
+		vbar_button_down->set_auto_hide(true);
+		hbar_button_left->set_auto_hide(true);
+		hbar_button_right->set_auto_hide(true);
+
 	} else {
 
 		vbar = vbox->add( GUI_NEW( VScrollBar), 1 );

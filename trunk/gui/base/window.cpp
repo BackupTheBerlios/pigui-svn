@@ -11,7 +11,8 @@
 //
 #include "window.h"
 #include "container.h"
-
+#include "containers/center_container.h"
+#include "widgets/label.h"
 
 #include <stdio.h>
 namespace GUI {
@@ -945,6 +946,7 @@ void Window::initialize() {
 	childs=0;
 	root=NULL;
 	focus=this;
+	tooltip=NULL;
 
 	size_update_needed=true;
 	size_update_from=0;
@@ -1234,6 +1236,11 @@ Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 	root_data->painter=p_painter;
 	root_data->skin=p_skin;
 	root_data->timer=p_timer;
+	tooltip = GUI_NEW( Window( this ) );
+	tooltip->hide();
+	CenterContainer *cc=GUI_NEW( CenterContainer );
+	tooltip->set_root_frame( cc );
+	tooltip_label = cc->set( memnew( Label ) );
 
 }
 

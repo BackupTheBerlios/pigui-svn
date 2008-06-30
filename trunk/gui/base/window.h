@@ -21,6 +21,7 @@ namespace GUI {
 
 class Frame;
 class Container;
+class Label;
 
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
@@ -112,6 +113,8 @@ private:
 	Window *focus; //focused window , only the tree root can use this
 	Window *root; //pointer to tree root
 
+    Window *tooltip;
+    Label * tooltip_label;
 
 
 	void update_rect_merge(UpdateRectList **p_rect);

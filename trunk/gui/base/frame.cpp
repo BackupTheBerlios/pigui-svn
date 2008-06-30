@@ -1,12 +1,33 @@
 
 
 #include "frame.h"
-
+#include <stdio.h>
 
 #include "base/container.h"
 #include "base/window.h"
 #include "base/skin.h"
 namespace GUI {
+
+
+struct _StyleOverride {
+
+	int style;
+	int with;
+	_StyleOverride *next;
+	
+	int get(int p_style) {
+	
+		if (p_style==style)
+			return with;
+		else if (next)
+			return next->get( p_style);
+		else
+			return p_style;
+	}
+	
+	_StyleOverride(int p_style=-1,int p_with=-1,_StyleOverride *p_next=0) { style=p_style; with=p_with; next=p_next; }
+	~_StyleOverride() { if (next) GUI_DELETE( next ); }
+};
 
 struct FramePrivate {
 	
@@ -21,9 +42,52 @@ struct FramePrivate {
 	bool bg_on_updates;
 	Skin *skin;	
 	Size size_cache;
-	FramePrivate() { can_fill_vertical=true; can_fill_horizontal=true; parent=0; window=0; focus_mode=FOCUS_NONE; visible=true; skin=0;  clipping=false; bg_on_updates=true; }
+	
+	_StyleOverride *stylebox_overrides;
+	_StyleOverride *font_overrides;
+	_StyleOverride *bitmap_overrides;
+	_StyleOverride *constant_overrides;
+	_StyleOverride *color_overrides;
+	
+	FramePrivate() { can_fill_vertical=true; can_fill_horizontal=true; parent=0; window=0; focus_mode=FOCUS_NONE; visible=true; skin=0;  clipping=false; bg_on_updates=true; 
+		stylebox_overrides=0; font_overrides=0; constant_overrides=0; color_overrides=0; bitmap_overrides=0; }
+	
+	~FramePrivate() {
+	
+		if (stylebox_overrides) GUI_DELETE( stylebox_overrides );
+		if (font_overrides) GUI_DELETE( font_overrides );
+		if (constant_overrides) GUI_DELETE( constant_overrides );
+		if (color_overrides) GUI_DELETE( color_overrides );
+		if (bitmap_overrides) GUI_DELETE( bitmap_overrides );
+	}
 };
 
+void Frame::add_stylebox_override(int p_style, int p_with_style) {
+
+	_fp->stylebox_overrides = GUI_NEW( _StyleOverride( p_style, p_with_style, _fp->stylebox_overrides ) );
+}
+void Frame::add_font_override(int p_style, int p_with_style) {
+
+	_fp->font_overrides = GUI_NEW( _StyleOverride( p_style, p_with_style, _fp->font_overrides ) );
+
+}
+void Frame::add_bitmap_override(int p_style, int p_with_style) {
+
+	_fp->bitmap_overrides = GUI_NEW( _StyleOverride( p_style, p_with_style, _fp->bitmap_overrides ) );
+
+}
+void Frame::add_constant_override(int p_style, int p_with_style) {
+
+	_fp->constant_overrides = GUI_NEW( _StyleOverride( p_style, p_with_style, _fp->constant_overrides ) );
+
+
+}
+void Frame::add_color_override(int p_style, int p_with_style) {
+
+	_fp->color_overrides = GUI_NEW( _StyleOverride( p_style, p_with_style, _fp->color_overrides ) );
+
+
+}
 
 void Frame::window_hid() {}
 
@@ -35,6 +99,9 @@ const StyleBox& Frame::stylebox(int p_which) {
 	if (!_fp->skin)
 		return none;
 
+	if (_fp->stylebox_overrides)
+		p_which=_fp->stylebox_overrides->get(p_which);
+
 	return _fp->skin->get_stylebox( p_which );
 	
 }
@@ -42,6 +109,9 @@ FontID Frame::font(int p_which){
 	
 	if (!_fp->skin)
 		return 0;
+	
+	if (_fp->font_overrides)
+		p_which=_fp->font_overrides->get(p_which);
 	
 	return _fp->skin->get_font( p_which );
 	
@@ -51,6 +121,10 @@ BitmapID Frame::bitmap(int p_which){
 	if (!_fp->skin)
 		return 0;
 	
+	if (_fp->bitmap_overrides) {
+		p_which=_fp->bitmap_overrides->get(p_which);
+	}
+	
 	return _fp->skin->get_bitmap( p_which );
 	
 }
@@ -58,6 +132,9 @@ int Frame::constant(int p_which){
 	
 	if (!_fp->skin)
 		return 0;
+	
+	if (_fp->constant_overrides)
+		p_which=_fp->constant_overrides->get(p_which);
 	
 	return _fp->skin->get_constant( p_which );
 	
@@ -67,6 +144,9 @@ const Color& Frame::color(int p_which){
 	static Color none;
 	if (!_fp->skin)
 		return none;
+	
+	if (_fp->color_overrides)
+		p_which=_fp->color_overrides->get(p_which);
 	
 	return _fp->skin->get_color( p_which );
 	

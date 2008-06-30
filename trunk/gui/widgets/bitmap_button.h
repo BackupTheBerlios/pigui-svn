@@ -36,7 +36,7 @@ public:
 	void set_hover_bitmap(BitmapID p_bitmap);
 	void set_icon_bitmap(BitmapID p_icon);
 
-	BitmapButton(BitmapID p_normal=-1, BitmapID p_pressed=-1, BitmapID p_hover=1,BitmapID p_icon=-1);
+	BitmapButton(BitmapID p_normal=-1, BitmapID p_pressed=-1, BitmapID p_hover=-1,BitmapID p_icon=-1);
 	~BitmapButton();
 
 };

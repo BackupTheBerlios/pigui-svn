@@ -11,13 +11,17 @@
 //
 #include "bitmap_button.h"
 #include "base/painter.h"
+#include "base/skin.h"
 
 namespace GUI {
 
 
 Size BitmapButton::get_minimum_size_internal() {
 
-	return get_painter()->get_bitmap_size( normal );
+	if (normal>=0)
+		return get_painter()->get_bitmap_size( normal );
+	else
+		return get_painter()->get_bitmap_size( bitmap( BITMAP_BUTTON_NORMAL) );
 }
 
 void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
@@ -26,20 +30,33 @@ void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expo
 
 		case DRAW_NORMAL: {
 
-			if (normal)
+			if (normal>=0)
 				get_painter()->draw_bitmap( normal, Point() );
+			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
+			
 		} break;
+		case DRAW_HOVER: {
+		
+			
+			BitmapID bm = hover>=0 ? hover : normal;
+			if (bm>=0)
+				get_painter()->draw_bitmap( bm, Point() );
+			else if (bitmap( BITMAP_BUTTON_HOVER )>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_HOVER ), Point() );
+			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
+		} break;		
 		case DRAW_PRESSED: {
 
 			BitmapID bm = pressed>=0 ? pressed : normal;
-			if (bm)
+			if (bm>=0)
 				get_painter()->draw_bitmap( bm, Point() );
+			else if (bitmap( BITMAP_BUTTON_PRESSED )>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_PRESSED ), Point() );
+			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
 
-		} break;
-		case DRAW_HOVER: {
-			BitmapID bm = hover>=0 ? hover : normal;
-			if (bm)
-				get_painter()->draw_bitmap( bm, Point() );
 		} break;
 
 	}

@@ -461,14 +461,20 @@ void Skin::set_default() {
 	/* Menu Box */
 
 	//SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox( 1, Color( 190,190,190  ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
+	SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox() ); //of no use here by default
+	SET_STYLEBOX( SB_MENUBOX_PRESSED, StyleBox( 2, Color( 110,110,110 ), Color( 50,50,50 ), Color( 200,200,200 ) ) );
+
+	SET_STYLEBOX( SB_MENUBOX_HOVER, StyleBox( 0, Color( 190,190,190 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
+	SET_STYLEBOX( SB_MENUBOX_FOCUS, StyleBox( 1,  Color( 255,50,50 ), Color( 255,50,50 ) ) );
+/*	
 	SET_STYLEBOX( SB_MENUBOX_NORMAL, StyleBox() );
 	SET_STYLEBOX( SB_MENUBOX_PRESSED, StyleBox( 1, Color( 110,110,110 ), Color( 50,50,50 ), Color( 200,200,200 ) ) );
 	SET_STYLEBOX( SB_MENUBOX_HOVER, StyleBox( 1, Color( 220,220,220 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
 	SET_STYLEBOX( SB_MENUBOX_FOCUS, StyleBox( 1,  Color( 255,50,50 ), Color( 255,50,50 ) ) );
-
-	SET_CONSTANT( C_MENUBOX_SEPARATION, 2 );
-	SET_CONSTANT( C_MENUBOX_EXTRA_MARGIN, 2 );
-	SET_CONSTANT( C_MENUBOX_DISPLACEMENT, 1 );
+*/
+	SET_CONSTANT( C_MENUBOX_SEPARATION, 8 );
+	SET_CONSTANT( C_MENUBOX_EXTRA_MARGIN, 4 );
+	SET_CONSTANT( C_MENUBOX_DISPLACEMENT, 0 );
 
 	SET_FONT( FONT_MENUBOX, 0 );
 
@@ -636,6 +642,14 @@ void Skin::set_default() {
 	SET_FONT(FONT_TEXT_VIEW,0);
 
 	set_default_extra();
+	
+	/* Bitmap button */
+	
+	SET_BITMAP( BITMAP_BUTTON_NORMAL, -1 );
+	SET_BITMAP( BITMAP_BUTTON_PRESSED, -1 );
+	SET_BITMAP( BITMAP_BUTTON_HOVER, -1 );
+	SET_BITMAP( BITMAP_BUTTON_ICON, -1 );
+	
 }
 
 

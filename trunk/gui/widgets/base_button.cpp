@@ -31,7 +31,7 @@ bool BaseButton::is_pressed() {
 
 BaseButton::DrawMode BaseButton::get_draw_mode() {
 	
-	if (status.press_attempt==false && status.hovering) {
+	if (status.press_attempt==false && status.hovering && !status.pressed) {
 		
 		
 		return DRAW_HOVER;

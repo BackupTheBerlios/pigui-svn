@@ -36,6 +36,11 @@ protected:
 public:
 	
 	
+	void add_stylebox_override(int p_style, int p_with_style);
+	void add_font_override(int p_style, int p_with_style);
+	void add_bitmap_override(int p_style, int p_with_style);
+	void add_constant_override(int p_style, int p_with_style);
+	void add_color_override(int p_style, int p_with_style);
 	
 	virtual void adjust_minimum_size();
 	

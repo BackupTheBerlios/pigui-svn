@@ -831,7 +831,7 @@ struct __Painter__ColorMap {
 
     String chr;
     Color color;
-    Uint8 alpha;
+    unsigned char alpha;
     __Painter__ColorMap() { alpha=255; }
 };
 
@@ -975,7 +975,7 @@ BitmapID Painter::load_xpm(const char **p_xpm) {
 					for (int i=0;i<pixelchars;i++)
 						pixelstr[i]=line_ptr[x*pixelchars+i];
 
-					Color pixel; Uint8 alpha=255;
+					Color pixel; unsigned char alpha=255;
 					for (int i=0;i<colormap_size;i++) {
 
 						if (colormap[i].chr==pixelstr) {

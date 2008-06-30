@@ -133,8 +133,10 @@ Size TabBar::get_minimum_size_internal() {
 	min.width+=p->get_stylebox_min_size( stylebox(SB_TABBAR_LEFT) ).width;
 	min.width+=p->get_stylebox_min_size( stylebox(SB_TABBAR_RIGHT) ).width;
 	
+	
 	if (list) {
-		min.width+=(get_tab_count()-1)*p->get_stylebox_min_size( stylebox(SB_TABBAR_TAB) ).width;
+	
+		
 		min.height=MAX(p->get_stylebox_min_size( stylebox(SB_TABBAR_RAISED) ).height,p->get_stylebox_min_size( stylebox(SB_TABBAR_TAB) ).height);
 		
 		min.height+=p->get_font_height( font( FONT_TABBAR ) );
@@ -142,10 +144,18 @@ Size TabBar::get_minimum_size_internal() {
 		Tab *l=list;
 	
 		bool first=true;
+		int current=0;
+		
 		while (l) {
 			
 			if (l->visible) {
 				min.width+=p->get_font_string_width( font( FONT_TABBAR) ,l->text);
+				
+				if (current==selected)
+					min.width+=p->get_stylebox_min_size( stylebox(SB_TABBAR_RAISED) ).width;
+				else
+					min.width+=p->get_stylebox_min_size( stylebox(SB_TABBAR_TAB) ).width;
+					
 				if (!first) {
 					min.width+=constant( C_TABBAR_TAB_SEPARATOR );
 				}

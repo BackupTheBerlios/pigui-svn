@@ -66,6 +66,9 @@ public:
 	virtual Size get_bitmap_size(BitmapID p_bitmap);
 	
 	virtual bool is_bitmap_valid(BitmapID p_bitmap);
+	
+	
+	virtual void draw_line(const Point& p_from, const Point& p_to, const Color& p_color,int p_width=1,unsigned char p_alpha=255);	
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos,const Color&p_color=Color() );
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos, const Rect& p_src_rect,const Color&p_color=Color());
 	

@@ -92,6 +92,9 @@ enum BitmapMode {
 #define MAX(m_a,m_b) (((m_a)>(m_b))?(m_a):(m_b))
 #endif
 
+#ifndef SGN
+#define SGN(x) ((x)>0 ? 1 : ((x)==0 ? 0:(-1)))
+#endif
 
 
 } //end of namespace

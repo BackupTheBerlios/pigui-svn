@@ -55,8 +55,16 @@ Color SDL_GetPixel(SDL_Surface *surface, int x, int y)
 	return Color(0);
 }
 
-void SDL_PutPixel(SDL_Surface *surface, int x, int y, const Color& p_color,Uint8 p_alpha=255)
+
+static inline void SDL_PutPixel(SDL_Surface *surface, int x, int y, const Color& p_color,Uint8 p_alpha=255)
 {
+
+	if (x<0 || x>=surface->w)
+		return;
+	if (y<0 || y>=surface->h)
+		return;
+	
+
 	int bpp = surface->format->BytesPerPixel;
 	/* Here p is the address to the pixel we want to set */
 	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
@@ -89,6 +97,85 @@ void SDL_PutPixel(SDL_Surface *surface, int x, int y, const Color& p_color,Uint8
 			break;
 	}
 }
+
+void PainterSDL::draw_line(const Point& p_from, const Point& p_to, const Color& p_color,int p_width,unsigned char p_alpha) {
+
+	/* not the fastest thing on earth but.. will likely optimize someday */
+	
+	if (SDL_MUSTLOCK(surface)) {
+	
+		int res=SDL_LockSurface(surface);
+		
+		if (res==-1)
+			return;
+	}
+		
+	
+	for (int i=0;i<p_width;i++) {
+	
+		int x1=p_from.x+rect.pos.x;
+		int x2=p_to.x+rect.pos.x;
+		int y1=p_from.y+rect.pos.y;
+		int y2=p_to.y+rect.pos.y;
+		
+		if (i>0) {
+		
+			int add = (i>>1)*((i&1)?-1:1);
+			if (ABS(x1-x2) > ABS(y1-y2) ) {
+			
+				y1+=add;
+				y2+=add;
+			} else {
+			
+				x1+=add;
+				x2+=add;			
+			}
+		}
+		
+		int lg_delta, sh_delta, cycle, lg_step, sh_step;
+		
+		lg_delta = x2 - x1;
+		sh_delta = y2 - y1;
+		lg_step = SGN(lg_delta);
+		lg_delta = ABS(lg_delta);
+		sh_step = SGN(sh_delta);
+		sh_delta = ABS(sh_delta);
+		if (sh_delta < lg_delta) {
+			cycle = lg_delta >> 1;
+			while (x1 != x2) {
+				SDL_PutPixel(surface,x1,y1,p_color);
+				cycle += sh_delta;
+				if (cycle > lg_delta) {
+					cycle -= lg_delta;
+					y1 += sh_step;
+				}
+				x1 += lg_step;
+			}
+			SDL_PutPixel(surface,x1,y1,p_color);
+		}
+		cycle = sh_delta >> 1;
+		while (y1 != y2) {
+			SDL_PutPixel(surface,x1,y1,p_color);
+			cycle += lg_delta;
+			if (cycle > sh_delta) {
+				cycle -= sh_delta;
+				x1 += lg_step;
+			}
+			y1 += sh_step;
+		}
+		
+		SDL_PutPixel(surface,x1,y1,p_color);
+	}
+		
+	if (SDL_MUSTLOCK(surface)) {
+	
+		SDL_UnlockSurface(surface);
+		
+	}
+		
+
+}
+
 void PainterSDL::set_clip_rect(bool p_enabled, const Rect& p_rect) {
 	
 	if (!p_enabled || p_rect.has_no_area()) {

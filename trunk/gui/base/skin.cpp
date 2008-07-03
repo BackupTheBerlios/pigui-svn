@@ -307,6 +307,7 @@ void Skin::set_default() {
 
 	/* Base Container */
 
+	SET_CONSTANT( C_TOOLTIP_DISPLACEMENT, 10 );
 	SET_STYLEBOX( SB_ROOT_CONTAINER, StyleBox( 0, Color(200,200,200),Color(250,250,250),Color(90,90,90) ) );
 	SET_STYLEBOX( SB_CONTAINER, StyleBox() );
 

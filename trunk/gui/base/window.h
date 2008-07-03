@@ -118,6 +118,7 @@ private:
 	int tooltip_cbk_count;
 	void tooltip_timer_cbk();
 	TimerID tooltip_timer;
+	Frame *tooltipped_frame;
 	
 	Point last_mouse_pos;
 

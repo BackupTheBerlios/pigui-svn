@@ -573,9 +573,10 @@ void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_m
 
 	if (!parent) {
 		
-		tooltip_timer=0;
+		tooltip_cbk_count=0;
 		if (tooltip->visible)
 			tooltip->hide();
+		last_mouse_pos=p_pos;
 	}
 
 	if (!parent && (root->focus!=this)) {
@@ -1241,6 +1242,7 @@ Frame* Window::find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos) 
 void Window::tooltip_timer_cbk() {
 	
 	tooltip_cbk_count++;
+	printf("cbk timer at %i\n",tooltip_cbk_count);
 	if (tooltip_cbk_count==2) {
 		
 		Point local_pos;
@@ -1254,8 +1256,13 @@ void Window::tooltip_timer_cbk() {
 			return;
 		
 		tooltip_label->set_text(tooltip_text);
-		tooltip->set_pos(last_mouse_pos);
+		tooltip->set_size(Size(1,1));
+		tooltip->set_pos(last_mouse_pos+Point(root_data->skin->get_constant( C_TOOLTIP_DISPLACEMENT),root_data->skin->get_constant( C_TOOLTIP_DISPLACEMENT)));
+		tooltip->raise();
 		tooltip->show();
+		
+		tooltipped_frame=f;
+		
 	}
 }
 

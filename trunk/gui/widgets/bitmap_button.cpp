@@ -20,8 +20,11 @@ Size BitmapButton::get_minimum_size_internal() {
 
 	if (normal>=0)
 		return get_painter()->get_bitmap_size( normal );
-	else
+	else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
 		return get_painter()->get_bitmap_size( bitmap( BITMAP_BUTTON_NORMAL) );
+	
+	return Size();
+	
 }
 
 void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
@@ -92,7 +95,7 @@ BitmapButton::BitmapButton(BitmapID p_normal, BitmapID p_pressed, BitmapID p_hov
 	normal=p_normal;
 	pressed=p_pressed;
 	hover=p_hover;
-	icon=p_icon;
+	icon=p_icon;  
 	set_fill_vertical( false );
 }
 

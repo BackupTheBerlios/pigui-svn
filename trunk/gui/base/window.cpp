@@ -293,6 +293,7 @@ void Window::check_size_updates() {
 
 	if (size_update_needed && root_frame) {
 
+	
 		Frame *from;
 
 		if (size_update_from) {
@@ -570,6 +571,12 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 }
 void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_mask) {
 
+	if (!parent) {
+		
+		tooltip_timer=0;
+		if (tooltip->visible)
+			tooltip->hide();
+	}
 
 	if (!parent && (root->focus!=this)) {
 		//deliver to whoever has the focus, if root does not have it
@@ -952,6 +959,8 @@ void Window::initialize() {
 	size_update_from=0;
 	no_local_updates=false;
 	no_stretch_root_frame=false;
+	
+	tooltip_cbk_count=0;
 
 	root_data=0;
 }
@@ -1166,6 +1175,9 @@ void Window::remove_from_modal_stack() {
 
 void Window::hide() {
 
+//	if (!visible)
+//		return;
+	
 	remove_from_modal_stack();
 	visible=false;
 	if (!parent)
@@ -1200,6 +1212,53 @@ bool Window::is_visible() {
 
 	return visible;
 }
+
+
+Frame* Window::find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos) {
+
+	if (p_window==tooltip)
+		return NULL;
+	
+	Frame *frame=NULL;
+	
+	if (p_window->next)
+		frame=find_frame_at_pos(p_window->next,p_pos-p_window->next->pos,local_pos);
+	if (frame)
+		return frame;
+	
+	if (p_window->childs)
+		frame=find_frame_at_pos(p_window->childs,p_pos-p_window->childs->pos,local_pos);
+	if (frame)
+		return frame;
+		
+	if (root_frame)
+		frame=root_frame->get_child_at_pos(p_pos,size,local_pos);
+	
+	return frame;
+	
+}
+
+void Window::tooltip_timer_cbk() {
+	
+	tooltip_cbk_count++;
+	if (tooltip_cbk_count==2) {
+		
+		Point local_pos;
+		Frame *f=find_frame_at_pos(this,last_mouse_pos,&local_pos);
+		
+		if (!f)
+			return;
+		
+		String tooltip_text=f->get_tooltip(local_pos);
+		if (tooltip_text=="")
+			return;
+		
+		tooltip_label->set_text(tooltip_text);
+		tooltip->set_pos(last_mouse_pos);
+		tooltip->show();
+	}
+}
+
 
 Window::Window(Window *p_parent,Mode p_mode, SizeMode p_size_mode) {
 
@@ -1241,6 +1300,7 @@ Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 	CenterContainer *cc=GUI_NEW( CenterContainer );
 	tooltip->set_root_frame( cc );
 	tooltip_label = cc->set( GUI_NEW(Label ) );
+	tooltip_timer=p_timer->create_timer( Method( this,&Window::tooltip_timer_cbk),250 );
 
 }
 

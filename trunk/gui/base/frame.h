@@ -42,6 +42,9 @@ public:
 	void add_constant_override(int p_style, int p_with_style);
 	void add_color_override(int p_style, int p_with_style);
 	
+	void set_tooltip(String p_text);
+	virtual String get_tooltip(const Point& p_point=Point());
+	
 	virtual void adjust_minimum_size();
 	
 	virtual	void update();

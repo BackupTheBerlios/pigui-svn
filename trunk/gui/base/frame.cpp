@@ -42,6 +42,7 @@ struct FramePrivate {
 	bool bg_on_updates;
 	Skin *skin;	
 	Size size_cache;
+	String tooltip;
 	
 	_StyleOverride *stylebox_overrides;
 	_StyleOverride *font_overrides;
@@ -91,6 +92,16 @@ void Frame::add_color_override(int p_style, int p_with_style) {
 
 void Frame::window_hid() {}
 
+
+void Frame::set_tooltip(String p_text) {
+	
+	_fp->tooltip=p_text;
+}
+
+String Frame::get_tooltip(const Point& p_point) {
+	
+	return _fp->tooltip;	
+}
 
 
 const StyleBox& Frame::stylebox(int p_which) {

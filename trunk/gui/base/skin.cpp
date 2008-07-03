@@ -641,8 +641,6 @@ void Skin::set_default() {
 	SET_COLOR(COLOR_TEXT_VIEW_FONT,Color(0));
 	SET_FONT(FONT_TEXT_VIEW,0);
 
-	set_default_extra();
-	
 	/* Bitmap button */
 	
 	SET_BITMAP( BITMAP_BUTTON_NORMAL, -1 );
@@ -650,6 +648,8 @@ void Skin::set_default() {
 	SET_BITMAP( BITMAP_BUTTON_HOVER, -1 );
 	SET_BITMAP( BITMAP_BUTTON_ICON, -1 );
 	
+	set_default_extra();
+		
 }
 
 

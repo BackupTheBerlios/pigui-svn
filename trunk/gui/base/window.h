@@ -113,8 +113,15 @@ private:
 	Window *focus; //focused window , only the tree root can use this
 	Window *root; //pointer to tree root
 
-    Window *tooltip;
-    Label * tooltip_label;
+	Window *tooltip;
+	Label * tooltip_label;
+	int tooltip_cbk_count;
+	void tooltip_timer_cbk();
+	TimerID tooltip_timer;
+	
+	Point last_mouse_pos;
+
+	Frame* find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos);
 
 
 	void update_rect_merge(UpdateRectList **p_rect);

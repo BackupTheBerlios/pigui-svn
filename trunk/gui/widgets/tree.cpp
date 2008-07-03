@@ -174,6 +174,7 @@ void TreeItem::set_collapsed(bool p_collapsed) {
 	collapsed_signal.call();
 
 	tree->check_minimum_size();
+	tree->update();
 }
 
 bool TreeItem::is_selected(int p_column) {
@@ -704,15 +705,17 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 
 	int item_h=compute_item_height( p_item )+constant( C_TREE_VSPACING );
 
-    bool skip=(p_item==root && hide_root);
+	bool skip=(p_item==root && hide_root);
+	
 
 	if (!skip && p_pos.y<item_h) {
 		// check event!
 
 
-		int x=p_pos.x;
+		
 
-		if (x >= x_ofs && x < (x_ofs+constant(C_TREE_GUIDE_WIDTH)) ) {
+
+		if (p_pos.x >=0 && p_pos.x < (constant(C_TREE_GUIDE_WIDTH)) ) {
 
 
 			if (p_item->childs)
@@ -720,6 +723,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 
 			return -1; //handled!
 		}
+		
+		int x=p_pos.x+x_ofs;
 		/* find clicked column */
 		int col=-1;
 		int col_ofs=0;
@@ -781,6 +786,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		bool bring_up_editor=c.selected && already_selected;
 		String editor_text=c.string;
 
+		int cell_x=p_pos.x-constant(C_TREE_GUIDE_WIDTH);
+
 		switch (c.mode) {
 
 			case CELL_MODE_STRING: {
@@ -789,7 +796,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 			case CELL_MODE_CHECK: {
 
 				bring_up_editor=false; //checkboxes are not edited with editor
-				if (x <= constant(C_TREE_CHECK_SIZE) ) {
+				
+				if (cell_x>=0 && cell_x<= constant(C_TREE_CHECK_SIZE) ) {
 
 					c.data.checked = !c.data.checked;
 					p_item->edited_signal.call(col);
@@ -883,10 +891,13 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 	} else {
 
 		Point new_pos=p_pos;
-		if (!skip)
-            x_ofs+=constant( C_TREE_GUIDE_WIDTH );
+		if (!skip) {
+			x_ofs+=constant( C_TREE_GUIDE_WIDTH );
+			new_pos.x-=constant( C_TREE_GUIDE_WIDTH );
+		}
 		y_ofs+=item_h;
 		new_pos.y-=item_h;
+		
 
 		if (!p_item->collapsed) { /* if not collapsed, check the childs */
 

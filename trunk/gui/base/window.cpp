@@ -1240,7 +1240,7 @@ Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 	tooltip->hide();
 	CenterContainer *cc=GUI_NEW( CenterContainer );
 	tooltip->set_root_frame( cc );
-	tooltip_label = cc->set( memnew( Label ) );
+	tooltip_label = cc->set( GUI_NEW(Label ) );
 
 }
 

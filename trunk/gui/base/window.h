@@ -74,8 +74,15 @@ private:
 		Timer *timer;
 		UpdateRectList *update_rect_list;
 		bool update_rect_list_locked;
-
-		RootWindowData() { skin=0; modal_stack=0; painter=0; timer=0; update_rect_list=0; update_rect_list_locked=false; }
+		
+		Window *tooltip;
+		Label * tooltip_label;
+		TimerID tooltip_timer;
+		Frame *tooltipped_frame;	
+		int tooltip_cbk_count;
+		Point last_mouse_pos;
+		
+		RootWindowData() { skin=0; modal_stack=0; painter=0; timer=0; update_rect_list=0; update_rect_list_locked=false; tooltipped_frame=0; tooltip_cbk_count=0; }
 
 	};
 
@@ -113,14 +120,7 @@ private:
 	Window *focus; //focused window , only the tree root can use this
 	Window *root; //pointer to tree root
 
-	Window *tooltip;
-	Label * tooltip_label;
-	int tooltip_cbk_count;
 	void tooltip_timer_cbk();
-	TimerID tooltip_timer;
-	Frame *tooltipped_frame;
-	
-	Point last_mouse_pos;
 
 	Frame* find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos);
 

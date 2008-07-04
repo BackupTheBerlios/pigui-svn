@@ -305,12 +305,16 @@ Skin::~Skin(){
 void Skin::set_default() {
 
 
+	SET_FONT( FONT_TOOLTIP, 0 );
+	SET_COLOR( COLOR_TOOLTIP_FONT, Color(0) );
+	
 	/* Base Container */
 
 	SET_CONSTANT( C_TOOLTIP_DISPLACEMENT, 10 );
 	SET_STYLEBOX( SB_ROOT_CONTAINER, StyleBox( 0, Color(200,200,200),Color(250,250,250),Color(90,90,90) ) );
 	SET_STYLEBOX( SB_CONTAINER, StyleBox() );
 
+	SET_STYLEBOX( SB_TOOLTIP_BG, StyleBox( 1, Color(230,230,200),Color(80,80,0),Color(80,80,0) ) );
 	/* Box Container */
 
 	SET_CONSTANT(C_BOX_CONTAINER_DEFAULT_SEPARATION,2);

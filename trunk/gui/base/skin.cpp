@@ -88,9 +88,9 @@ int Skin::find_font(String p_by_name) {
 }
 int Skin::find_color(String p_by_name) {
 
-	for (int i=0;i<constant_count;i++) {
+	for (int i=0;i<color_count;i++) {
 
-		if (constant_name[i].nocasecmp_to(p_by_name)==0)
+		if (color_name[i].nocasecmp_to(p_by_name)==0)
 			return i;
 
 	}

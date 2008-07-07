@@ -1302,8 +1302,6 @@ Window::Window(Window *p_parent,Mode p_mode, SizeMode p_size_mode) {
 
 Window::Window(Painter *p_painter,Timer *p_timer,Skin *p_skin) {
 
-
-
 	initialize();
 
 	root=this;

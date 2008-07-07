@@ -28,7 +28,7 @@ const StyleBox& MenuButton::stylebox(int p_which) {
 		case SB_BUTTON_UNCHECKED: return Frame::stylebox( SB_MENUBUTTON_UNCHECKED ); break;
 	}		
 		
-	return Frame::stylebox(0); //should never reach here
+	return Frame::stylebox(p_which); //should never reach here
 }
 FontID MenuButton::font(int p_which) {
 	
@@ -44,7 +44,7 @@ const Color& MenuButton::color(int p_which) {
 		
 	}
 	
-	return Frame::color(0);
+	return Frame::color(p_which);
 }
 
 BitmapID MenuButton::bitmap(int p_which) {
@@ -55,7 +55,7 @@ BitmapID MenuButton::bitmap(int p_which) {
 		case BITMAP_BUTTON_UNCHECKED: return Frame::bitmap( BITMAP_MENUBUTTON_UNCHECKED ); break;
 	}
 	
-	return 0; //should never reach here
+	return Frame::bitmap( p_which ); //should never reach here
 }
 int MenuButton::constant(int p_which) {
 	
@@ -68,7 +68,7 @@ int MenuButton::constant(int p_which) {
 		case C_BUTTON_LABEL_ALIGN_CENTER: return 0; break;		
 	}
 	
-	return 0; //should never reach here
+	return Frame::constant(p_which); //should never reach here
 }
 
 void MenuButton::set_id(int p_id) {

@@ -35,11 +35,13 @@ const StyleBox& CheckButton::stylebox(int p_which) {
 		case SB_BUTTON_UNCHECKED: return Frame::stylebox( SB_CHECKBUTTON_UNCHECKED ); break;
 	}		
 		
-	return Frame::stylebox(0); //should never reach here
+	return Frame::stylebox(p_which); //should never reach here
 }
 FontID CheckButton::font(int p_which) {
-	
-	return Frame::font( FONT_CHECKBUTTON );
+
+        if (p_which==FONT_BUTTON)
+	    return Frame::font( FONT_CHECKBUTTON );
+	else return Frame::font( p_which );
 }
 BitmapID CheckButton::bitmap(int p_which) {
 	
@@ -49,7 +51,7 @@ BitmapID CheckButton::bitmap(int p_which) {
 		case BITMAP_BUTTON_UNCHECKED: return Frame::bitmap( BITMAP_CHECKBUTTON_UNCHECKED ); break;
 	}
 	
-	return 0; //should never reach here
+	return Frame::bitmap(p_which); //should never reach here
 }
 
 const Color& CheckButton::color(int p_which) {
@@ -61,7 +63,7 @@ const Color& CheckButton::color(int p_which) {
 		
 	}
 	
-	return Frame::color(0);
+	return Frame::color(p_which);
 }
 
 int CheckButton::constant(int p_which) {
@@ -75,7 +77,7 @@ int CheckButton::constant(int p_which) {
 		case C_BUTTON_LABEL_ALIGN_CENTER: return 0; break;
 	}
 	
-	return 0; //should never reach here
+	return Frame::constant(p_which); //should never reach here
 }
 
 CheckButton::CheckButton(BitmapID p_icon) : Button(p_icon) {

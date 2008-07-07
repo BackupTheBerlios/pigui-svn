@@ -32,7 +32,7 @@ const StyleBox& MenuBox::stylebox(int p_which) {
 		case SB_BUTTON_UNCHECKED: return Frame::stylebox( -1 ); break;
 	}
 		
-	return Frame::stylebox(0); //should never reach here
+	return Frame::stylebox(p_which); //should never reach here
 }
 FontID MenuBox::font(int p_which) {
 	
@@ -40,7 +40,7 @@ FontID MenuBox::font(int p_which) {
 }
 BitmapID MenuBox::bitmap(int p_which) {
 
-	return -1;
+    return Frame::bitmap(p_which);
 }
 
 const Color& MenuBox::color(int p_which) {
@@ -51,9 +51,8 @@ const Color& MenuBox::color(int p_which) {
 		
 	}
 	
-	return Frame::color(0);
+	return Frame::color(p_which);
 }
-
 int MenuBox::constant(int p_which) {
 	
 	switch( p_which ) {
@@ -65,7 +64,7 @@ int MenuBox::constant(int p_which) {
 		case C_BUTTON_LABEL_ALIGN_CENTER: return 0; break;
 	}
 	
-	return 0; //should never reach here
+	return Frame::constant(p_which); //should never reach here
 }
 
 void MenuBox::resize(const Size& p_new_size) {

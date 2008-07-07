@@ -52,6 +52,7 @@ public:
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos, const Rect& p_src_rect,const Color&p_color=Color(255,255,255) )=0;
 	
 	virtual void draw_line(const Point& p_from, const Point& p_to, const Color& p_color,int p_width=1,unsigned char p_alpha=255)=0;
+	virtual void draw_circle( const Point& p_from, const Point& p_to, const Color& p_color );
 	
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos,Direction p_dir ,const Color&p_color=Color(255,255,255) )=0;
 	virtual void draw_bitmap(BitmapID p_bitmap,const Point &p_pos, const Rect& p_src_rect,Direction p_dir,const Color&p_color=Color(255,255,255) )=0;

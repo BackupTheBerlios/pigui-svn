@@ -5,6 +5,7 @@
 
 #include "defs.h"
 #include <stdio.h>
+#include <math.h>
 namespace GUI {
 
 struct PainterPrivate {
@@ -237,6 +238,8 @@ int Painter::get_font_string_width(FontID p_font,const String& p_string) {
 	return width;
 }
 
+
+
 void Painter::draw_char(FontID p_font,const Point & p_pos,String::CharType &p_char,const Color&p_color) {
 
 	if (!is_font_valid( p_font )) {
@@ -271,7 +274,6 @@ void Painter::draw_text(FontID p_font,const Point & p_pos,const String &p_string
 
 		if (!c)
 			continue;
-
 		if (p_clip_w>=0 && (ofs+c->rect.size.width)>(p_clip_w))
 			break; //width exceeded
 
@@ -411,6 +413,47 @@ void Painter::font_add_char(FontID p_font,unsigned int p_char,BitmapID p_bitmap,
 	p->fonts[p_font].add_char(p_char,p_bitmap,p_rect,p_valign);
 //	printf("adding ucode: %i\n",p_char);
 }
+
+
+void Painter::draw_circle( const Point& p_from, const Point& p_to, const Color& p_color ) {
+
+	int from_y=p_from.y,to_y=p_to.y;
+	int from_x=p_from.x,to_x=p_to.x;
+	int aux;
+	
+	if (from_x>to_x) {
+		aux=from_x;
+		from_x=to_x;
+		to_x=aux;
+	}
+		
+	if (from_y>to_y) {
+		aux=from_y;
+		from_y=to_y;
+		to_y=aux;
+	}
+		
+	float y_range=(to_y-from_y);
+		
+	for (int i=from_x;i<=to_x;i++) {
+	
+		float x=(float)(i-from_x) / (float)(to_x-from_x);
+		x=x*2-1.0;
+		if (x<-1.0)
+			x=-1.0;
+		if (x>1.0)
+			x=1.0;
+			
+		float y=sqrtf( 1.0 - x*x );
+		
+		float beg_y=from_y+(1.0-y)*y_range/2.0;
+		float size_y=y*y_range;
+		
+		draw_fill_rect( Point( i, (int)beg_y), Size( 1, (int)size_y), p_color );				
+	}
+	
+}
+
 
 void Painter::draw_fill_rect(const Point & p_from,const Size & p_size,const Color& p_color,const Rect& p_clip) {
 

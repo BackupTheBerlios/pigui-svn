@@ -30,7 +30,7 @@ bool Button::has_icon() {
 }
 BitmapID Button::get_icon() {
 
-	return icon;
+	return (icon>=0)?icon:( (bitmap( BITMAP_BUTTON_DEFAULT_ICON )>=0) ? bitmap( BITMAP_BUTTON_DEFAULT_ICON ): -1 );
 }
 
 void Button::set_text(String p_text) {
@@ -60,8 +60,8 @@ Size Button::get_minimum_size_internal() {
 
 	Size min;
 
-	if (icon >=0 && p->is_bitmap_valid( icon )) {
-		Size icon_size=p->get_bitmap_size( icon );
+	if (get_icon() >=0 && p->is_bitmap_valid( get_icon() )) {
+		Size icon_size=p->get_bitmap_size( get_icon() );
 
 		min.width+=icon_size.width;
 		if (min.height < icon_size.height )
@@ -202,14 +202,14 @@ void Button::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 		area_rect.size.x-=cbsize.x+constant( C_BUTTON_SEPARATION );
 	}
 
-	if (icon >=0 && p->is_bitmap_valid( icon )) {
+	if (get_icon() >=0 && p->is_bitmap_valid( get_icon() )) {
 
-		Size icon_size=p->get_bitmap_size( icon );
+		Size icon_size=p->get_bitmap_size( get_icon() );
 
 		Point icon_pos=area_rect.pos;
 		icon_pos.y+=(area_rect.size.height-icon_size.height)/2;
 
-		p->draw_bitmap( icon, icon_pos );
+		p->draw_bitmap( get_icon(), icon_pos );
 
 		area_rect.pos.x+=icon_size.width;
 		area_rect.size.x-=icon_size.width;

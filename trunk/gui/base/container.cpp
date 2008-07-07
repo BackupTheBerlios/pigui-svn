@@ -434,6 +434,9 @@ void Container::set_minimum_size(const Size & p_size ) {
 }
 Size Container::get_minimum_size() {
 	
+	if (!get_window())
+		return _cp->minimum_size;
+		
 	
 	Size minsize=get_minimum_size_internal();
 	

@@ -52,7 +52,7 @@ public:
 	virtual double get_unit_value(); ///< return value in range 0 - 1 , can be overriden for "curving" 
 	virtual void set_unit_value(double p_v); ///< return set in range 0 - 1 , can be overriden for "curving" 
 	
-	String get_as_text();
+	virtual String get_as_text();
 	void step_increment();
 	void step_decrement();
 	

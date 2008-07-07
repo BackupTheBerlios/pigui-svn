@@ -25,6 +25,9 @@ void Widget::set_minimum_size(const Size & p_size ) {
 }
 Size Widget::get_minimum_size() {
 	
+	if (!get_window())
+		return _wp->minimum_size;
+		
 	Size internal=get_minimum_size_internal();
 	if (internal.width < _wp->minimum_size.width )
 		internal.width=_wp->minimum_size.width;

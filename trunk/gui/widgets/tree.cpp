@@ -711,10 +711,6 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 	if (!skip && p_pos.y<item_h) {
 		// check event!
 
-
-		
-
-
 		if (p_pos.x >=0 && p_pos.x < (constant(C_TREE_GUIDE_WIDTH)) ) {
 
 
@@ -741,8 +737,12 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 			break;
 		}
 
+		
+
 		if (col==-1)
 			return -1;
+		else if (col==0)
+			x=p_pos.x-constant(C_TREE_GUIDE_WIDTH);;
 
 		TreeItem::Cell &c = p_item->cells[col];
 
@@ -786,8 +786,6 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		bool bring_up_editor=c.selected && already_selected;
 		String editor_text=c.string;
 
-		int cell_x=p_pos.x-constant(C_TREE_GUIDE_WIDTH);
-
 		switch (c.mode) {
 
 			case CELL_MODE_STRING: {
@@ -797,7 +795,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 
 				bring_up_editor=false; //checkboxes are not edited with editor
 				
-				if (cell_x>=0 && cell_x<= constant(C_TREE_CHECK_SIZE) ) {
+				if (x>=0 && x<= constant(C_TREE_CHECK_SIZE) ) {
 
 					c.data.checked = !c.data.checked;
 					p_item->edited_signal.call(col);

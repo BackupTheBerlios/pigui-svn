@@ -223,6 +223,8 @@ public:
 
 	void set_hide_root(bool p_eanbled);
 
+	bool get_selected( TreeItem** p_item, int *p_col=0);
+
 	void set_select_mode(SelectMode p_mode);
 	Tree(int p_columns=1);
 	~Tree();

@@ -13,6 +13,7 @@
 #include "base/painter.h"
 #include "base/skin.h"
 #include "containers/box_container.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -1264,6 +1265,57 @@ void Tree::set_column_expand(int p_column,bool p_expand) {
 
 }
 
+bool Tree::get_selected( TreeItem** p_item, int *p_col) {
+	
+	if (!p_item)
+		return false;
+	if (!p_col)
+		return false;
+		
+	if (!root)
+		return false;
+				
+	
+	while(true) {
+	
+		
+		if (!*p_item) {
+			*p_item=root;
+			*p_col=0;
+		} else {
+			(*p_col)++;
+			
+			if (*p_col>=columns || select_mode==SELECT_ROW) {
+				
+				if ((*p_item)->childs) {
+					
+					*p_item=(*p_item)->childs;
+					
+				} else if ((*p_item)->next) {
+				
+					*p_item=(*p_item)->next;			
+				} else {
+				
+					while(!(*p_item)->next) {
+				
+						*p_item=(*p_item)->parent;
+						if (*p_item==NULL)
+							return false;
+					}
+					
+					*p_item=(*p_item)->next;
+				}
+				
+				*p_col=0;
+			}
+		}
+	
+		if ((*p_item)->cells[*p_col].selected)
+			return true;
+	}
+	
+	return false;
+}
 
 Tree::Tree(int p_columns) {
 

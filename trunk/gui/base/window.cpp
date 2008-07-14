@@ -217,6 +217,8 @@ void Window::redraw_all(Rect p_custom_area) {
 void Window::redraw_contents_over_area(const Rect& p_rect) {
 
 
+	if (!root_frame)
+		return;
 	/* Redrawing all should work fine */
 
 	get_painter()->reset_clip_rect_stack();

@@ -569,11 +569,11 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 						if (!r)
 							break;
 
-																int updown_w = item_rect.size.y/2;
+						int updown_w = item_rect.size.y/2;
 
-						get_painter()->draw_text( font(FONT_TREE), text_pos, r->get_as_text(), col,item_rect.size.x-updown_w );
+						get_painter()->draw_text( font(FONT_TREE), text_pos, r->get_as_text(), col,item_rect.size.x- (updown_w * 2) );
 
-																	if (!p_item->cells[i].editable)
+						if (!p_item->cells[i].editable)
 							break;
 
 						Point updown_pos=item_rect.pos;
@@ -582,6 +582,11 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 						get_painter()->draw_arrow( updown_pos,Size(updown_w,updown_w), UP, color(COLOR_TREE_GUIDES));
 						get_painter()->draw_arrow( updown_pos+Point(0,updown_w),Size(updown_w,updown_w), DOWN, color(COLOR_TREE_GUIDES));
 
+						// slider arrow
+						Point arrow_pos = item_rect.pos;
+						arrow_pos.x += item_rect.size.x - updown_w * 2;
+						int arrow_w = item_rect.size.y/2;
+						get_painter()->draw_arrow( arrow_pos, Size(arrow_w, item_rect.size.y), DOWN, color(COLOR_TREE_GUIDES));
 
 					}
 
@@ -829,32 +834,49 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 					popup_edited_item_col=col;
 					//}
 					bring_up_editor=false;
-				} else if (x >= (get_column_width(col)-item_h/2)) {
-
-					/* touching the combo */
-					bool up=p_pos.y < (item_h /2);
-
-					if (p_button==BUTTON_LEFT) {
-						c.data.range->set( c.data.range->get() + (up?1.0:-1.0) * c.data.range->get_step() );
-					} else if (p_button==BUTTON_RIGHT) {
-
-						c.data.range->set( up?c.data.range->get_max():c.data.range->get_min()  );
-					} else if (p_button==BUTTON_WHEEL_UP) {
-
-						c.data.range->set( c.data.range->get() +  c.data.range->get_step() );
-
-					} else if (p_button==BUTTON_WHEEL_DOWN) {
-
-						c.data.range->set( c.data.range->get() -  c.data.range->get_step() );
-
-					}
-
-					p_item->edited_signal.call(col);
-
-					bring_up_editor=false;
 				} else {
+					
+					if (x >= (get_column_width(col)-item_h/2)) {
+					
+						/* touching the combo */
+						bool up=p_pos.y < (item_h /2);
+	
+						if (p_button==BUTTON_LEFT) {
+							c.data.range->set( c.data.range->get() + (up?1.0:-1.0) * c.data.range->get_step() );
+						} else if (p_button==BUTTON_RIGHT) {
+	
+							c.data.range->set( up?c.data.range->get_max():c.data.range->get_min()  );
+						} else if (p_button==BUTTON_WHEEL_UP) {
+	
+							c.data.range->set( c.data.range->get() +  c.data.range->get_step() );
+	
+						} else if (p_button==BUTTON_WHEEL_DOWN) {
+	
+							c.data.range->set( c.data.range->get() -  c.data.range->get_step() );
+	
+						}
+	
+						p_item->edited_signal.call(col);
+	
+						bring_up_editor=false;
 
-					editor_text=c.data.range->get_as_text();
+					} else if (x >= (get_column_width(col)- ( item_h/2 * 2))) {
+						// scroll bar here
+						
+						printf("scroll bar popup!\n");
+						scroll_bar->set_range(c.data.range);
+						scroll_bar->show();
+						line_edit->hide();
+						line_edit_window->set_pos(get_global_pos() + Point(col_ofs,y_ofs + item_h) );
+						line_edit_window->set_size( Size(get_column_width(col),item_h));
+						line_edit_window->show();
+						
+						bring_up_editor=false;
+
+					} else {
+
+						editor_text=c.data.range->get_as_text();
+					};	
 
 				}
 
@@ -884,6 +906,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		line_edit_window->set_size( Size(get_column_width(col),item_h));
 		line_edit->clear();
 		line_edit->set_text( editor_text );
+		scroll_bar->hide();
+		line_edit->show();
 		line_edit_window->show();
 
 		return -1; //select
@@ -1239,6 +1263,7 @@ void Tree::set_in_window() {
 	VBoxContainer *vbc = GUI_NEW( VBoxContainer );
 	line_edit_window->set_root_frame( vbc );
 	line_edit = vbc->add( GUI_NEW( LineEdit ) );
+	scroll_bar = vbc->add( GUI_NEW( HScrollBar ) );
 	line_edit_window->hide();
 	line_edit->text_enter_signal.connect(this,&Tree::line_edit_enter_slot);
 	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );

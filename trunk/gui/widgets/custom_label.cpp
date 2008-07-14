@@ -39,7 +39,6 @@ FontID CustomLabel::font(int p_which) {
 
 			return font_id;
 		 } else if (skin_font!=-1) {
-
             return get_window()->get_skin()->get_font( skin_font );
 		 }
 

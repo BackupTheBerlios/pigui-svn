@@ -865,8 +865,8 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 						
 						printf("scroll bar popup!\n");
 						scroll_bar->set_range(c.data.range);
-						scroll_bar->show();
 						line_edit->hide();
+						scroll_bar->show();
 						line_edit_window->set_pos(get_global_pos() + Point(col_ofs,y_ofs + item_h) );
 						line_edit_window->set_size( Size(get_column_width(col),item_h));
 						line_edit_window->show();

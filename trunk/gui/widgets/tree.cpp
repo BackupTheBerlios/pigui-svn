@@ -55,6 +55,7 @@ void TreeItem::set_cell_mode( int p_column, TreeCellMode p_mode ) {
 
 	changed_signal.call(p_column);
 }
+
 TreeCellMode TreeItem::get_cell_mode( int p_column ) {
 
 	if (p_column<0 || p_column >=tree->columns)
@@ -152,6 +153,8 @@ void TreeItem::set_range(int p_column,RangeBase *p_range,bool p_own_range)  {
 		GUI_DELETE( c.data.range );
 	c.data.range=p_range;
 	c.owned_range=p_own_range;
+	
+	changed_signal.call(p_column);
 }
 
 RangeBase *TreeItem::get_range(int p_column)   {
@@ -1148,9 +1151,21 @@ TreeItem* Tree::get_root_item() {
 	return root;
 };
 
+void Tree::item_range_changed(double p_value, TreeItem* p_item, int p_column) {
+	
+	p_item->edited_signal.call( p_column );
+};
 
 void Tree::item_changed(int p_column,TreeItem *p_item) {
 
+	if (p_item->get_cell_mode(p_column) == CELL_MODE_RANGE) {
+		
+		RangeBase* range = p_item->get_range(p_column);
+		range->value_changed_signal.connect( 
+			Method1<double>( Method2<double, TreeItem*>( 
+				Method3<double, TreeItem*, int>( this, &Tree::item_range_changed ), p_column), p_item) );
+	};
+	
 	update(); //just redraw all for now, could be optimized for asking a redraw with exposure for the item
 	check_minimum_size();
 }

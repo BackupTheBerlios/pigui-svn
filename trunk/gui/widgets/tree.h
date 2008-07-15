@@ -162,6 +162,7 @@ private:
 
 
 	void item_changed(int p_column,TreeItem *p_item);
+	void item_range_changed(double p_value, TreeItem* p_item, int p_column);
 
 	int get_item_height(TreeItem *root);
 	void tree_changed_callback();

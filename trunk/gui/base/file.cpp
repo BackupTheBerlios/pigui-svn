@@ -18,7 +18,8 @@ File* (*File::create_func)()=0;
 
 File *File::create(){
 
-	ERR_FAIL_COND_V( !create_func, 0 );
+	if ( !create_func)
+		return 0;
 
 	return create_func();
 }
@@ -35,8 +36,9 @@ uint16_t File::get_16() {
 	b=get_8();
 	
 	if (endian_swap) {
-		
-		SWAP( a,b );
+		uint8_t aux=a;
+		a=b;
+		b=aux;
 	}
 	
 	res=b;
@@ -55,7 +57,9 @@ uint32_t File::get_32() {
 	
 	if (endian_swap) {
 		
-		SWAP( a,b );
+		uint16_t aux=a;
+		a=b;
+		b=aux;
 	}
 	
 	res=b;
@@ -74,7 +78,9 @@ uint64_t File::get_64() {
 	
 	if (endian_swap) {
 		
-		SWAP( a,b );
+		uint32_t aux=a;
+		a=b;
+		b=aux;
 	}
 	
 	res=b;
@@ -101,7 +107,9 @@ void File::store_16(uint16_t p_dest) {
 	
 	if (endian_swap) {
 		
-		SWAP( a,b );
+		uint8_t aux=a;
+		a=b;
+		b=aux;
 	}
 		
 	store_8(a);
@@ -118,7 +126,9 @@ void File::store_32(uint32_t p_dest) {
 	
 	if (endian_swap) {
 		
-		SWAP( a,b );
+		uint16_t aux=a;
+		a=b;
+		b=aux;
 	}
 		
 	store_16(a);
@@ -134,7 +144,9 @@ void File::store_64(uint64_t p_dest) {
 	
 	if (endian_swap) {
 		
-		SWAP( a,b );
+		uint32_t aux=a;
+		a=b;
+		b=aux;
 	}
 		
 	store_32(a);

@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <stdio.h>
 
 #include "base/file_system.h"
 
@@ -52,6 +53,8 @@ public:
 	
 	virtual bool file_exists(String p_file);	
 	
+	virtual bool rename(String p_path,String p_new_path); ///< false on succes
+	virtual bool remove(String p_path); ///< false on success
 	
 	static void set_default_filesystem();
 	

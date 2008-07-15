@@ -168,6 +168,23 @@ void FileSystemDirent::set_default_filesystem() {
 	FileSystem::instance_func=&FileSystemDirent::create_fs;
 }
 
+bool FileSystemDirent::rename(String p_path,String p_new_path) {
+
+	return ::rename(p_path.utf8().get_data(),p_new_path.utf8().get_data());
+}
+bool FileSystemDirent::remove(String p_path)  {
+
+	printf("erasing %s\n",p_path.utf8().get_data());
+	struct stat flags;	
+	if ((stat(p_path.utf8().get_data(),&flags)!=0))
+		return true;
+	
+	if (S_ISDIR(flags.st_mode))
+		return ::rmdir(p_path.utf8().get_data());
+	else 
+		return ::unlink(p_path.utf8().get_data());
+}
+
 FileSystemDirent::FileSystemDirent() {
 	
 	dir_stream=0;

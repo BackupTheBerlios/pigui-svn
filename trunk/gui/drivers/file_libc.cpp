@@ -39,7 +39,7 @@ void FileLibC::check_errors() {
 
 File::FileError FileLibC::open(String p_filename, int p_mode_flags) {
 
-	if (!f)
+	if (f)
 		return ERR_IN_USE;
 				
 	const char* mode_string;
@@ -62,7 +62,7 @@ File::FileError FileLibC::open(String p_filename, int p_mode_flags) {
 		if (!S_ISREG(st.st_mode))
 			return ERR_CANT_OPEN;
 
-	};
+	}
 
 	f=fopen(p_filename.utf8().get_data(),mode_string);
 
@@ -105,6 +105,8 @@ void FileLibC::seek_end(int32_t p_position) {
 }
 uint32_t FileLibC::get_pos() {
 
+	if (!f)
+		return 0;
 
 	uint32_t aux_position=0;
 	if ( !(aux_position = ftell(f)) ) {

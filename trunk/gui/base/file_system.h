@@ -42,6 +42,9 @@ public:
 	virtual String get_abs_dir_path(String p_dir);
 	virtual String get_abs_file_path(String p_file);
 	
+	virtual bool rename(String p_path,String p_new_path)=0; ///< false on succes
+	virtual bool remove(String p_path)=0; ///< false on success
+	
 	virtual ~FileSystem();
 
 	

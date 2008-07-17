@@ -15,6 +15,16 @@
 
 namespace GUI {
 
+void BaseButton::set_disabled(bool p_disabled) {
+	
+	status.disabled = p_disabled;
+};
+
+bool BaseButton::is_disabled() const {
+
+	return status.disabled;
+};
+
 void BaseButton::set_pressed(bool p_pressed) {
 	
 	if (!toggle_mode)
@@ -30,6 +40,10 @@ bool BaseButton::is_pressed() {
 
 
 BaseButton::DrawMode BaseButton::get_draw_mode() {
+	
+	if (status.disabled) {
+		return DRAW_DISABLED;
+	};
 	
 	if (status.press_attempt==false && status.hovering && !status.pressed) {
 		
@@ -99,7 +113,7 @@ void BaseButton::mouse_leave() {
 }
 void BaseButton::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask){
 	
-	if (p_button!=BUTTON_LEFT)
+	if ( status.disabled || p_button!=BUTTON_LEFT )
 		return;
 	
 	if (p_press) {
@@ -151,6 +165,9 @@ void BaseButton::focus_leave() {
 
 bool BaseButton::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask) {
 
+	if (status.disabled)
+		return false;
+	
 	if (p_scan_code==KEY_SPACE) {
 
 
@@ -202,6 +219,7 @@ BaseButton::BaseButton() {
 	status.press_attempt=false;
 	status.hovering=false;
 	status.pressing_inside=false;
+	status.disabled = false;
 	set_focus_mode( FOCUS_ALL );
 }
 

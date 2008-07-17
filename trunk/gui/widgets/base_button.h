@@ -27,7 +27,8 @@ public:
 	enum DrawMode {
 		DRAW_NORMAL,
 		DRAW_PRESSED,
-		DRAW_HOVER
+		DRAW_HOVER,
+		DRAW_DISABLED,
 	};
 
 private:
@@ -42,9 +43,9 @@ private:
 		bool press_attempt;
 		bool pressing_inside;
 
+		bool disabled;
+
 	} status;
-	
-	
 	
 protected:	
 	
@@ -74,7 +75,9 @@ protected:
 	bool is_toggle_mode() { return toggle_mode; }
 
 public:
-	
+
+	void set_disabled(bool p_disabled);
+	bool is_disabled() const;
 	
 	/* Signals */
 	

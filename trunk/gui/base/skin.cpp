@@ -364,6 +364,7 @@ void Skin::set_default() {
 	SET_STYLEBOX( SB_BUTTON_PRESSED, StyleBox( 2, Color( 110,110,110 ), Color( 50,50,50 ), Color( 200,200,200 ) ) );
 	SET_STYLEBOX( SB_BUTTON_HOVER, StyleBox( 2, Color( 190,190,190 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
 	SET_STYLEBOX( SB_BUTTON_FOCUS, StyleBox( 1, Color( 255,50,50 ), Color( 255,50,50 ) ) );
+	SET_STYLEBOX( SB_BUTTON_DISABLED, StyleBox( 2, Color( 110,110,110 ), Color( 50,50,50 ), Color( 200,200,200 ) ) );
 
 	SET_STYLEBOX( SB_BUTTON_CHECKED, StyleBox() ); //of no use here by default
 	SET_STYLEBOX( SB_BUTTON_UNCHECKED, StyleBox() ); //of no use here by default

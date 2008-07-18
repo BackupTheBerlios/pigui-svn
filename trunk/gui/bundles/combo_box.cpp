@@ -227,6 +227,7 @@ ComboBox::ComboBox(Mode p_mode) {
 	setting_line_edit=false;
 	popup=NULL;
 	set_fill_vertical( false );
+	set_separation(0);
 }
 
 

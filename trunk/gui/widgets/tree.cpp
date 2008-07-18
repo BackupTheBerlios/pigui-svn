@@ -1177,41 +1177,43 @@ void Tree::select_single_item(TreeItem *p_selected,TreeItem *p_current,int p_col
 
 		TreeItem::Cell &c=p_current->cells[i];
 
-        if (select_mode==SELECT_ROW) {
-
-                if (p_selected==p_current) {
-
-                    if (!c.selected) {
-
-                        c.selected=true;
-                        p_current->selected_signal.call(p_col);
-                    }
-
-                } else {
-
-                    if (c.selected) {
-
-                        c.selected=false;
-                        p_current->deselected_signal.call(p_col);
-                    }
-
-                }
-
-        } else if (select_mode==SELECT_SINGLE) {
-
-            if (&selected_cell==&c) {
-
-                if (!selected_cell.selected) {
-
-                    selected_cell.selected=true;
-                    p_selected->selected_signal.call(p_col);
-                }
-            } else {
-
-                c.selected=false;
-                p_current->deselected_signal.call(p_col);
-            }
-        }
+		if (select_mode==SELECT_ROW) {
+	
+			if (p_selected==p_current) {
+	
+				if (!c.selected) {
+		
+					c.selected=true;
+									
+					if (p_col==i)
+						p_current->selected_signal.call(p_col);
+				}
+		
+			} else {
+		
+				if (c.selected) {
+		
+					c.selected=false;
+					p_current->deselected_signal.call(p_col);
+				}
+	
+			}
+	
+		} else if (select_mode==SELECT_SINGLE) {
+	
+		if (&selected_cell==&c) {
+	
+			if (!selected_cell.selected) {
+	
+			selected_cell.selected=true;
+			p_selected->selected_signal.call(p_col);
+			}
+		} else {
+	
+			c.selected=false;
+			p_current->deselected_signal.call(p_col);
+		}
+		}
 
 	}
 

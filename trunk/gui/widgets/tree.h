@@ -223,6 +223,8 @@ public:
 
 	void set_column_min_width(int p_column,int p_min_width);
 	void set_column_expand(int p_column,bool p_expand);
+	
+	int get_column_width(int p_column);
 
 	void set_hide_root(bool p_eanbled);
 

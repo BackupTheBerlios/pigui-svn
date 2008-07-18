@@ -66,6 +66,7 @@ private:
 public:
 
 	void add_frame(Frame *p_frame, bool p_h_expand, bool p_v_expand);
+	void set_separation(int p_separation);
 
 	template<class T>
 	T *add(T *p_frame, bool p_h_expand, bool p_v_expand) {

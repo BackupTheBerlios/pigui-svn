@@ -204,6 +204,10 @@ void GridContainer::resize_internal(const Size& p_new_size) {
 
 }
 
+void GridContainer::set_separation(int p_separation) {
+	
+	separation=p_separation;
+}
 
 void GridContainer::add_frame(Frame *p_frame, bool p_h_expand, bool p_v_expand) {
 

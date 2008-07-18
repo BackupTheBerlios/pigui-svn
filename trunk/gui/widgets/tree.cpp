@@ -1255,13 +1255,6 @@ void Tree::compute_column_size_caches() {
 
 
 }
-int Tree::get_column_width(int p_column) {
-
-	if (p_column<0 || p_column >= columns)
-		return 0;
-
-	return column_width_caches[p_column];
-}
 
 void Tree::set_hide_root(bool p_enabled) {
 
@@ -1357,7 +1350,7 @@ bool Tree::get_selected( TreeItem** p_item, int *p_col) {
 	return false;
 }
 
-int Tree::get_column_width(int p_column) {
+int Tree::get_column_width(int p_column) const {
 	
 	ERR_FAIL_INDEX_V(p_column,columns,-1);
 	

@@ -188,7 +188,7 @@ private:
 
 	int* column_width_caches;
 	void compute_column_size_caches();
-	int get_column_width(int p_column);
+
 
 	Window *line_edit_window;
 	LineEdit *line_edit;
@@ -224,7 +224,7 @@ public:
 	void set_column_min_width(int p_column,int p_min_width);
 	void set_column_expand(int p_column,bool p_expand);
 	
-	int get_column_width(int p_column);
+	int get_column_width(int p_column) const;
 
 	void set_hide_root(bool p_eanbled);
 

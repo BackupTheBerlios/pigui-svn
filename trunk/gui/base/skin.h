@@ -159,7 +159,7 @@ enum ColorList {
 	COLOR_TEXT_EDIT_CURSOR,
 	COLOR_UPDOWN,
 	COLOR_TEXT_VIEW_FONT,
-	
+
 	COLOR_KNOB_BG,
 	COLOR_KNOB_HANDLE,
 	COLOR_MAX
@@ -261,14 +261,15 @@ enum BitmapList {
 	BITMAP_MAX,
 	BITMAP_SCROLLBAR_GRABBER,
 	BITMAP_SCROLLBAR_GRABBER_HOVER,
-	
+
 	BITMAP_BUTTON_NORMAL,
 	BITMAP_BUTTON_PRESSED,
 	BITMAP_BUTTON_HOVER,
+	BITMAP_BUTTON_DISABLED,
 	BITMAP_BUTTON_ICON,
-	
+
 	BITMAP_KNOB_ANIMATION,
-	
+
 };
 
 
@@ -300,7 +301,7 @@ protected:
 
 	virtual void set_default_extra() {};
 public:
-	
+
 	const StyleBox& get_stylebox(unsigned int p_which);
 	int get_constant(unsigned int p_which);
 	BitmapID get_bitmap(unsigned int p_which);
@@ -330,7 +331,7 @@ public:
 	void set_bitmap_name(int p_which,String p_name);
 	void set_font_name(int p_which,String p_name);
 	void set_color_name(int p_which,String p_name);
-	
+
 	void set_default();
 
 	Skin(int p_stylebox_max=SB_MAX,int p_constant_max=C_MAX,int p_bitmap_max=BITMAP_MAX,int p_font_max=FONT_MAX,int p_color_max=COLOR_MAX);

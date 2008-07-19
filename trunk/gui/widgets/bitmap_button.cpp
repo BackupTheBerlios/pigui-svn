@@ -22,9 +22,9 @@ Size BitmapButton::get_minimum_size_internal() {
 		return get_painter()->get_bitmap_size( normal );
 	else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
 		return get_painter()->get_bitmap_size( bitmap( BITMAP_BUTTON_NORMAL) );
-	
+
 	return Size();
-	
+
 }
 
 void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
@@ -37,11 +37,11 @@ void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expo
 				get_painter()->draw_bitmap( normal, Point() );
 			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
 				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
-			
+
 		} break;
 		case DRAW_HOVER: {
-		
-			
+
+
 			BitmapID bm = hover>=0 ? hover : normal;
 			if (bm>=0)
 				get_painter()->draw_bitmap( bm, Point() );
@@ -49,7 +49,7 @@ void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expo
 				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_HOVER ), Point() );
 			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
 				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
-		} break;		
+		} break;
 		case DRAW_PRESSED: {
 
 			BitmapID bm = pressed>=0 ? pressed : normal;
@@ -61,7 +61,15 @@ void BitmapButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expo
 				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
 
 		} break;
-
+        case DRAW_DISABLED: {
+            BitmapID bm = disabled>=0 ? disabled : normal;
+			if (bm>=0)
+				get_painter()->draw_bitmap( bm, Point() );
+			else if (bitmap( BITMAP_BUTTON_DISABLED )>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_DISABLED ), Point() );
+			else if (bitmap( BITMAP_BUTTON_NORMAL)>=0)
+				get_painter()->draw_bitmap( bitmap( BITMAP_BUTTON_NORMAL), Point() );
+        } break;
 	}
 
 	if (icon>=0)
@@ -84,18 +92,24 @@ void BitmapButton::set_hover_bitmap(BitmapID p_bitmap) {
 
 }
 
+void BitmapButton::set_disabled_bitmap(BitmapID p_bitmap) {
+
+    disabled=p_bitmap;
+}
+
 void BitmapButton::set_icon_bitmap(BitmapID p_bitmap) {
 
 	icon=p_bitmap;
 
 }
 
-BitmapButton::BitmapButton(BitmapID p_normal, BitmapID p_pressed, BitmapID p_hover,BitmapID p_icon) {
+BitmapButton::BitmapButton(BitmapID p_normal, BitmapID p_pressed, BitmapID p_hover,BitmapID p_icon,BitmapID p_disabled) {
 
 	normal=p_normal;
 	pressed=p_pressed;
 	hover=p_hover;
-	icon=p_icon;  
+	disabled=p_disabled;
+	icon=p_icon;
 	set_fill_vertical( false );
 }
 

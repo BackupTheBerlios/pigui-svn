@@ -42,6 +42,9 @@ public:
 	void add_constant_override(int p_style, int p_with_style);
 	void add_color_override(int p_style, int p_with_style);
 	
+	virtual BitmapID get_cursor(const Point& p_point=Point(),Point *p_hotspot=NULL);
+	virtual void set_cursor(BitmapID p_bitmap, const Point& p_hotspot);
+	
 	void set_tooltip(String p_text);
 	virtual String get_tooltip(const Point& p_point=Point());
 	

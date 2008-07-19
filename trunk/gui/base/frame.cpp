@@ -43,7 +43,8 @@ struct FramePrivate {
 	Skin *skin;	
 	Size size_cache;
 	String tooltip;
-	
+	BitmapID cursor;
+	Point cursor_hotspot;
 	_StyleOverride *stylebox_overrides;
 	_StyleOverride *font_overrides;
 	_StyleOverride *bitmap_overrides;
@@ -51,7 +52,7 @@ struct FramePrivate {
 	_StyleOverride *color_overrides;
 	
 	FramePrivate() { can_fill_vertical=true; can_fill_horizontal=true; parent=0; window=0; focus_mode=FOCUS_NONE; visible=true; skin=0;  clipping=false; bg_on_updates=true; 
-		stylebox_overrides=0; font_overrides=0; constant_overrides=0; color_overrides=0; bitmap_overrides=0; }
+		stylebox_overrides=0; font_overrides=0; constant_overrides=0; color_overrides=0; bitmap_overrides=0; cursor=INVALID_BITMAP_ID; }
 	
 	~FramePrivate() {
 	
@@ -96,6 +97,20 @@ void Frame::window_hid() {}
 void Frame::set_tooltip(String p_text) {
 	
 	_fp->tooltip=p_text;
+}
+
+BitmapID Frame::get_cursor(const Point& p_point,Point *p_hotspot) {
+
+	if (p_hotspot)
+		*p_hotspot=_fp->cursor_hotspot;
+		
+	return _fp->cursor;
+}
+
+void Frame::set_cursor(BitmapID p_bitmap, const Point& p_hotspot) {
+
+	_fp->cursor=p_bitmap;
+	_fp->cursor_hotspot=p_hotspot;
 }
 
 String Frame::get_tooltip(const Point& p_point) {

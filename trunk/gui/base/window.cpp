@@ -575,9 +575,21 @@ void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_m
 
 	if (!parent) {
 				
+		Point lp;
+		Frame *f=find_frame_at_pos(this,p_pos,&lp);
+				
+		if (f) {
+			Point hotspot;
+			BitmapID id=f->get_cursor( lp, &hotspot );
+			
+			get_painter()->set_cursor_bitmap( id, hotspot );
+		} else {
+		
+			get_painter()->set_cursor_bitmap( INVALID_BITMAP_ID, Point() );
+		
+		}
+		
 		if (root_data->tooltip->visible) {
-			Point lp;
-			Frame *f=find_frame_at_pos(this,p_pos,&lp);
 			if (f!=root_data->tooltipped_frame) {
 				root_data->tooltip->hide();
 				root_data->tooltip_cbk_count=0;

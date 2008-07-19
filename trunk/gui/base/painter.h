@@ -119,6 +119,10 @@ public:
 
 	virtual void set_window_icon(BitmapID p_bitmap)=0;
 	
+	virtual void set_cursor_visible(bool p_visible)=0;
+	virtual void set_default_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot)=0; // use INVALID_BITMAP_ID to reset
+	virtual void set_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot)=0; // use INVALID_BITMAP_ID to reset
+	
 	
 	virtual void set_display_title(String p_title, String p_icon_title)=0;
 	virtual ~Painter();

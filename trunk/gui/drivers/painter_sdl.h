@@ -104,6 +104,10 @@ public:
 	
 	void set_window_icon(BitmapID p_bitmap);
 		
+	virtual void set_cursor_visible(bool p_visible);		
+	virtual void set_default_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot);		
+	virtual void set_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot);		
+	
 	PainterSDL(SDL_Surface *p_surf);
 	~PainterSDL();
 

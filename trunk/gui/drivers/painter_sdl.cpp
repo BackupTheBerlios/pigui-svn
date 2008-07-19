@@ -937,6 +937,20 @@ void PainterSDL::set_window_icon(BitmapID p_bitmap) {
 	
 }
 
+void PainterSDL::set_cursor_visible(bool p_visible) {
+
+
+}
+
+void PainterSDL::set_default_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot) {
+
+
+}
+
+void PainterSDL::set_cursor_bitmap(BitmapID p_bitmap,const Point& p_hotspot) {
+
+
+}
 
 PainterSDL::PainterSDL(SDL_Surface *p_surf) {
 	

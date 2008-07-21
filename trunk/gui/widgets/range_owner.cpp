@@ -66,15 +66,17 @@ void RangeOwner::set_range(RangeBase *p_range,bool p_own_it) {
 
 	range_owned=p_own_it;
 
-	_check_auto_hide();
-			
-	range->range_changed_signal.connect( this, &RangeOwner::_range_changed );
-	range->value_changed_signal.connect( this, &RangeOwner::_value_changed );
-	
-	if (get_parent()) {
-		update();
-		range_ptr_changed();
-	}
+	if (range) {
+		_check_auto_hide();
+				
+		range->range_changed_signal.connect( this, &RangeOwner::_range_changed );
+		range->value_changed_signal.connect( this, &RangeOwner::_value_changed );
+		
+		if (get_parent()) {
+			update();
+			range_ptr_changed();
+		}
+	};
 }
 
 void RangeOwner::set_auto_hide(bool p_auto_hide) {

@@ -1250,6 +1250,7 @@ void Tree::clear() {
 	};
 
 	check_minimum_size();
+	scroll_bar->set_range(NULL);
 };
 
 

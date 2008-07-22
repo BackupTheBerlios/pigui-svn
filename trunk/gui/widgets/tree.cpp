@@ -1250,7 +1250,8 @@ void Tree::clear() {
 	};
 
 	check_minimum_size();
-	scroll_bar->set_range(NULL);
+	if (scroll_bar)
+		scroll_bar->set_range(NULL);
 };
 
 
@@ -1385,6 +1386,7 @@ Tree::Tree(int p_columns) {
 	root=0;
 	popup_menu=NULL;
 	popup_edited_item=NULL;
+	scroll_bar = NULL;
 }
 
 

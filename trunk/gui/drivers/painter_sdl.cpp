@@ -963,21 +963,34 @@ PainterSDL::PainterSDL(SDL_Surface *p_surf) {
 #include "default_font.inc"
 	
 	
-	BitmapID font_bmp=create_bitmap( Size(default_font_width, default_font_height), MODE_ALPHA_MASK );
+	BitmapID default_font = create_bitmap(Size( _SDL_builtin_font_texture_width, _SDL_builtin_font_texture_height ), MODE_ALPHA_MASK);
 	
-	/* Create default font */
-	for (int i=0;i<default_font_width;i++) {
-		for (int j=0;j<default_font_height;j++) {
-			
-			set_bitmap_pixel( font_bmp, Point( i , j ) , Color(default_font_data[ default_font_width * j + i ]) );
-			
+	for(int i=0;i<_SDL_builtin_font_texture_height;i++) {
+	
+		for(int j=0;j<_SDL_builtin_font_texture_width;j++) {
+		
+			set_bitmap_pixel( default_font,Point( j,i ), Color(_SDL_builtin_font_texture[i*_SDL_builtin_font_texture_width+j]));
+
 		}
 	}
 	
-	FontID fontid= create_font(default_font_height,default_font_ascent);
-	for (int i=0;i<96;i++) {
-		font_add_char( fontid, i+32, font_bmp, Rect( Point( i*8, 0), Size( 8, 13 ) ) );
+
+	GUI::FontID dfid=create_font( _SDL_builtin_font_height, _SDL_builtin_font_ascent );
+
+	for (int i=0;i<_SDL_builtin_font_charcount;i++) {
+
+		unsigned int character=_SDL_builtin_font_charrects[i][0];
+		GUI::Rect frect;
+		frect.pos.x=_SDL_builtin_font_charrects[i][1];
+		frect.pos.y=_SDL_builtin_font_charrects[i][2];
+		frect.size.x=_SDL_builtin_font_charrects[i][3];
+		frect.size.y=_SDL_builtin_font_charrects[i][4];
+		int valign=_SDL_builtin_font_charrects[i][5];
+
+		font_add_char( dfid, character, 0, frect, valign );
 	}
+	
+	
 	
 	
 	set_key_repeat( SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);

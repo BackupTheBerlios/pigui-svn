@@ -1356,7 +1356,8 @@ bool Tree::get_selected( TreeItem** p_item, int *p_col) {
 
 int Tree::get_column_width(int p_column) const {
 	
-	ERR_FAIL_INDEX_V(p_column,columns,-1);
+	if (p_column<0 || p_column>columns)
+		return -1;
 	
 	return column_width_caches[p_column];
 }

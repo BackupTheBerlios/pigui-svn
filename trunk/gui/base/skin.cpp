@@ -630,7 +630,7 @@ void Skin::set_default() {
 
 	/* Tab Box */
 
-	SET_STYLEBOX(SB_TABBOX, StyleBox( 2, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
+	SET_STYLEBOX(SB_TABBOX, StyleBox( 2, Color(200,200,200),Color(250,250,250),Color(90,90,90) ) );
 
 	for(int i=0;i<4;i++)
 		stylebox_array[SB_TABBOX].margins[i]=4;

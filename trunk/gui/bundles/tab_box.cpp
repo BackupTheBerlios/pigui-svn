@@ -35,6 +35,7 @@ void TabBox::add_frame(String p_label,Frame *p_child,bool p_at_top) {
 		
 void TabBox::raise(int p_index) {
 	
+	tabs->select_tab(p_index);
 	stack->raise(p_index);
 }
 void TabBox::raise_frame(Frame *p_child) {

@@ -482,11 +482,17 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 	/* CLIPPING, STEP 1 */
 	Rect global_rect=Rect( p_pos + rect.pos , p_src_rect.size ); //convert src rect to global screen coords
 	
+	
 	/* CLIPPING, STEP2, Apply Rotation */
-	if (p_dir==DOWN) {
+	if (p_dir==RIGHT) {
+	
+		//global_rect=Rect(rect.pos+p_pos-p_src_rect.pos, Size( src_surface->w, src_surface->h ) ).clip( global_rect ); // clip by src_surface
+	
+	} else if (p_dir==DOWN) {
 		
 		global_rect.size.swap_xy();
-		
+		global_rect=Rect(rect.pos+p_pos-p_src_rect.pos, Size( src_surface->h, src_surface->w ) ).clip( global_rect ); // clip by src_surface
+	
 	} else if (p_dir==LEFT || p_dir==UP) {
 		
 		PRINT_ERROR("Unsupported Direction in bitmap draw - only RIGHT and DOWN work ATM");
@@ -500,7 +506,7 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 	if (clip_rect_active) // clip by clip rect, if enabled
 		global_rect=clip_rect.clip( global_rect );
 	
-	global_rect=Rect(rect.pos+p_pos-p_src_rect.pos, Size( src_surface->w, src_surface->h ) ).clip( global_rect ); // clip by src_surface
+		
 	global_rect =  Rect(Point(), Size( surface->w, surface->h ) ).clip ( global_rect ); // clip by screen
 	
 	if (global_rect.has_no_area()) {
@@ -511,24 +517,24 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 	
 	
 	/* CLIPPING Step 4 , Transform to local again */
-	Rect local_rect=Rect( global_rect.pos-(p_pos + rect.pos) , global_rect.size ); // first create, in local coords
-	Rect read_rect=Rect( local_rect.pos+p_src_rect.pos, local_rect.size );
-	
-	
+	//Rect local_rect=Rect( global_rect.pos-(p_pos + rect.pos) , global_rect.size ); // first create, in local coords
+	Rect write_rect=global_rect;
+	Rect read_rect=Rect( global_rect.pos-(p_pos + rect.pos)+p_src_rect.pos, global_rect.size );
 	/* CLIPPING Step 5, Deapply Rotation */
 	
 	if (p_dir==DOWN) {
 		
 		read_rect.size.swap_xy(); //adjust size
-		Point vec=read_rect.pos-p_src_rect.pos;
-		vec.swap_xy();
-		read_rect.pos=p_src_rect.pos+vec;
+		/*
+		read_rect.pos-=p_src_rect.pos;
+		read_rect.pos.swap_xy();
+		read_rect.pos+=p_src_rect.pos;*/
 	}
 		
 	/* Compute read/write rects */
 
 
-	Rect write_rect=Rect( local_rect.pos+rect.pos+p_pos, read_rect.size );
+	
 
 //	draw_fill_rect(p_pos,p_src_rect.size,Color(233,233,233));
 //	draw_fill_rect(write_rect.pos-rect.pos,write_rect.size,Color(233,233,233));

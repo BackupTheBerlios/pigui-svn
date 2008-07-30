@@ -46,6 +46,7 @@ public:
 	void raise(int p_index);
 	void raise_frame(Frame *p_child);
 	
+	TabBar *get_tabs() { return tabs; }
 	TabBox();
 	~TabBox();
 };

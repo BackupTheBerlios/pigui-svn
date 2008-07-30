@@ -28,13 +28,13 @@ class ArrowButton : public BaseButton {
 	RangeBase *range;
 	bool auto_hide;
 
-    void _check_auto_hide();
-    void _range_changed();
+	void _check_auto_hide();
+	void _range_changed();
 	Size get_minimum_size_internal();
 	void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
 
 	virtual String get_type();
-    void press_slot();
+	void press_slot();
 public:
 	void set_dir(Direction p_dir);
 	Direction get_dir () const;

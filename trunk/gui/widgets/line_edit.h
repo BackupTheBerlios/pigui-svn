@@ -76,6 +76,8 @@ public:
 	Signal< Method1< String > > text_changed_signal;
 	Signal< Method1< String > > text_enter_signal;
 	Signal<> lost_focus_signal;
+	Signal<> non_editable_clicked_signal;
+	
 
 	void select_all();
 

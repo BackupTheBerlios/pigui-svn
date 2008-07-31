@@ -46,6 +46,8 @@ void LineEdit::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_
 			selection.creating=true;
 		}
 
+		if (!editable)
+			non_editable_clicked_signal.call();
 		update();
 
 	} else {

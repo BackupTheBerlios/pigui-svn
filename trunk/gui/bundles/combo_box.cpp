@@ -222,7 +222,7 @@ ComboBox::ComboBox(Mode p_mode) {
 	arrow_button->set_focus_mode( FOCUS_NONE );
 
 	arrow_button->pressed_signal.connect( this, &ComboBox::button_clicked );
-
+	line_edit->non_editable_clicked_signal.connect( this, &ComboBox::button_clicked );
 
 	setting_line_edit=false;
 	popup=NULL;

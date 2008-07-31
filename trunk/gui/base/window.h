@@ -124,6 +124,8 @@ private:
 
 	Frame* find_frame_at_pos(Point p_pos,Point *local_pos);
 
+	void check_tooltip_and_cursor_at_pos(const Point& p_pos);
+	
 
 	void update_rect_merge(UpdateRectList **p_rect);
 	void add_update_rect(const Rect& p_rect);

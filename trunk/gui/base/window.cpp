@@ -443,6 +443,7 @@ void Window::mouse_doubleclick(const Point& p_pos,int p_modifier_mask) {
 	child->mouse_doubleclick( local_pos, p_modifier_mask );
 
 }
+
 void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
 
 
@@ -455,11 +456,14 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 			Point pos=p_pos-root->focus->get_global_pos();
 
 			root->focus->mouse_button( pos , p_button, p_press, p_modifier_mask );
+			check_tooltip_and_cursor_at_pos(p_pos);
 			return;
 
 		} else {
 
 			Window *at_click=find_window_at_pos(p_pos);
+			
+
 
 			bool post_popup_hide=false;
 			while (root->root_data->modal_stack) {
@@ -469,10 +473,10 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 
 					/* good bye popup */
 
+								
 					root->root_data->modal_stack->window->popup_cancel_signal.call();
 					root->root_data->modal_stack->window->hide();
-
-
+					
 					post_popup_hide=true;
 					continue; /* Try again, if there still is a modal stack */
 
@@ -497,6 +501,7 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 				if (post_popup_hide)
 					focus->mouse_motion( pos, Point(), 0 );
 				focus->mouse_button( pos, p_button, p_press, p_modifier_mask );
+				check_tooltip_and_cursor_at_pos(p_pos);
 				return;
 			}
 
@@ -573,8 +578,9 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 	child->mouse_button( local_pos, p_button, p_press, p_modifier_mask );
 
 }
-void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_mask) {
 
+void Window::check_tooltip_and_cursor_at_pos(const Point& p_pos) {
+	
 	if (!parent) {
 				
 		Point lp;
@@ -602,7 +608,13 @@ void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_m
 		}
 		root_data->last_mouse_pos=p_pos;
 	}
+	
+}
 
+void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_mask) {
+
+	check_tooltip_and_cursor_at_pos(p_pos);
+	
 	if (!parent && (root->focus!=this)) {
 		//deliver to whoever has the focus, if root does not have it
 

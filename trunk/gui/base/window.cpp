@@ -1096,12 +1096,12 @@ void Window::show() {
 		return;
 
 	if (root_frame && !focus_child) {
-		Frame *prev_f=root_frame->prev_in_focus(0);
-		if (prev_f) {
+		Frame *next_f=root_frame->next_in_focus(0);
+		if (next_f) {
 
-			focus_child=prev_f;
-			prev_f->focus_enter();
-			prev_f->update();
+			focus_child=next_f;
+			next_f->focus_enter();
+			next_f->update();
 
 		}
 	}

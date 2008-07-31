@@ -182,6 +182,7 @@ void WindowButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expo
 WindowButton::WindowButton(Mode p_mode) {
 
 	mode=p_mode;
+	set_focus_mode( FOCUS_NONE );
 }
 
 

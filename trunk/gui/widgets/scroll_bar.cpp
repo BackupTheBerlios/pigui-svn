@@ -220,9 +220,25 @@ void ScrollBar::mouse_button(const Point& p_pos, int p_button,bool p_press,int p
 
 	if (p_press) {
 
-		drag.active=true;
-		drag.pos_at_click=get_click_pos(p_pos);
-		drag.value_at_click=get_range()->get_unit_value();
+		int ofs = orientation==VERTICAL ? p_pos.y : p_pos.x ;
+		int grabber_ofs = get_grabber_offset();
+		int grabber_size = get_grabber_size();
+		
+		if ( ofs < grabber_ofs ) {
+			
+			get_range()->set( get_range()->get() - get_range()->get_page() );
+			
+		} else if (ofs > grabber_ofs + grabber_size ) {
+			
+			get_range()->set( get_range()->get() + get_range()->get_page() );
+			
+		} else {
+		
+			
+			drag.active=true;
+			drag.pos_at_click=get_click_pos(p_pos);
+			drag.value_at_click=get_range()->get_unit_value();
+		}
 
 
 	} else {

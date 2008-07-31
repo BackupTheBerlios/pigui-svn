@@ -392,12 +392,14 @@ Window *Window::find_window_at_pos(const Point& p_point) {
 	Window *found=0;
 	while (w) {
 
-		Point rpos=p_point - w->pos;
-		Window *wf = w->find_window_at_pos( rpos );
-		if (wf)
-			found=wf;
+		if (w->is_visible()) {
+			Point rpos=p_point - w->pos;
+			Window *wf = w->find_window_at_pos( rpos );
+			if (wf)
+				found=wf;
 
-
+		}
+		
 		w=w->next;
 
 	}
@@ -576,7 +578,7 @@ void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_m
 	if (!parent) {
 				
 		Point lp;
-		Frame *f=find_frame_at_pos(this,p_pos,&lp);
+		Frame *f=find_frame_at_pos(p_pos,&lp);
 				
 		if (f) {
 			Point hotspot;
@@ -1238,27 +1240,14 @@ bool Window::is_visible() {
 }
 
 
-Frame* Window::find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos) {
+Frame* Window::find_frame_at_pos(Point p_pos,Point *local_pos) {
 
-	if (p_window==root->root_data->tooltip)
+	Window * w = find_window_at_pos(p_pos);
+	
+	Point w_pos = p_pos - w->get_pos();
+	if (!w->root_frame)
 		return NULL;
-	
-	Frame *frame=NULL;
-	
-	if (p_window->next)
-		frame=find_frame_at_pos(p_window->next,p_pos-p_window->next->pos,local_pos);
-	if (frame)
-		return frame;
-	
-	if (p_window->childs)
-		frame=find_frame_at_pos(p_window->childs,p_pos-p_window->childs->pos,local_pos);
-	if (frame)
-		return frame;
-		
-	if (root_frame)
-		frame=root_frame->get_child_at_pos(p_pos,size,local_pos);
-	
-	return frame;
+	return w->root_frame->get_child_at_pos(w_pos,w->get_size(),local_pos);
 	
 }
 
@@ -1269,7 +1258,7 @@ void Window::tooltip_timer_cbk() {
 	if (root_data->tooltip_cbk_count==2) {
 		
 		Point local_pos;
-		Frame *f=find_frame_at_pos(this,root_data->last_mouse_pos,&local_pos);
+		Frame *f=find_frame_at_pos(root_data->last_mouse_pos,&local_pos);
 		
 		if (!f)
 			return;

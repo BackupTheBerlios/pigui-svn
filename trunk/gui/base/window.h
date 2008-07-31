@@ -122,7 +122,7 @@ private:
 
 	void tooltip_timer_cbk();
 
-	Frame* find_frame_at_pos(Window *p_window,Point p_pos,Point *local_pos);
+	Frame* find_frame_at_pos(Point p_pos,Point *local_pos);
 
 
 	void update_rect_merge(UpdateRectList **p_rect);

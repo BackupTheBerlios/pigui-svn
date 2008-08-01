@@ -64,7 +64,7 @@ public:
 	void add_item(BitmapID p_bitmap_ID,const String& p_str="",int p_id=-1,unsigned int p_shortcut=0,bool p_shortcut_active=true);
 	void add_separator();
 	
-	String get_item_string(int p_at);
+	//String get_item_string(int p_at);
 	
 	void select(int p_at); 
 	int get_selected();

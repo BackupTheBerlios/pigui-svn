@@ -1,3 +1,4 @@
+
 //
 // C++ Implementation: option_button
 //
@@ -78,12 +79,11 @@ void OptionButton::pressed() {
 	popup->popup( get_global_pos()+Point( 0, size.height) );
 }
 void OptionButton::item_activated(int p_which) {
-	
-	
+		
 	select(p_which);
-	item_selected_signal.call(p_which);
+	selected_signal.call(p_which);
 	popup->hide(); //this at end of function to reproduce bug
-	
+		
 }
 
 int OptionButton::get_size() {

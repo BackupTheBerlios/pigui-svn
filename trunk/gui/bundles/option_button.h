@@ -41,8 +41,8 @@ class OptionButton : public Button {
 	
 public:
 
-	Signal< Method1<int> > item_selected_signal;
-	
+	Signal< Method1<int> > selected_signal; /// Something was selected
+		
 	int get_size(); ///< return amount of elements in list
 	int get_selected(); ///< Index of selected item
 	String get_string(); ///< String of selected  item, or default for the first

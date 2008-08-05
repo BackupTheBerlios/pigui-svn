@@ -22,7 +22,9 @@
  #define S_ISREG(m) ((m)&_S_IFREG)
 #endif
 
-void FileAccessWindows::check_errors() {
+namespace GUI {
+
+void FileWindows::check_errors() {
 
 	ERR_FAIL_COND(!f);
 
@@ -33,7 +35,7 @@ void FileAccessWindows::check_errors() {
 
 }
 
-Error FileAccessWindows::open(String p_filename, int p_mode_flags) {
+File::FileError FileWindows::open(String p_filename, int p_mode_flags) {
 
 	p_filename=fix_path(p_filename);
 
@@ -73,7 +75,7 @@ Error FileAccessWindows::open(String p_filename, int p_mode_flags) {
 	}
 
 }
-void FileAccessWindows::close() {
+void FileWindows::close() {
 
 	if (!f)
 		return;
@@ -81,24 +83,24 @@ void FileAccessWindows::close() {
 	fclose(f);
 	f = NULL;
 }
-bool FileAccessWindows::is_open() {
+bool FileWindows::is_open() {
 
 	return (f!=NULL);
 }
-void FileAccessWindows::seek(Uint32 p_position) {
+void FileWindows::seek(Uint32 p_position) {
 
 	ERR_FAIL_COND(!f);
 	last_error=OK;
 	if ( fseek(f,p_position,SEEK_SET) )
 		check_errors();
 }
-void FileAccessWindows::seek_end(Sint32 p_position) {
+void FileWindows::seek_end(signed int p_position) {
 
 	ERR_FAIL_COND(!f);
 	if ( fseek(f,p_position,SEEK_END) )
 		check_errors();
 }
-Uint32 FileAccessWindows::get_pos() {
+Uint32 FileWindows::get_pos() {
 
 
 	Uint32 aux_position=0;
@@ -107,7 +109,7 @@ Uint32 FileAccessWindows::get_pos() {
 	};
 	return aux_position;
 }
-Uint32 FileAccessWindows::get_len() {
+Uint32 FileWindows::get_len() {
 
 
 	ERR_FAIL_COND_V(!f,0);
@@ -120,15 +122,15 @@ Uint32 FileAccessWindows::get_len() {
 	return size;
 }
 
-bool FileAccessWindows::eof_reached() {
+bool FileWindows::eof_reached() {
 
 	return last_error==ERR_FILE_EOF;
 }
 
-Uint8 FileAccessWindows::get_8() {
+unsigned char FileWindows::get_8() {
 
 	ERR_FAIL_COND_V(!f,0);
-	Uint8 b;
+	unsigned char b;
 	if (fread(&b,1,1,f) == 0) {
 		check_errors();
 	};
@@ -137,12 +139,12 @@ Uint8 FileAccessWindows::get_8() {
 }
 
 
-Error FileAccessWindows::get_error() {
+File::FileError FileWindows::get_error() {
 
 	return last_error;
 }
 
-void FileAccessWindows::store_8(Uint8 p_dest) {
+void FileWindows::store_8(unsigned char p_dest) {
 
 	ERR_FAIL_COND(!f);
 	fwrite(&p_dest,1,1,f);
@@ -150,7 +152,7 @@ void FileAccessWindows::store_8(Uint8 p_dest) {
 }
 
 
-bool FileAccessWindows::file_exists(String p_name) {
+bool FileWindows::file_exists(String p_name) {
 
 	FILE *g;
 	//printf("opening file %s\n", p_fname.c_str());
@@ -165,27 +167,28 @@ bool FileAccessWindows::file_exists(String p_name) {
 	}
 }
 
-FileAccess * FileAccessWindows::create_win32() {
+File * FileWindows::create_win32() {
 
-	return memnew( FileAccessWindows );
+	return memnew( FileWindows );
 }
-void FileAccessWindows::set_as_default()  {
+void FileWindows::set_as_default()  {
 
 	create_func=create_win32;
 }
 
 
-FileAccessWindows::FileAccessWindows() {
+FileWindows::FileWindows() {
 
 	f=NULL;
 	flags=0;
 	last_error=OK;
 
 }
-FileAccessWindows::~FileAccessWindows() {
+FileWindows::~FileWindows() {
 
 	if (f)
 		fclose(f);
 }
-
+}
 #endif
+

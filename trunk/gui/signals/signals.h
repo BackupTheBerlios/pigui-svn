@@ -15,6 +15,7 @@
 
 //#include "typedefs.h"
 
+#include "base/defs.h"
 #include "base/memory.h"
 
 /**

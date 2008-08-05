@@ -41,7 +41,7 @@ bool SignalTarget::_register_signal( SignalBase *p_signal ) {
 		c=c->next;
 	}
 
-	c = memnew(Connection);
+	c = GUI_NEW(Connection);
 
 	c->next=_conn_list;
 	c->signal=p_signal;
@@ -62,7 +62,7 @@ void SignalTarget::_clear_signal( SignalBase *p_signal ) {
 			c->refcount--;
 			if (c->refcount<=0) {
 				*pc=c->next;
-				memdelete(c);
+				GUI_DELETE(c);
 			}
 			
 			return; // just be connected only once anyway
@@ -80,7 +80,7 @@ void SignalTarget::clear_connections() {
 		Connection *c=_conn_list;
 		_conn_list=_conn_list->next;
 		c->signal->remove_target( this );
-		memdelete(c);
+		GUI_DELETE(c);
 	}		
 	
 };

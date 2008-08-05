@@ -11,6 +11,8 @@
 //
 #include "signals.h"
 
+namespace GUI {
+
 int SignalBase::connection_count = 0;
 
 bool SignalBase::register_at_target( SignalTarget *p_target ) {
@@ -92,3 +94,5 @@ SignalTarget::~SignalTarget() {
 	clear_connections();
 }
 
+
+}

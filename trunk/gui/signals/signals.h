@@ -13,16 +13,15 @@
 #ifndef SIGNALS_H
 #define SIGNALS_H
 
-#include "error_macros.h"
 //#include "typedefs.h"
 
-#include "os/memory.h"
+#include "base/memory.h"
 
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
 
-
+namespace GUI {
 
 class SignalBase;
 
@@ -225,7 +224,7 @@ struct Bind5to6 : public Bind5to6_Base<P1,P2,P3,P4,P5> {
 	
 	void call(P1 p_data1,P2 p_data2,P3 p_data3,P4 p_data4,P5 p_data5) { method.call(p_data1,p_data2,p_data3,p_data4,p_data5, data); }
 	Bind5to6_Base<P1,P2,P3,P4,P5> * copy() const {
-		Bind5to6<P1,P2,P3,P4,P5,P6> *_copy = memnew( (Bind5to6<P1,P2,P3,P4,P5,P6>)(method, data));
+		Bind5to6<P1,P2,P3,P4,P5,P6> *_copy = GUI_NEW( (Bind5to6<P1,P2,P3,P4,P5,P6>)(method, data));
 		*_copy=*this;
 		return _copy;
 	}
@@ -284,7 +283,7 @@ public:
 	void set( T* p_instance,void (T::*p_method)(P1,P2,P3,P4,P5) ) {
 
 		if (bindobj)
-			memdelete(bindobj);
+			GUI_DELETE(bindobj);
 		bindobj = 0;
 		
 		method=_method_marshallize(p_instance,p_method);	
@@ -296,15 +295,15 @@ public:
 	void bind(const Method6<P1,P2,P3,P4,P5, TBind>& p_method, TBind p_data) {
 
 		clear();
-		bindobj = memnew((Bind5to6<P1,P2,P3,P4,P5, TBind>)(p_method, p_data));
+		bindobj = GUI_NEW((Bind5to6<P1,P2,P3,P4,P5, TBind>)(p_method, p_data));
 	}
 
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; }
 
 	void operator=(const Method5& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -379,7 +378,7 @@ struct Bind4to5 : public Bind4to5_Base<P1,P2,P3,P4> {
 	
 	void call(P1 p_data1,P2 p_data2,P3 p_data3,P4 p_data4) { method.call(p_data1,p_data2,p_data3,p_data4, data); }
 	Bind4to5_Base<P1,P2,P3,P4> * copy() const {
-		Bind4to5<P1,P2,P3,P4,P5> *_copy = memnew( (Bind4to5<P1,P2,P3,P4,P5>)(method, data));
+		Bind4to5<P1,P2,P3,P4,P5> *_copy = GUI_NEW( (Bind4to5<P1,P2,P3,P4,P5>)(method, data));
 		*_copy=*this;
 		return _copy;
 	}
@@ -439,7 +438,7 @@ public:
 	void set( T* p_instance,void (T::*p_method)(P1,P2,P3,P4) ) {
 
 		if (bindobj)
-			memdelete(bindobj);
+			GUI_DELETE(bindobj);
 		bindobj = 0;
 		
 		method=_method_marshallize(p_instance,p_method);	
@@ -451,15 +450,15 @@ public:
 	void bind(const Method5<P1,P2,P3,P4, TBind>& p_method, TBind p_data) {
 
 		clear();
-		bindobj = memnew((Bind4to5<P1,P2,P3,P4, TBind>)(p_method, p_data));
+		bindobj = GUI_NEW((Bind4to5<P1,P2,P3,P4, TBind>)(p_method, p_data));
 	}
 
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; }
 
 	void operator=(const Method4& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -534,7 +533,7 @@ struct Bind3to4 : public Bind3to4_Base<P1,P2,P3> {
 	
 	void call(P1 p_data1,P2 p_data2,P3 p_data3) { method.call(p_data1,p_data2,p_data3, data); }
 	Bind3to4_Base<P1,P2,P3> * copy() const {
-		Bind3to4<P1,P2,P3,P4> *_copy = memnew( (Bind3to4<P1,P2,P3,P4>)(method, data));
+		Bind3to4<P1,P2,P3,P4> *_copy = GUI_NEW( (Bind3to4<P1,P2,P3,P4>)(method, data));
 		*_copy=*this;
 		return _copy;
 	}
@@ -595,7 +594,7 @@ public:
 	void set( T* p_instance,void (T::*p_method)(P1,P2,P3) ) {
 
 		if (bindobj)
-			memdelete(bindobj);
+			GUI_DELETE(bindobj);
 		bindobj = 0;
 		
 		method=_method_marshallize(p_instance,p_method);	
@@ -607,15 +606,15 @@ public:
 	void bind(const Method4<P1,P2,P3, TBind>& p_method, TBind p_data) {
 
 		clear();
-		bindobj = memnew((Bind3to4<P1,P2,P3, TBind>)(p_method, p_data));
+		bindobj = GUI_NEW((Bind3to4<P1,P2,P3, TBind>)(p_method, p_data));
 	}
 
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; }
 
 	void operator=(const Method3& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -690,7 +689,7 @@ struct Bind2to3 : public Bind2to3_Base<P1,P2> {
 	
 	void call(P1 p_data1,P2 p_data2) { method.call(p_data1,p_data2, data); }
 	Bind2to3_Base<P1,P2> * copy() const {
-		Bind2to3<P1,P2,P3> *_copy = memnew( (Bind2to3<P1,P2,P3>)(method, data));
+		Bind2to3<P1,P2,P3> *_copy = GUI_NEW( (Bind2to3<P1,P2,P3>)(method, data));
 		*_copy=*this;
 		return _copy;
 	}
@@ -752,7 +751,7 @@ public:
 	void set( T* p_instance,void (T::*p_method)(P1,P2) ) {
 
 		if (bindobj)
-			memdelete(bindobj);
+			GUI_DELETE(bindobj);
 		bindobj = 0;
 		
 		method=_method_marshallize(p_instance,p_method);	
@@ -764,15 +763,15 @@ public:
 	void bind(const Method3<P1,P2, TBind>& p_method, TBind p_data) {
 
 		clear();
-		bindobj = memnew((Bind2to3<P1,P2, TBind>)(p_method, p_data));
+		bindobj = GUI_NEW((Bind2to3<P1,P2, TBind>)(p_method, p_data));
 	}
 
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; }
 
 	void operator=(const Method2& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -847,7 +846,7 @@ struct Bind1to2 : public Bind1to2_Base<P1> {
 	
 	void call(P1 p_data1) { method.call(p_data1, data); }
 	Bind1to2_Base<P1> * copy() const {
-		Bind1to2<P1,P2> *_copy = memnew( (Bind1to2<P1,P2>)(method, data));
+		Bind1to2<P1,P2> *_copy = GUI_NEW( (Bind1to2<P1,P2>)(method, data));
 		*_copy=*this;
 		return _copy;
 	}
@@ -910,7 +909,7 @@ public:
 	void set( T* p_instance,void (T::*p_method)(P1) ) {
 
 		if (bindobj)
-			memdelete(bindobj);
+			GUI_DELETE(bindobj);
 		bindobj = 0;
 		
 		method=_method_marshallize(p_instance,p_method);	
@@ -922,15 +921,15 @@ public:
 	void bind(const Method2<P1, TBind>& p_method, TBind p_data) {
 
 		clear();
-		bindobj = memnew((Bind1to2<P1, TBind>)(p_method, p_data));
+		bindobj = GUI_NEW((Bind1to2<P1, TBind>)(p_method, p_data));
 	}
 
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; }
 
 	void operator=(const Method1& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -1004,7 +1003,7 @@ struct Bind0to1 : public Bind0to1_Base {
 
 	void call() { method.call(data1); }
 	Bind0to1_Base * copy() const {
-		Bind0to1<P1> *_copy = memnew(Bind0to1<P1>(method,data1));
+		Bind0to1<P1> *_copy = GUI_NEW(Bind0to1<P1>(method,data1));
 		*_copy=*this;
 		return _copy;
 	}
@@ -1077,16 +1076,16 @@ public:
 	void bind(const Method1<P1>& p_method1, P1 p_data1) {
 
 		clear();
-		bindobj = memnew(Bind0to1<P1>(p_method1,p_data1));
+		bindobj = GUI_NEW(Bind0to1<P1>(p_method1,p_data1));
 	}
 
 	
-	void clear() { call_func=0; if (bindobj) memdelete(bindobj); bindobj = 0; instance = 0; }
+	void clear() { call_func=0; if (bindobj) GUI_DELETE(bindobj); bindobj = 0; instance = 0; }
 	
 	void operator=(const Method& p_method) {
 
 		if (bindobj)
-				memdelete(bindobj);
+				GUI_DELETE(bindobj);
 		bindobj=0;
 
 		if (p_method.bindobj) {
@@ -1237,7 +1236,7 @@ class Signal : public SignalBase {
 				c=c->next;
 
 				remove_from_target( aux->instance );
-				memdelete(aux); //good bye connection
+				GUI_DELETE(aux); //good bye connection
 
 				continue;
 				
@@ -1278,7 +1277,7 @@ public:
 		while (c) {
 			
 			if (c->method==m) {
-				//ERR_PRINT("Already connected");
+				//PRINT_ERROR("Already connected");
 				return -1; // already connected there! dont do it again
 			};
 
@@ -1291,7 +1290,7 @@ public:
 			//instance already has us? do we have that method?
 
 
-		c = memnew(Connection);
+		c = GUI_NEW(Connection);
 		c->method=m;
 		c->instance=m.get_instance();
 		c->count = SignalBase::connection_count++;
@@ -1340,7 +1339,7 @@ public:
 			c=c->next;
 		}
 		if (!c) {
-			ERR_PRINT("Invalid connection count.");
+			PRINT_ERROR("Invalid connection count.");
 			return;
 		};
 		// unless inside a call, cleanup! otherwise autocleanup will happen later
@@ -1547,7 +1546,7 @@ public:
 
 		if (call_ref>0) {
 			
-			ERR_PRINT(" DO NOT CLEAR A SIGNAL IN THE MIDDLE OF A CALL() ");
+			PRINT_ERROR(" DO NOT CLEAR A SIGNAL IN THE MIDDLE OF A CALL() ");
 			
 		}
 		
@@ -1573,7 +1572,7 @@ public:
 
 		if (call_ref>0) {
 			
-			ERR_PRINT(" DO NOT DELETE A SIGNAL IN THE MIDDLE OF A CALL() ");
+			PRINT_ERROR(" DO NOT DELETE A SIGNAL IN THE MIDDLE OF A CALL() ");
 			
 		}
 		
@@ -1581,7 +1580,8 @@ public:
 	};
 
 };
-	
+
+}	
 #endif
 
 

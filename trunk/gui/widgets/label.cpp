@@ -38,7 +38,9 @@ void Label::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	string_size.width=get_painter()->get_font_string_width( font(FONT_LABEL), text );
 	string_size.height=get_painter()->get_font_height( font(FONT_LABEL) );
 	
-	int y_ofs=constant( C_LABEL_MARGIN )+((p_size.height-constant( C_LABEL_MARGIN )*2)-string_size.height)/2+get_painter()->get_font_ascent( font(FONT_LABEL) );
+	//int y_ofs=constant( C_LABEL_MARGIN )+((p_size.height-constant( C_LABEL_MARGIN )*2)-string_size.height)/2+get_painter()->get_font_ascent( font(FONT_LABEL) );
+	int y_ofs = (p_size.height - string_size.height)/2 + get_painter()->get_font_ascent( font(FONT_LABEL) );
+	
 	int x_ofs=0;
 	
 	switch (align) {

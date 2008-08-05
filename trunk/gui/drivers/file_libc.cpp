@@ -88,7 +88,7 @@ bool FileLibC::is_open() {
 
 	return (f!=NULL);
 }
-void FileLibC::seek(uint32_t p_position) {
+void FileLibC::seek(unsigned int p_position) {
 
 	if (!f)
 		return;
@@ -97,24 +97,24 @@ void FileLibC::seek(uint32_t p_position) {
 	if ( fseek(f,p_position,SEEK_SET) )
 		check_errors();
 }
-void FileLibC::seek_end(int32_t p_position) {
+void FileLibC::seek_end(signed int p_position) {
 
 	if (!f) return;
 	if ( fseek(f,p_position,SEEK_END) )
 		check_errors();
 }
-uint32_t FileLibC::get_pos() {
+unsigned int FileLibC::get_pos() {
 
 	if (!f)
 		return 0;
 
-	uint32_t aux_position=0;
+	unsigned int aux_position=0;
 	if ( !(aux_position = ftell(f)) ) {
 		check_errors();
 	};
 	return aux_position;
 }
-uint32_t FileLibC::get_len() {
+unsigned int FileLibC::get_len() {
 
 	if (!f)
 		return 0;
@@ -132,11 +132,11 @@ bool FileLibC::eof_reached() {
 	return last_error==ERR_EOF;
 }
 
-uint8_t FileLibC::get_8() {
+unsigned char FileLibC::get_8() {
 
 	if (!f)
 		return 0;
-	uint8_t b;
+	unsigned char b;
 	if (fread(&b,1,1,f) == 0) {
 		check_errors();
 	};
@@ -150,7 +150,7 @@ File::FileError FileLibC::get_error() {
 	return last_error;
 }
 
-void FileLibC::store_8(uint8_t p_dest) {
+void FileLibC::store_8(unsigned char p_dest) {
 
 	if (!f) return;
 	fwrite(&p_dest,1,1,f);

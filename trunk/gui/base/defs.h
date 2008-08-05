@@ -96,6 +96,15 @@ enum BitmapMode {
 #define SGN(x) ((x)>0 ? 1 : ((x)==0 ? 0:(-1)))
 #endif
 
+#ifdef _MSVC
+
+typedef unsigned __int64 gui_u64;
+
+#else
+
+typedef unsigned long long gui_u64;
+
+#endif
 
 } //end of namespace
 

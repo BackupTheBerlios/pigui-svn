@@ -22,16 +22,16 @@ namespace GUI {
 class Knob : public RangeOwner {
 
         bool grabbing;
-        GUI::Point old_pos;
+        Point old_pos;
         float grab_val;
 
 
-	virtual void mouse_button(const  GUI::Point& p_pos, int p_button,bool p_press,int p_modifier_mask);	
-	virtual void mouse_motion(const  GUI::Point& p_pos, const  GUI::Point& p_rel, int p_button_mask);
+	virtual void mouse_button(const  Point& p_pos, int p_button,bool p_press,int p_modifier_mask);	
+	virtual void mouse_motion(const  Point& p_pos, const  Point& p_rel, int p_button_mask);
 	
 	virtual Size get_minimum_size_internal(); ///< Use this one when writing widgets
 
-	virtual void draw(const  GUI::Point& p_global,const Size& p_size,const Rect& p_exposed);
+	virtual void draw(const  Point& p_global,const Size& p_size,const Rect& p_exposed);
 
 	virtual void range_changed();
 	virtual void value_changed(double p_new_val);

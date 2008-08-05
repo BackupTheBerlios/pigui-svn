@@ -18,9 +18,9 @@
 namespace GUI {
 
 
-void Knob::mouse_button(const  GUI::Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
+void Knob::mouse_button(const  Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
 
-	if (p_button==GUI::BUTTON_LEFT) {
+	if (p_button==BUTTON_LEFT) {
 	
 		if (p_press) {
 		
@@ -34,20 +34,20 @@ void Knob::mouse_button(const  GUI::Point& p_pos, int p_button,bool p_press,int 
 	}
 }
 
-void Knob::mouse_motion(const  GUI::Point& p_pos, const  GUI::Point& p_rel, int p_button_mask)  {
+void Knob::mouse_motion(const  Point& p_pos, const  Point& p_rel, int p_button_mask)  {
 
       if (!grabbing) {
                 old_pos=p_pos;
                 return; //not dragging, pointless
         }
         
-        GUI::Point moved=p_pos-old_pos;
+        Point moved=p_pos-old_pos;
         
 //        float turnamount=-moved.y; // y turn
         float turnamount=moved.x; // x turn
         
         turnamount/=100; //?
-        if (p_button_mask&GUI::KEY_MASK_SHIFT)
+        if (p_button_mask&KEY_MASK_SHIFT)
                 turnamount/=8.0;
 
 	grab_val+=turnamount;
@@ -65,9 +65,9 @@ Size Knob::get_minimum_size_internal() {
 	return Size( constant( C_KNOB_SIZE) ,  constant( C_KNOB_SIZE) );
 }
 
-void Knob::draw(const  GUI::Point& p_global,const Size& p_size,const Rect& p_exposed) {
+void Knob::draw(const  Point& p_global,const Size& p_size,const Rect& p_exposed) {
 
-	get_painter()->draw_circle(  GUI::Point(), p_size, color (COLOR_KNOB_BG ) );
+	get_painter()->draw_circle(  Point(), p_size, color (COLOR_KNOB_BG ) );
 	
 	
 	float ang_begin_rad=(constant(C_KNOB_ANGLE_BEGIN)*(M_PI*2.0)/360.0);
@@ -77,8 +77,8 @@ void Knob::draw(const  GUI::Point& p_global,const Size& p_size,const Rect& p_exp
         int handle_y= get_size_cache().height/2-(int)(-cos(angle)*(float)constant(C_KNOB_HANDLE_AT_RADIUS))-constant( C_KNOB_HANDLE_SIZE)/2;
         int handle_x= get_size_cache().width/2+(int)(-sin(angle)*(float)constant(C_KNOB_HANDLE_AT_RADIUS))-constant( C_KNOB_HANDLE_SIZE)/2;
         
-        GUI::Point from( handle_x, handle_y );
-        GUI::Point to=from+GUI::Point( constant( C_KNOB_HANDLE_SIZE), constant( C_KNOB_HANDLE_SIZE) );
+        Point from( handle_x, handle_y );
+        Point to=from+Point( constant( C_KNOB_HANDLE_SIZE), constant( C_KNOB_HANDLE_SIZE) );
         get_painter()->draw_circle( from, to, color( COLOR_KNOB_HANDLE ) );
 	
 }

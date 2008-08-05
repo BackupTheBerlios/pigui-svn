@@ -27,16 +27,16 @@ File *File::create(){
 
 /* these are all implemented for ease of porting, then can later be optimized */
 
-uint16_t File::get_16() {
+unsigned short File::get_16() {
 	
-	uint16_t res;
-	uint8_t a,b;
+	unsigned short res;
+	unsigned char a,b;
 	
 	a=get_8();
 	b=get_8();
 	
 	if (endian_swap) {
-		uint8_t aux=a;
+		unsigned char aux=a;
 		a=b;
 		b=aux;
 	}
@@ -47,17 +47,17 @@ uint16_t File::get_16() {
 	
 	return res;
 }
-uint32_t File::get_32() {
+unsigned int File::get_32() {
 	
-	uint32_t res;
-	uint16_t a,b;
+	unsigned int res;
+	unsigned short a,b;
 	
 	a=get_16();
 	b=get_16();
 	
 	if (endian_swap) {
 		
-		uint16_t aux=a;
+		unsigned short aux=a;
 		a=b;
 		b=aux;
 	}
@@ -68,17 +68,17 @@ uint32_t File::get_32() {
 	
 	return res;	
 }
-uint64_t File::get_64() {
+gui_u64 File::get_64() {
 	
-	uint64_t res;
-	uint32_t a,b;
+	gui_u64 res;
+	unsigned int a,b;
 	
 	a=get_32();
 	b=get_32();
 	
 	if (endian_swap) {
 		
-		uint32_t aux=a;
+		unsigned int aux=a;
 		a=b;
 		b=aux;
 	}
@@ -91,23 +91,23 @@ uint64_t File::get_64() {
 	
 }
 
-void File::get_buffer(uint8_t *p_dst,int p_length) {
+void File::get_buffer(unsigned char *p_dst,int p_length) {
 	
 	for (int i=0;i<p_length;i++)
 		p_dst[i]=get_8();
 	
 }
 
-void File::store_16(uint16_t p_dest) {
+void File::store_16(unsigned short p_dest) {
 	
-	uint8_t a,b;
+	unsigned char a,b;
 	
 	a=p_dest&0xFF;
 	b=p_dest>>8;
 	
 	if (endian_swap) {
 		
-		uint8_t aux=a;
+		unsigned char aux=a;
 		a=b;
 		b=aux;
 	}
@@ -116,17 +116,17 @@ void File::store_16(uint16_t p_dest) {
 	store_8(b);
 
 }
-void File::store_32(uint32_t p_dest) {
+void File::store_32(unsigned int p_dest) {
 	
 	
-	uint16_t a,b;
+	unsigned short a,b;
 	
 	a=p_dest&0xFFFF;
 	b=p_dest>>16;
 	
 	if (endian_swap) {
 		
-		uint16_t aux=a;
+		unsigned short aux=a;
 		a=b;
 		b=aux;
 	}
@@ -135,16 +135,16 @@ void File::store_32(uint32_t p_dest) {
 	store_16(b);
 	
 }
-void File::store_64(uint64_t p_dest) {
+void File::store_64(gui_u64 p_dest) {
 	
-	uint32_t a,b;
+	unsigned int a,b;
 	
 	a=p_dest&0xFFFFFFFF;
 	b=p_dest>>32;
 	
 	if (endian_swap) {
 		
-		uint32_t aux=a;
+		unsigned int aux=a;
 		a=b;
 		b=aux;
 	}
@@ -153,7 +153,7 @@ void File::store_64(uint64_t p_dest) {
 	store_32(b);
 	
 }
-void File::store_buffer(const uint8_t *p_src,int p_length) {
+void File::store_buffer(const unsigned char *p_src,int p_length) {
 	
 	for (int i=0;i<p_length;i++)
 		store_8(p_src[i]);

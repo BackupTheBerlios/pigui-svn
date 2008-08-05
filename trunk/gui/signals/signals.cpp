@@ -11,9 +11,7 @@
 //
 #include "signals.h"
 
-#ifndef GUI_EXTERNAL_SIGNAL
-
-namespace GUI {
+int SignalBase::connection_count = 0;
 
 bool SignalBase::register_at_target( SignalTarget *p_target ) {
 	
@@ -41,7 +39,7 @@ bool SignalTarget::_register_signal( SignalBase *p_signal ) {
 		c=c->next;
 	}
 
-	c = new Connection;
+	c = memnew(Connection);
 
 	c->next=_conn_list;
 	c->signal=p_signal;
@@ -61,9 +59,8 @@ void SignalTarget::_clear_signal( SignalBase *p_signal ) {
 			
 			c->refcount--;
 			if (c->refcount<=0) {
-				
 				*pc=c->next;
-				delete c;
+				memdelete(c);
 			}
 			
 			return; // just be connected only once anyway
@@ -73,22 +70,25 @@ void SignalTarget::_clear_signal( SignalBase *p_signal ) {
 	}
 
 }
-		
-SignalTarget::SignalTarget() {
 
-	_conn_list=0; //no connections to here
-}
-SignalTarget::~SignalTarget() {
+void SignalTarget::clear_connections() {
 
 	while (_conn_list) {
 
 		Connection *c=_conn_list;
 		_conn_list=_conn_list->next;
 		c->signal->remove_target( this );
-		delete c;
+		memdelete(c);
 	}		
+	
+};
+
+SignalTarget::SignalTarget() {
+
+	_conn_list=0; //no connections to here
+}
+SignalTarget::~SignalTarget() {
+
+	clear_connections();
 }
 
-}
-
-#endif

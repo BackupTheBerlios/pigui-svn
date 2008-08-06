@@ -59,6 +59,9 @@ public:
 	virtual String get_current_dir(); ///< return current dir location
 
 	virtual bool file_exists(String p_file);	
+
+	virtual bool rename(String p_path,String p_new_path); ///< false on succes
+	virtual bool remove(String p_path); ///< false on success
 	
 	virtual bool make_dir(String p_dir);
 	

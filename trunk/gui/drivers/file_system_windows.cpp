@@ -242,6 +242,30 @@ bool FileSystemWindows::file_exists(String p_file) {
 	return false;
 }
 
+bool FileSystemWindows::rename(String p_path,String p_new_path) {
+
+	if (file_exists(p_new_path)) {
+		if (remove(p_new_path)) {
+			return true;
+		};
+	};
+	
+	return ::_wrename(p_path.c_str(),p_new_path.c_str());
+}
+bool FileSystemWindows::remove(String p_path)  {
+
+	printf("erasing %s\n",p_path.utf8().get_data());
+	DWORD fileAttr = GetFileAttributesW(p_file.c_str());
+	if (fileAttr == INVALID_FILE_ATTRIBUTES)
+		return true;
+	
+	if (fileAttr & FILE_ATTRIBUTE_DIRECTORY)
+		return ::_wrmdir(p_path.c_str());
+	else 
+		return ::_wunlink(p_path.c_str());
+}
+
+
 FileSystem *FileSystemWindows::create_fs() {
 
 	return GUI_NEW( FileSystemWindows );

@@ -1255,6 +1255,8 @@ bool Window::is_visible() {
 Frame* Window::find_frame_at_pos(Point p_pos,Point *local_pos) {
 
 	Window * w = find_window_at_pos(p_pos);
+	if (!w)
+		return NULL;
 	
 	Point w_pos = p_pos - w->get_pos();
 	if (!w->root_frame)

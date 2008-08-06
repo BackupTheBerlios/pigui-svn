@@ -13,6 +13,29 @@
 
 namespace GUI {
 
+	
+void ScrollContainer::mouse_button(const GUI::Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
+	
+	if (p_modifier_mask&KEY_MASK_ALT) {
+		
+		if (p_button==BUTTON_WHEEL_DOWN)
+			h_scroll.set( h_scroll.get() - h_scroll.get_page() / 8.0);
+		if (p_button==BUTTON_WHEEL_UP)
+			h_scroll.set( h_scroll.get() + h_scroll.get_page() / 8.0);
+	} else {
+		
+		if (p_button==BUTTON_WHEEL_DOWN)
+			v_scroll.set( v_scroll.get() + v_scroll.get_page() / 8.0);
+		if (p_button==BUTTON_WHEEL_UP)
+			v_scroll.set( v_scroll.get() - v_scroll.get_page() / 8.0);
+		
+	}
+			
+	if (p_button==BUTTON_WHEEL_UP || p_button==BUTTON_WHEEL_DOWN)
+		get_window()->stop_event();
+}
+	
+	
 void ScrollContainer::set_expand_h(bool p_enable) {
 
 	expand_h=p_enable;

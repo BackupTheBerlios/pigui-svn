@@ -444,7 +444,16 @@ void Window::mouse_doubleclick(const Point& p_pos,int p_modifier_mask) {
 
 }
 
+void Window::stop_event() {
+	
+	if (!root)
+		return;
+	
+	root->root_data->stop_event=true;
+}
+
 void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modifier_mask) {
+
 
 
 	if (!parent && (root->focus!=this)) {
@@ -456,7 +465,7 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 			Point pos=p_pos-root->focus->get_global_pos();
 
 			root->focus->mouse_button( pos , p_button, p_press, p_modifier_mask );
-			check_tooltip_and_cursor_at_pos(p_pos);
+			
 			return;
 
 		} else {
@@ -501,14 +510,12 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 				if (post_popup_hide)
 					focus->mouse_motion( pos, Point(), 0 );
 				focus->mouse_button( pos, p_button, p_press, p_modifier_mask );
-				check_tooltip_and_cursor_at_pos(p_pos);
 				return;
 			}
 
 		}
 
 	}
-
 
 
 	if (!root_frame)
@@ -555,7 +562,14 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 				if (child==drag.child) {
 
 					//send event now
-					child->mouse_button( local_pos, p_button, p_press, p_modifier_mask );
+					root->root_data->stop_event=false;
+					Frame* from=child;
+		
+					while(from && !root->root_data->stop_event) {
+			
+						from->mouse_button( local_pos, p_button, p_press, p_modifier_mask );
+						from=from->get_parent();
+					}
 
 					/* try to find if child changed */
 					child=root_frame->get_child_at_pos( p_pos, size, &local_pos );
@@ -575,8 +589,17 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 		}
 
 	}
-	child->mouse_button( local_pos, p_button, p_press, p_modifier_mask );
-
+	
+	root->root_data->stop_event=false;
+	Frame* from=child;
+		
+	while(from && !root->root_data->stop_event) {
+			
+		from->mouse_button( local_pos, p_button, p_press, p_modifier_mask );
+		from=from->get_parent();
+	}
+	
+	check_tooltip_and_cursor_at_pos(p_pos);	
 }
 
 void Window::check_tooltip_and_cursor_at_pos(const Point& p_pos) {
@@ -654,8 +677,14 @@ void Window::mouse_motion(const Point& p_pos, const Point& p_rel, int p_button_m
 		return; //nothing found!
 
 
-	child->mouse_motion( local_pos, p_rel, p_button_mask );
-
+	root->root_data->stop_event=false;
+	Frame* from=child;
+		
+	while(from && !root->root_data->stop_event) {
+			
+		from->mouse_motion( local_pos, p_rel, p_button_mask );
+		from=from->get_parent();
+	}
 }
 
 void Window::key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask) {

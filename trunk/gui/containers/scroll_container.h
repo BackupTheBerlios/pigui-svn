@@ -31,6 +31,8 @@ class ScrollContainer : public Container {
 	bool scroll_h;
 	bool scroll_v;
 	
+	virtual void mouse_button(const GUI::Point& p_pos, int p_button,bool p_press,int p_modifier_mask);
+	
 	virtual Size get_minimum_size_internal();
 	virtual void resize_internal(const Size& p_new_size);
 	virtual void check_minimum_size();

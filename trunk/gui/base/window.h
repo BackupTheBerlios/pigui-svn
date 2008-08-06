@@ -81,8 +81,9 @@ private:
 		Frame *tooltipped_frame;	
 		int tooltip_cbk_count;
 		Point last_mouse_pos;
+		bool stop_event;
 		
-		RootWindowData() { skin=0; modal_stack=0; painter=0; timer=0; update_rect_list=0; update_rect_list_locked=false; tooltipped_frame=0; tooltip_cbk_count=0; }
+		RootWindowData() { skin=0; modal_stack=0; painter=0; timer=0; update_rect_list=0; update_rect_list_locked=false; tooltipped_frame=0; tooltip_cbk_count=0; stop_event=true; }
 
 	};
 
@@ -193,6 +194,8 @@ public:
 	void mouse_doubleclick(const Point& p_pos,int p_modifier_mask);
 	void key(unsigned long p_unicode, unsigned long p_scan_code,bool p_press,bool p_repeat,int p_modifier_mask);
 
+	void stop_event();
+	
 	bool is_visible();
 
 	Frame * get_focused_child();

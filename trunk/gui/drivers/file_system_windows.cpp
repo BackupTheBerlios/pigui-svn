@@ -15,6 +15,8 @@
 
 
 #include <windows.h>
+#include <wchar.h>
+#include <stdio.h>
 
 namespace GUI {
 
@@ -249,19 +251,19 @@ bool FileSystemWindows::rename(String p_path,String p_new_path) {
 			return true;
 		};
 	};
-	
+
 	return ::_wrename(p_path.c_str(),p_new_path.c_str());
 }
 bool FileSystemWindows::remove(String p_path)  {
 
 	printf("erasing %s\n",p_path.utf8().get_data());
-	DWORD fileAttr = GetFileAttributesW(p_file.c_str());
+	DWORD fileAttr = GetFileAttributesW(p_path.c_str());
 	if (fileAttr == INVALID_FILE_ATTRIBUTES)
 		return true;
-	
+
 	if (fileAttr & FILE_ATTRIBUTE_DIRECTORY)
 		return ::_wrmdir(p_path.c_str());
-	else 
+	else
 		return ::_wunlink(p_path.c_str());
 }
 

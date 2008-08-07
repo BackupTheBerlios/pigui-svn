@@ -1,7 +1,7 @@
 Import('env');
 Export('env');
 
-targets=['painter_sdl.cpp','keycodes_sdl.cpp','file_system_dirent.cpp','timer_sdl.cpp','file_system_windows.cpp','file_libc.cpp','file_windows.cpp'];
+targets=['painter_sdl.cpp','keycodes_sdl.cpp','file_system_dirent.cpp','timer_sdl.cpp','file_system_windows.cpp','file_libc.cpp'] #,'file_windows.cpp'];
 
 
 for x in targets:

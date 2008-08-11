@@ -52,7 +52,7 @@ private:
 	int columns;
 	int rows;
 
-	int elements;
+
 
 	int separation;
 

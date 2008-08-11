@@ -22,7 +22,38 @@ Container::Element *GridContainer::create_new_element() {
 
 void GridContainer::compute_cachedatas() {
 
-    int row=0,col=0;
+
+	int visible_elements=0;
+	
+	GridElement *ge=(GridElement*)get_element_list_end();
+
+	while (ge) {
+
+		if (ge->frame->is_visible()) {
+			
+			visible_elements++;
+		}
+
+		ge=(GridElement*)ge->prev;
+	}
+
+	
+	rows=((visible_elements-1)/columns)+1;
+
+	if (vcache && ( vcache_size!=rows || rows==0)) {
+	
+		GUI_DELETE_ARRAY( vcache );
+		vcache=0;
+	}
+	
+	if (rows && !vcache) {
+		vcache=GUI_NEW_ARRAY( CacheData, rows );
+	}
+	
+	vcache_size=rows;
+	
+	
+	int row=0,col=0;
 
 
 
@@ -42,38 +73,39 @@ void GridContainer::compute_cachedatas() {
 		hcache[c].size=0;
 	}
 	
-	GridElement *ge=(GridElement*)get_element_list_end();
+	ge=(GridElement*)get_element_list_end();
 	
 	while (ge) {
 
 
-		Size emin=ge->frame->get_minimum_size();
-		if (!ge->frame->is_visible())
-			emin=Size();
-
-
-		if (row<(rows-1))
-			emin.height+=sep;
-		
-		if (col<(columns-1))
-			emin.width+=sep;
-		
-		if (emin.width>hcache[col].min_size)
-			hcache[col].min_size=emin.width;
-
-		if (emin.height>vcache[row].min_size)
-			vcache[row].min_size=emin.height;
-
-		if (ge->h_expand)
-			hcache[col].expand=true;
-					
-		if (ge->v_expand)
-			vcache[row].expand=true;
-		
-		col++;
-		if (col>=columns) {
-			col=0;
-			row++;
+		Size emin;
+		if (ge->frame->is_visible()) {
+			
+			emin=ge->frame->get_minimum_size();
+	
+			if (row<(rows-1))
+				emin.height+=sep;
+			
+			if (col<(columns-1))
+				emin.width+=sep;
+			
+			if (emin.width>hcache[col].min_size)
+				hcache[col].min_size=emin.width;
+	
+			if (emin.height>vcache[row].min_size)
+				vcache[row].min_size=emin.height;
+	
+			if (ge->h_expand)
+				hcache[col].expand=true;
+						
+			if (ge->v_expand)
+				vcache[row].expand=true;
+			
+			col++;
+			if (col>=columns) {
+				col=0;
+				row++;
+			}
 		}
 
 		ge=(GridElement*)ge->prev;
@@ -83,8 +115,9 @@ void GridContainer::compute_cachedatas() {
 }
 Size GridContainer::get_minimum_size_internal() {
 
-    if (!get_element_list())
-        return Size();
+	
+	if (!get_element_list())
+		return Size();
 
 	int sep=separation;
 	Size min;
@@ -174,31 +207,32 @@ void GridContainer::resize_internal(const Size& p_new_size) {
 
 	while (ge) {
 
-
-		Size dst_size(hcache[col].size,vcache[row].size);
-
-		if (row<(rows-1))
-			dst_size.height-=sep;
-		
-		if (col<(columns-1))
-			dst_size.width-=sep;
-
-		
-		ge->rect.pos=ofs;
-		ge->rect.size=dst_size;
-		ge->frame->resize_tree( dst_size );
-
-		ofs.x+=hcache[col].size;
-		
-		col++;
-		if (col>=columns) {
-			col=0;
-			ofs.x=0;
-			ofs.y+=vcache[row].size;
-			row++;
+		if (ge->frame->is_visible()) {
+	
+			Size dst_size(hcache[col].size,vcache[row].size);
+	
+			if (row<(rows-1))
+				dst_size.height-=sep;
 			
+			if (col<(columns-1))
+				dst_size.width-=sep;
+	
+			
+			ge->rect.pos=ofs;
+			ge->rect.size=dst_size;
+			ge->frame->resize_tree( dst_size );
+	
+			ofs.x+=hcache[col].size;
+			
+			col++;
+			if (col>=columns) {
+				col=0;
+				ofs.x=0;
+				ofs.y+=vcache[row].size;
+				row++;
+				
+			}
 		}
-
 		ge=(GridElement*)ge->prev;
 	}
 
@@ -218,24 +252,9 @@ void GridContainer::add_frame(Frame *p_frame, bool p_h_expand, bool p_v_expand) 
 	ge->h_expand=p_h_expand;
 	ge->v_expand=p_v_expand;
 
-
+	
 	/* vcache */
 	
-	elements++;
-
-	
-	rows=((elements-1)/columns)+1;
-
-	
-	while (rows>vcache_size) {
-
-		vcache_size+=VCACHE_RESIZE_EVERY;
-		CacheData * new_cache = GUI_NEW_ARRAY( CacheData, vcache_size);
-		if (vcache) {
-			GUI_DELETE_ARRAY( vcache );
-		}
-		vcache=new_cache;
-	}
 
 	
 }
@@ -245,7 +264,7 @@ GridContainer::GridContainer(int p_columns) {
 	if (p_columns<1)
 		p_columns=1;
 
-        elements=0;
+        
 	columns = p_columns;
 
 	hcache = GUI_NEW_ARRAY( CacheData, columns);

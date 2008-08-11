@@ -302,6 +302,11 @@ Button::Button(BitmapID p_icon) {
 	shortcut_active=false;
 }
 
+void Button::set_flat(bool p_flat) {
+
+	flat=p_flat;
+}
+
 Button::Button(String p_text,BitmapID p_icon) {
 
 	accel_char = -1;
@@ -310,6 +315,7 @@ Button::Button(String p_text,BitmapID p_icon) {
 	icon=p_icon;
 	shortcut=0;
 	shortcut_active=false;
+	flat=false;
 }
 
 

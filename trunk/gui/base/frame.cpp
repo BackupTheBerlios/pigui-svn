@@ -356,6 +356,11 @@ void Frame::focus_leave() {
 
 void Frame::set_window(Window *p_window) {
 	
+	if (p_window && _fp->window) {
+		//PRINT_ERROR("Setting frame in window more than once!"); -- probably normal, as long as check exists, all is ok
+		return; 
+	}
+		
 	_fp->window=p_window;
 	if (p_window)
 		_fp->skin=p_window->get_skin();

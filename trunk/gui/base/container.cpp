@@ -1,7 +1,7 @@
 
 
 #include "container.h"
-#include <stdio.h>
+
 namespace GUI {
 
 
@@ -50,6 +50,7 @@ Container::Element *Container::create_new_element() {
 }
 
 Container::Element* Container::add_frame_internal( Frame * p_frame, bool p_front ) {
+	
 	
 	if (p_frame->get_parent()) {
 		PRINT_ERROR("Child already has a parent!");

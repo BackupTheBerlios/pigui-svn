@@ -125,8 +125,8 @@ String FileSystemWindows::get_drive(int p_drive) {
 
 	if (p_drive<0 || p_drive>=drive_count)
 		return "";
-
-	return String::chr(drives[p_drive])+":";
+	char drv[3]={drives[p_drive],':','\n'};
+	return drv;
 }
 
 bool FileSystemWindows::change_dir(String p_dir) {
@@ -305,7 +305,14 @@ FileSystemWindows::FileSystemWindows() {
 	p->h=INVALID_HANDLE_VALUE;
 	change_dir(".");
 }
+bool FileSystemWindows::rename(String p_path,String p_new_path) {
 
+	return false;
+}
+bool FileSystemWindows::remove(String p_path) {
+
+	return false;
+}
 
 FileSystemWindows::~FileSystemWindows()
 {

@@ -29,6 +29,7 @@ protected:
 	int accel_char;
 	unsigned int shortcut;
 	bool shortcut_active;
+	bool flat;
 
 	void parse_accelerator();
 
@@ -49,6 +50,8 @@ public:
 	BitmapID get_icon();
 	
 	void set_shurtcut(unsigned int p_shortcut,bool p_active=true);
+	
+	void set_flat(bool p_flat);
 
 	Button(BitmapID p_icon);
 	Button(String p_text="",BitmapID p_icon=-1);

@@ -13,6 +13,8 @@
 #include "containers/box_container.h"
 #include "widgets/separator.h"
 #include "widgets/menu_button.h"
+#include "widgets/label.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -33,6 +35,8 @@ void PopUpMenu::menu_button_toggled(MenuButton*p_mb,bool p_toggle) {
 
 void PopUpMenu::add_item(String p_text, int p_ID, void *p_userdata,int p_shortcut,bool p_shortcut_active) {
 	
+	
+
 	MenuButton *mb  = vbc->add( GUI_NEW(MenuButton(p_text)), 0 );
 	
 	mb->set_id( p_ID );
@@ -397,6 +401,7 @@ void PopUpMenu::popup() {
 }
 void PopUpMenu::popup(const Point &p_pos) {
 	
+	
 	set_pos(p_pos);
 	show();	
 	set_focus( 0 ); //clear focus	
@@ -416,8 +421,11 @@ PopUpMenu::PopUpMenu(Window *p_parent) : Window(p_parent,MODE_POPUP) {
 	set_root_frame( main_vbc );
 	
 	vbc = main_vbc->add( GUI_NEW( VBoxContainer ) );
+
+	
 	vbc->set_separation(1);
 	main_vbc->set_stylebox_override( get_skin()->get_stylebox( SB_POPUP_MENU_BG ) );
+	
 
 	
 }

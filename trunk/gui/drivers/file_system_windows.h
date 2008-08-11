@@ -65,6 +65,9 @@ public:
 	
 	virtual bool make_dir(String p_dir);
 	
+	virtual bool rename(String p_path,String p_new_path); ///< false on succes
+	virtual bool remove(String p_path); ///< false on success
+	
 	static void set_default_filesystem();
 	
 	FileSystemWindows();

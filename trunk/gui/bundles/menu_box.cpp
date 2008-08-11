@@ -13,7 +13,6 @@
 #include "base/skin.h"
 
 
-
 namespace GUI {
 
 
@@ -76,7 +75,7 @@ void MenuBox::pressed() {
 	
 	pre_show_signal.call();
 	
-	popup->set_size( Size( size.width, 0 ) );
+	popup->set_size( Size( size.width, 100 ) );
 	popup->popup( get_global_pos()+Point( 0, size.height) );
 }
 void MenuBox::item_activated(int p_which) {
@@ -172,6 +171,7 @@ void MenuBox::clear() {
 
 void MenuBox::set_in_window() {
 	
+
 	popup = GUI_NEW( PopUpMenu( get_window() ) );
 	popup->selected_id_signal.connect( this, &MenuBox::item_activated );
 	

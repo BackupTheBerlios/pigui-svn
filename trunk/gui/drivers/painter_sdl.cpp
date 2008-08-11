@@ -330,7 +330,9 @@ BitmapID PainterSDL::create_bitmap(const Size& p_size,BitmapMode p_mode,bool p_a
 	} if (p_mode==MODE_ALPHA_MASK) {
 
 		s= SDL_CreateRGBSurface(SDL_SWSURFACE, p_size.width, p_size.height, 8, 0,0,0,0xFF);
+
 		if (s) {
+
 			SDL_Color colors;
 					/* Fill colors with color information */
 			for(int i=0;i<256;i++){
@@ -491,7 +493,10 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 	} else if (p_dir==DOWN) {
 		
 		global_rect.size.swap_xy();
-		global_rect=Rect(rect.pos+p_pos-p_src_rect.pos, Size( src_surface->h, src_surface->w ) ).clip( global_rect ); // clip by src_surface
+		
+		Rect clipsrc = Rect(rect.pos+p_pos-p_src_rect.pos, Size( src_surface->w, src_surface->h ) );
+		
+		global_rect=clipsrc.clip( global_rect ); // clip by src_surface
 	
 	} else if (p_dir==LEFT || p_dir==UP) {
 		
@@ -529,6 +534,7 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 		read_rect.pos-=p_src_rect.pos;
 		read_rect.pos.swap_xy();
 		read_rect.pos+=p_src_rect.pos;*/
+
 	}
 		
 	/* Compute read/write rects */
@@ -567,6 +573,7 @@ void PainterSDL::draw_custom_bitmap(BitmapID p_bitmap,const Point &p_pos, const 
 					} break;
 					case DOWN: {
 						dst_line=(Uint16 *)surface->pixels + (write_rect.pos.y) * surface->pitch / 2 + write_rect.pos.x+(read_rect.size.height-iy-1);
+
 					} break;
 					default: {};
 				}

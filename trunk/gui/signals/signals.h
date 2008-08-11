@@ -10,11 +10,11 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef SIGNALS_H
-#define SIGNALS_H
+#ifndef GUI_SIGNALS_H
+#define GUI_SIGNALS_H
 
 //#include "typedefs.h"
-
+#include "base/defs.h"
 #include "base/defs.h"
 #include "base/memory.h"
 

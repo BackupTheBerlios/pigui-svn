@@ -24,6 +24,7 @@ namespace GUI {
 
 enum StyleBoxList{
 
+	SB_NONE,
 	SB_ROOT_CONTAINER,
  	SB_CONTAINER,
 	SB_POPUP_BG,

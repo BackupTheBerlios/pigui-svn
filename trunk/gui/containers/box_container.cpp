@@ -180,7 +180,8 @@ void BoxContainer::resize_internal(const Size& p_new_size) {
 	
 	
 	if (stretchable_space < 0) {
-		PRINT_ERROR("Negative stretchable space?");
+#warning this is probably a bug, it IS happening		
+		//PRINT_ERROR("Negative stretchable space?");
 		return;
 	}
 	

@@ -41,6 +41,39 @@ public:
 		Element *next;		
 		Element *prev;		
 		
+		void set_rect( Rect p_rect ) {
+			
+			bool restraints = (!frame->can_fill_vertical() || !frame->can_fill_horizontal());
+			
+			if (!restraints) {
+					
+				rect=p_rect;
+				return;
+			}
+			
+			Size minsize = frame->get_minimum_size();
+			
+			if (!frame->can_fill_vertical()) {
+				
+				rect.pos.y=p_rect.pos.y+(p_rect.size.y-minsize.y)/2;
+				rect.size.y=minsize.y;
+			} else {
+				
+				rect.pos.y=p_rect.pos.y;
+				rect.size.y=p_rect.size.y;
+			}
+			
+			if (!frame->can_fill_horizontal()) {
+
+				rect.pos.x=p_rect.pos.x+(p_rect.size.x-minsize.x)/2;
+				rect.size.x=minsize.x;
+			} else {
+				
+				rect.pos.x=p_rect.pos.x;
+				rect.size.x=p_rect.size.x;
+			}				
+		}
+		
 		Element() { frame = 0; next =0; prev =0; }
 		virtual ~Element() {}
 	};

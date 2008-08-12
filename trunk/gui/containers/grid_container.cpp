@@ -218,8 +218,9 @@ void GridContainer::resize_internal(const Size& p_new_size) {
 				dst_size.width-=sep;
 	
 			
-			ge->rect.pos=ofs;
-			ge->rect.size=dst_size;
+			ge->set_rect( Rect( ofs, dst_size ) );
+			//ge->rect.pos=ofs;
+			//ge->rect.size=dst_size;
 			ge->frame->resize_tree( dst_size );
 	
 			ofs.x+=hcache[col].size;

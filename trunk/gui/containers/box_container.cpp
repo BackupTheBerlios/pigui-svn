@@ -299,36 +299,40 @@ void BoxContainer::resize_internal(const Size& p_new_size) {
 
 		}
 		
-		bool can_fill_perp=vertical?e->frame->can_fill_horizontal():e->frame->can_fill_vertical();
+		//bool can_fill_perp=vertical?e->frame->can_fill_horizontal():e->frame->can_fill_vertical();
 		int final_pos_perp=0;
 		int final_size_perp=total_size_perp;
 		
+		/*
 		if (!can_fill_perp) {
 			
 			final_pos_perp+=(final_size_perp-e->stretch_cache.perp_min_size)/2; //center it
 			final_size_perp=e->stretch_cache.perp_min_size; //and change size
 
-		}
+		}*/
 		
-		
+		Rect final_rect;
 		
 		if (vertical) { /* VERTICAL */
 			
-			e->rect.pos.x=final_pos_perp;
-			e->rect.size.width=final_size_perp;
 			
-			e->rect.pos.y=final_pos;
-			e->rect.size.height=final_size;
+			final_rect.pos.x=final_pos_perp;
+			final_rect.size.width=final_size_perp;
+			
+			final_rect.pos.y=final_pos;
+			final_rect.size.height=final_size;
 			
 		} else { /* HORIZONTAL */
 			
-			e->rect.pos.y=final_pos_perp;
-			e->rect.size.height=final_size_perp;
+			final_rect.pos.y=final_pos_perp;
+			final_rect.size.height=final_size_perp;
 			
-			e->rect.pos.x=final_pos;
-			e->rect.size.width=final_size;
+			final_rect.pos.x=final_pos;
+			final_rect.size.width=final_size;
 
 		}
+		
+		e->set_rect( final_rect );
 		
 		
 		e->frame->resize_tree( e->rect.size );

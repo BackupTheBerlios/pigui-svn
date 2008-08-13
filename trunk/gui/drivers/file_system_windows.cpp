@@ -305,14 +305,6 @@ FileSystemWindows::FileSystemWindows() {
 	p->h=INVALID_HANDLE_VALUE;
 	change_dir(".");
 }
-bool FileSystemWindows::rename(String p_path,String p_new_path) {
-
-	return false;
-}
-bool FileSystemWindows::remove(String p_path) {
-
-	return false;
-}
 
 FileSystemWindows::~FileSystemWindows()
 {

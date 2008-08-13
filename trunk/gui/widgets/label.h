@@ -35,6 +35,7 @@ private:
 		int line_end_ofs;
 		int line_size;
 		String text;
+		LineCache() { line_size=0; line_end_ofs=0; }
 	};
 	
 	LineCache *line_cache;

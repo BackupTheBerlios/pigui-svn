@@ -133,6 +133,7 @@ void Label::regenerate_line_cache() {
 				max_w=line_cache[line].line_size;
 			}
 			from=i+1;
+			line++;
 		}
 	}
 	

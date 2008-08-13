@@ -305,7 +305,7 @@ Skin::~Skin(){
 void Skin::set_default() {
 
 
-	SET_STYLEBOX( SB_NONE, StyleBox() )
+	SET_STYLEBOX( SB_EMPTY, StyleBox() )
 	SET_FONT( FONT_TOOLTIP, 0 );
 	SET_COLOR( COLOR_TOOLTIP_FONT, Color(0) );
 	

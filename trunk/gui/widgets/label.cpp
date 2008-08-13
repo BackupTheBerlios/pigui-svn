@@ -12,6 +12,7 @@
 #include "label.h"
 #include "base/painter.h"
 #include "base/skin.h"
+#include <stdio.h>
 namespace GUI {
 
 
@@ -71,37 +72,6 @@ void Label::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	}
 	
 	
-	string_size.width=get_painter()->get_font_string_width( font(FONT_LABEL), text );
-	string_size.height=get_painter()->get_font_height( font(FONT_LABEL) );
-	
-	//int y_ofs=constant( C_LABEL_MARGIN )+((p_size.height-constant( C_LABEL_MARGIN )*2)-string_size.height)/2+get_painter()->get_font_ascent( font(FONT_LABEL) );
-	int y_ofs = (p_size.height - string_size.height)/2 + get_painter()->get_font_ascent( font(FONT_LABEL) );
-	
-	int x_ofs=0;
-	
-	switch (align) {
-		
-		case ALIGN_LEFT: {
-			
-			x_ofs=constant( C_LABEL_MARGIN );
-		} break;
-		case ALIGN_CENTER: {
-			
-			x_ofs=constant( C_LABEL_MARGIN )+((p_size.width-constant( C_LABEL_MARGIN )*2)-string_size.width)/2;
-			
-		} break;
-		case ALIGN_RIGHT: {
-			
-			x_ofs=p_size.width-constant( C_LABEL_MARGIN )-string_size.width;
-		} break;
-		
-	}
-	
-	get_painter()->draw_text( font(FONT_LABEL), Point( x_ofs, y_ofs ), text, color(COLOR_LABEL_FONT) );
-	
-	
-	
-	
 }
 
 void Label::set_align(Align p_align) {
@@ -147,7 +117,7 @@ void Label::regenerate_line_cache() {
 	int max_w=0;
 	for (int i=0;i<=text.length();i++) {
 		
-		if (text[i]=='\n' || i==text.length()) {
+		if (i==text.length() || text[i]=='\n') {
 			
 			line_cache[line].line_end_ofs=i;
 			line_cache[line].line_size=0;
@@ -157,7 +127,7 @@ void Label::regenerate_line_cache() {
 				line_cache[line].line_size+=get_painter()->get_font_char_width( font(FONT_LABEL),text[j]);
 			}
 			
-			line_cache[i].text=text.substr(from,i-from);						
+			line_cache[line].text=text.substr(from,i-from);						
 			if (line_cache[line].line_size>max_w) {
 			
 				max_w=line_cache[line].line_size;

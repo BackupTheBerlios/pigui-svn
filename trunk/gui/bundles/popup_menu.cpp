@@ -43,7 +43,7 @@ void PopUpMenu::add_item(String p_text, int p_ID, void *p_userdata,int p_shortcu
 	mb->set_userdata( p_userdata );
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 	id_count=p_ID+1;
-	
+	vbc->set_separation( 2 );
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -57,6 +57,7 @@ void PopUpMenu::add_item(String p_text, void *p_userdata,int p_shortcut,bool p_s
 	mb->set_userdata( p_userdata );
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 
+	vbc->set_separation( 2 );
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -73,6 +74,7 @@ void PopUpMenu::add_item(BitmapID p_icon, String p_text, int p_ID, void *p_userd
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 	id_count=p_ID+1;
 	
+	vbc->set_separation( 2 );
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -87,6 +89,7 @@ void PopUpMenu::add_item(BitmapID p_icon, String p_text, void *p_userdata,int p_
 	mb->set_userdata( p_userdata );
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 	
+	vbc->set_separation( 2 );
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -101,6 +104,7 @@ void PopUpMenu::add_item(String p_text, const Method& p_method,int p_shortcut,bo
 	mb->pressed_signal.connect( p_method );
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 	
+	vbc->set_separation( 2 );
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -114,6 +118,7 @@ void PopUpMenu::add_item(BitmapID p_icon, String p_text, const Method& p_method,
 	mb->pressed_signal.connect( p_method );
 	mb->set_shurtcut( p_shortcut, p_shortcut_active );
 	
+	vbc->set_separation( 2 );	
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_pressed_signal.connect( this,  &PopUpMenu::menu_button_selected );
@@ -123,19 +128,23 @@ void PopUpMenu::add_item(BitmapID p_icon, String p_text, const Method& p_method,
 		
 void PopUpMenu::add_item(String p_text, int p_ID, void *p_userdata) {
 
+
 	add_item(p_text,p_ID,p_userdata,0,false);
 }
 void PopUpMenu::add_item(String p_text, void *p_userdata) {
+
 
 	add_item(p_text,p_userdata,0,false);
 
 }
 void PopUpMenu::add_item(BitmapID p_icon, String p_text, int p_ID, void *p_userdata) {
 
+
 	add_item(p_icon,p_text,p_ID,p_userdata,0,false);
 
 }
 void PopUpMenu::add_item(BitmapID p_icon, String p_text, void *p_userdata) {
+
 
 	add_item(p_icon,p_text,p_userdata,0,false);
 
@@ -161,6 +170,7 @@ void PopUpMenu::add_check_item(String p_text, int p_ID, bool p_checked,void *p_u
 	mb->set_checked(p_checked);
 	id_count=p_ID+1;	
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );
@@ -174,6 +184,7 @@ void PopUpMenu::add_check_item(String p_text, bool p_checked,void *p_userdata) {
 	mb->set_userdata( p_userdata );
 	mb->set_checked(p_checked);
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );
@@ -189,6 +200,7 @@ void PopUpMenu::add_check_item(BitmapID p_icon, String p_text, int p_ID, bool p_
 	mb->set_checked(p_checked);
 	id_count=p_ID+1;
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );
@@ -203,6 +215,7 @@ void PopUpMenu::add_check_item(BitmapID p_icon, String p_text,bool p_checked,voi
 	mb->set_userdata( p_userdata );
 	mb->set_checked(p_checked);
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );
@@ -217,6 +230,7 @@ void PopUpMenu::add_check_item(String p_text, const Method1<bool>& p_method, boo
 	mb->toggled_signal.connect( p_method );
 	mb->set_checked(p_checked);
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );
@@ -230,6 +244,7 @@ void PopUpMenu::add_check_item(BitmapID p_icon, String p_text, const Method1<boo
 	mb->toggled_signal.connect( p_method );
 	mb->set_checked(p_checked);
 	
+	vbc->set_separation( 2 );		
 	vbc->adjust_minimum_size();
 	
 	mb->menubutton_toggled_signal.connect( this,  &PopUpMenu::menu_button_toggled );

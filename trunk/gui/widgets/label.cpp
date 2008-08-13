@@ -57,23 +57,31 @@ void Label::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 			
 	for(int i=0;i<line_cache_count;i++) {
 		
-		Point ofs=shadow_ofs;
-		ofs.y+=i*font_h+constant( C_LABEL_MARGIN )+font_ascent;
+		Point ofs;
+		ofs.y=i*font_h+constant( C_LABEL_MARGIN )+font_ascent;
 		
 		switch( align ) {
 			
 			case ALIGN_LEFT: {
 			
-				ofs.x+=constant( C_LABEL_MARGIN );
+				ofs.x=constant( C_LABEL_MARGIN );
+				ofs+=shadow_ofs;
 			} break;
 			case ALIGN_CENTER: {
 			
-				ofs.x+=(p_size.width-line_cache[i].line_size)/2;;
+				ofs.x=(p_size.width-line_cache[i].line_size)/2;
+				ofs+=shadow_ofs;
 			
 			} break;
 			case ALIGN_RIGHT: {
 			
-				ofs.x+=p_size.width-constant( C_LABEL_MARGIN )-line_cache[i].line_size;
+				ofs.x=p_size.width-constant( C_LABEL_MARGIN )-line_cache[i].line_size;
+				
+				shadow_ofs.x=-(shadow_offset.x+shadow_size);
+				if (shadow_ofs.x>0)
+					shadow_ofs.x=0;
+				
+				ofs+=shadow_ofs;
 			} break;
 			
 		}

@@ -29,13 +29,28 @@ public:
 		ALIGN_RIGHT
 	};
 private:
+	
+	struct LineCache {
+		
+		int line_end_ofs;
+		int line_size;
+		String text;
+	};
+	
+	LineCache *line_cache;
+	int line_cache_count;
+	int line_cache_max_w;
+	
 	Align align;
 	
 	String text;
 	
+	void regenerate_line_cache();
 	Size get_minimum_size_internal();
+	void set_in_window();
 protected:
 
+	
 	virtual String get_type();	
 public:
 	

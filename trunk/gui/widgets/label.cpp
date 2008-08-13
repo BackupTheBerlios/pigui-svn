@@ -192,6 +192,7 @@ String Label::get_type() {
 
 Label::Label(String p_text,Align p_align)
 {
+	line_cache=0;
 	align=p_align;
 	text=p_text;
 	set_fill_vertical(false);

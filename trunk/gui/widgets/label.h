@@ -21,7 +21,6 @@ namespace GUI {
 */
 class Label : public Widget {
 public:	
-	
 	enum Align {
 		
 		ALIGN_LEFT,
@@ -41,6 +40,9 @@ private:
 	LineCache *line_cache;
 	int line_cache_count;
 	int line_cache_max_w;
+	
+	Point shadow_offset;
+	int shadow_size;
 	
 	Align align;
 	

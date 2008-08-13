@@ -27,6 +27,9 @@ Size Label::get_minimum_size_internal() {
 
 	min.y+=get_painter()->get_font_height( font(FONT_LABEL) )*line_cache_count;
 	min.x+=line_cache_max_w;
+
+	min.x+=ABS( shadow_offset.x + shadow_size * 2 );
+	min.y+=ABS( shadow_offset.y + shadow_size * 2 );
 		
 	return min;
 	
@@ -42,33 +45,54 @@ void Label::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	
 	int font_h=get_painter()->get_font_height( font(FONT_LABEL) );
 	int font_ascent=get_painter()->get_font_ascent( font(FONT_LABEL) );
-	Size ofs(constant( C_LABEL_MARGIN ),constant( C_LABEL_MARGIN ));
 	
+	Point shadow_ofs;
+	
+	shadow_ofs.x=-shadow_offset.x+shadow_size;
+	if (shadow_ofs.x<0)
+		shadow_ofs.x=0;
+	shadow_ofs.y=-shadow_offset.y+shadow_size;
+	if (shadow_ofs.y<0)
+		shadow_ofs.y=0;
+			
 	for(int i=0;i<line_cache_count;i++) {
 		
-		Point ofs;
-		ofs.y=i*font_h+constant( C_LABEL_MARGIN )+font_ascent;
+		Point ofs=shadow_ofs;
+		ofs.y+=i*font_h+constant( C_LABEL_MARGIN )+font_ascent;
 		
 		switch( align ) {
 			
 			case ALIGN_LEFT: {
 			
-				ofs.x=constant( C_LABEL_MARGIN );
+				ofs.x+=constant( C_LABEL_MARGIN );
 			} break;
 			case ALIGN_CENTER: {
 			
-				ofs.x=(p_size.width-line_cache[i].line_size)/2;;
+				ofs.x+=(p_size.width-line_cache[i].line_size)/2;;
 			
 			} break;
 			case ALIGN_RIGHT: {
 			
-				ofs.x=p_size.width-constant( C_LABEL_MARGIN )-line_cache[i].line_size;
+				ofs.x+=p_size.width-constant( C_LABEL_MARGIN )-line_cache[i].line_size;
 			} break;
 			
 		}
 		
-		get_painter()->draw_text( font(FONT_LABEL), ofs, line_cache[i].text, color(COLOR_LABEL_FONT) );
+		if (shadow_size>0 || shadow_offset!=Point()) {
+			// reasons to use a shadow
+			if (shadow_size==0) { // simple shadow
+				get_painter()->draw_text( font(FONT_LABEL), ofs+shadow_offset, line_cache[i].text, color(COLOR_LABEL_FONT_SHADOW) );
+			} else {
+				
+				get_painter()->draw_text( font(FONT_LABEL), ofs+shadow_offset+Point(shadow_size,0), line_cache[i].text, color(COLOR_LABEL_FONT_SHADOW) );
+				get_painter()->draw_text( font(FONT_LABEL), ofs+shadow_offset+Point(-shadow_size,0), line_cache[i].text, color(COLOR_LABEL_FONT_SHADOW) );
+				get_painter()->draw_text( font(FONT_LABEL), ofs+shadow_offset+Point(0,shadow_size), line_cache[i].text, color(COLOR_LABEL_FONT_SHADOW) );get_painter()->draw_text( font(FONT_LABEL), ofs+shadow_offset+Point(0,-shadow_size), line_cache[i].text, color(COLOR_LABEL_FONT_SHADOW) );				
+			}
+
+		}
 		
+		get_painter()->draw_text( font(FONT_LABEL), ofs, line_cache[i].text, color(COLOR_LABEL_FONT) );
+				
 	}
 	
 	
@@ -167,6 +191,8 @@ Label::Label(String p_text,Align p_align)
 	align=p_align;
 	text=p_text;
 	set_fill_vertical(false);
+	shadow_size=0;
+	
 	
 }
 

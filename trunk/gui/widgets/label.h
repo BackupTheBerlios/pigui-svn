@@ -67,6 +67,9 @@ public:
 	void set_text(const String& p_string);
 	String get_text();
 	
+	void set_shadow_size(int p_size);
+	void set_shadow_offset(const Point& p_offset);
+	
 	Label(String p_text="",Align p_align=ALIGN_LEFT);
 
     ~Label();

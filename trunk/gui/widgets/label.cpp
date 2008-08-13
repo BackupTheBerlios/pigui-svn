@@ -28,8 +28,8 @@ Size Label::get_minimum_size_internal() {
 	min.y+=get_painter()->get_font_height( font(FONT_LABEL) )*line_cache_count;
 	min.x+=line_cache_max_w;
 
-	min.x+=ABS( shadow_offset.x + shadow_size * 2 );
-	min.y+=ABS( shadow_offset.y + shadow_size * 2 );
+	min.x+=ABS( shadow_offset.x) + shadow_size * 2;
+	min.y+=ABS( shadow_offset.y) + shadow_size * 2;
 		
 	return min;
 	
@@ -184,6 +184,18 @@ String Label::get_type() {
 
 	return "Label";
 }
+
+void Label::set_shadow_size(int p_size) {
+	
+	shadow_size=p_size;	
+	check_minimum_size();
+}
+void Label::set_shadow_offset(const Point& p_offset) {
+	
+	shadow_offset=p_offset;	
+	check_minimum_size();
+}
+
 
 Label::Label(String p_text,Align p_align)
 {

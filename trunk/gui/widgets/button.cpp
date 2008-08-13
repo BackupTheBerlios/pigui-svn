@@ -15,7 +15,7 @@
 #include "base/painter.h"
 #include "base/skin.h"
 
-
+#include <stdio.h>
 namespace GUI {
 
 
@@ -214,6 +214,7 @@ void Button::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 		area_rect.pos.x+=icon_size.width;
 		area_rect.size.x-=icon_size.width;
 		if (label_text!="") {
+			
 			area_rect.pos.x+=constant( C_BUTTON_SEPARATION ); //separation for the label
 			area_rect.size.x-=constant( C_BUTTON_SEPARATION ); //separation for the label
 		}

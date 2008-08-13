@@ -86,12 +86,14 @@ Size Slider::get_minimum_size_internal() {
 	const StyleBox &sb_slider_normal=(orientation==VERTICAL)?stylebox(SB_SLIDER_NORMAL_V):stylebox(SB_SLIDER_NORMAL_H);
 	BitmapID grabber_bmp = (orientation==VERTICAL)?bitmap( BITMAP_SLIDER_GRABBER_V ) : bitmap( BITMAP_SLIDER_GRABBER_H );
 	
+	
 	Size min;
 	
 	min.width=get_painter()->get_stylebox_margin( sb_slider_normal , MARGIN_LEFT )+get_painter()->get_stylebox_margin( sb_slider_normal , MARGIN_RIGHT );
 	
 	min.height=get_painter()->get_stylebox_margin( sb_slider_normal , MARGIN_TOP )+get_painter()->get_stylebox_margin( sb_slider_normal , MARGIN_BOTTOM );
 	
+
 	if (constant( C_SLIDER_GRABBER_SIZE )>0) {
 		
 		min.height+=constant( C_SLIDER_GRABBER_SIZE );

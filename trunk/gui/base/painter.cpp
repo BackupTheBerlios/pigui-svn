@@ -134,6 +134,9 @@ void Painter::push_clip_rect(const Rect &p_rect) {
 	clip_rect.pos += local_rect.pos;
 	clip_rect = local_rect.clip( clip_rect );
 
+	if (p->clip_rect_count>0)
+		clip_rect=p->clip_rect_stack[ p->clip_rect_count-1 ].clip(clip_rect);
+		
 	set_clip_rect(true, clip_rect);
 
 	p->clip_rect_stack[ p->clip_rect_count++ ] = clip_rect;

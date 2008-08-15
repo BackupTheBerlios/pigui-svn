@@ -866,7 +866,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 					} else if (x >= (get_column_width(col)- ( item_h/2 * 2))) {
 						// scroll bar here
 						
-						printf("scroll bar popup!\n");
+						//printf("scroll bar popup!\n");
 						scroll_bar->set_range(c.data.range);
 						line_edit->hide();
 						scroll_bar->show();

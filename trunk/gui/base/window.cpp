@@ -341,7 +341,10 @@ void Window::check_size_updates() {
 void Window::check_for_updates() {
 
 	/* For now, if the window has a child, it wont redraw */
-
+	
+	if (!parent)
+		check_tooltip_and_cursor_at_pos(root_data->last_mouse_pos,false);
+	
 	update_signal.call();
 	update_signal.clear();
 	frame_signal.call();
@@ -600,10 +603,11 @@ void Window::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_mo
 		from=from->get_parent();
 	}
 	
-	check_tooltip_and_cursor_at_pos(p_pos);	
+	root->check_tooltip_and_cursor_at_pos(get_global_pos()+p_pos);	
 }
 
-void Window::check_tooltip_and_cursor_at_pos(const Point& p_pos) {
+
+void Window::check_tooltip_and_cursor_at_pos(const Point& p_pos,bool p_update_tooltip_timer) {
 	
 	if (!parent) {
 				
@@ -620,17 +624,17 @@ void Window::check_tooltip_and_cursor_at_pos(const Point& p_pos) {
 			get_painter()->set_cursor_bitmap( INVALID_BITMAP_ID, Point() );
 		
 		}
-		
 		if (root_data->tooltip->visible) {
 			if (f!=root_data->tooltipped_frame) {
 				root_data->tooltip->hide();
 				root_data->tooltip_cbk_count=0;
 			}
 		} else {
-			
-			root_data->tooltip_cbk_count=0;
+			if (p_update_tooltip_timer)
+				root_data->tooltip_cbk_count=0;
 		}
 		root_data->last_mouse_pos=p_pos;
+		//printf("tooltip found %p, last mouse pos %i,%i\n",f,root_data->last_mouse_pos.x,root_data->last_mouse_pos.y);
 	}
 	
 }
@@ -941,6 +945,8 @@ void Window::update_rect_merge(UpdateRectList **p_rect) {
 
 void Window::add_update_rect(const Rect& p_rect) {
 
+	if (no_local_updates)
+		return;
 	if (!root) {
 
 		PRINT_ERROR("Not Root!");
@@ -1255,6 +1261,10 @@ void Window::hide() {
 
 	if (focus_child)
 		focus_child->window_hid();
+		
+	if (root->root_data->tooltip->visible && root->root_data->tooltipped_frame && root->root_data->tooltipped_frame->get_window()==this)
+		root->root_data->tooltip->hide();
+		
 
 	//parent->update(Rect(pos,size));
 }

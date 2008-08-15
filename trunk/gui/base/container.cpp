@@ -485,6 +485,8 @@ void Container::resize_tree(const Size& p_new_size) {
 		_cp->resizing=false;
 		_cp->size_cache=p_new_size;
 	} while (_cp->recursive_resize_attempt && max_recursive_attempt_limit--);
+	
+	
 }
 
 

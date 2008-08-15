@@ -34,13 +34,13 @@ class FixedContainer : public Container {
 	
 public:
 	
-	void add_child(Frame *p_frame,const Point& p_pos=Point(),const Size &p_size=Size());
+	void add_frame(Frame *p_frame,const Point& p_pos=Point(),const Size &p_size=Size());
 	
 	/* Helper for ease of coding */
 	template<class T>
 	inline T* add(T *p_frame,const Point& p_pos=Point(),const Size &p_size=Size()) {
 
-		add_child(p_frame,p_pos,p_size);
+		add_frame(p_frame,p_pos,p_size);
 		return p_frame;
 	}
 	

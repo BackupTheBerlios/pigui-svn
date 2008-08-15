@@ -51,11 +51,8 @@ void GridContainer::compute_cachedatas() {
 	}
 	
 	vcache_size=rows;
-	
-	
+		
 	int row=0,col=0;
-
-
 
 	int sep=separation;
 
@@ -142,6 +139,28 @@ Size GridContainer::get_minimum_size_internal() {
 
 void GridContainer::compute_sizes(CacheData *p_cache, int p_elements, int p_total) {
 
+	int expand_available=p_total;
+	int expand_count=0;
+	
+	for (int i=0;i<p_elements;i++) {
+	
+		expand_available-=p_cache[i].min_size;
+		if (p_cache[i].expand) {			
+			expand_count++;
+		}
+	}
+	
+	for (int i=0;i<p_elements;i++) {
+
+		int final=p_cache[i].min_size;
+
+		if (p_cache[i].expand && expand_available>0) {
+			
+			final+=expand_available/expand_count;
+		}
+		p_cache[i].size=final;
+	}	
+#if 0	
 	float expand_count=0;
 	float expand_sum=0;
 	float shrink_sum=0;
@@ -150,11 +169,7 @@ void GridContainer::compute_sizes(CacheData *p_cache, int p_elements, int p_tota
 	
 	for (int i=0;i<p_elements;i++) {
 
-		if (p_cache[i].min_size<1)
-			continue;
-
 		if (p_cache[i].expand) {
-
 			expand_sum+=p_cache[i].min_size;
 			expand_count++;
 		} else {
@@ -165,7 +180,7 @@ void GridContainer::compute_sizes(CacheData *p_cache, int p_elements, int p_tota
 	}
 	
 	
-	if (display_count==0 || ( expand_count>0 && expand_sum==0))
+	if (display_count==0)
 		return; //nothing to do
 
 	float expand_space=p_total-shrink_sum;
@@ -189,7 +204,7 @@ void GridContainer::compute_sizes(CacheData *p_cache, int p_elements, int p_tota
 		p_cache[i].size=final;
 	}
 
-
+#endif
 }
 
 void GridContainer::resize_internal(const Size& p_new_size) {
@@ -242,6 +257,7 @@ void GridContainer::resize_internal(const Size& p_new_size) {
 void GridContainer::set_separation(int p_separation) {
 	
 	separation=p_separation;
+	check_minimum_size();
 }
 
 void GridContainer::add_frame(Frame *p_frame, bool p_h_expand, bool p_v_expand) {

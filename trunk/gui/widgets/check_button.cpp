@@ -68,7 +68,7 @@ const Color& CheckButton::color(int p_which) {
 
 int CheckButton::constant(int p_which) {
 	
-	switch( p_which ) {
+  	switch( p_which ) {
 		case C_BUTTON_SEPARATION: return Frame::constant( C_CHECKBUTTON_SEPARATION ); break;
 		case C_BUTTON_EXTRA_MARGIN: return Frame::constant( C_CHECKBUTTON_EXTRA_MARGIN ); break;
 		case C_BUTTON_DISPLACEMENT: return Frame::constant( C_CHECKBUTTON_DISPLACEMENT ); break;

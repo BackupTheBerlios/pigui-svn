@@ -182,7 +182,8 @@ void Window::set_size(const Size& p_size) {
 	}
 
 
-
+	if (new_size==size)
+		return;
 	size=new_size;
 	root_frame->resize_tree( new_size );
 	Rect size_update( get_global_pos(), size );

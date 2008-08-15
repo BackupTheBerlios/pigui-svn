@@ -37,8 +37,8 @@ Size FixedContainer::get_minimum_size_internal() {
 		if ( (fe->desired_pos.x+elem_min.width)>minimum.width)
 			minimum.width=fe->desired_pos.x+elem_min.width;
 		
-		if ( (fe->desired_pos.x+elem_min.height)>minimum.height)
-			minimum.height=fe->desired_pos.x+elem_min.height;
+		if ( (fe->desired_pos.y+elem_min.height)>minimum.height)
+			minimum.height=fe->desired_pos.y+elem_min.height;
 		
 		fe=(FixedElement*)fe->next;
 	}
@@ -72,7 +72,7 @@ void FixedContainer::resize_internal(const Size& p_new_size) {
 
 }
 
-void FixedContainer::add_child(Frame *p_frame,const Point& p_pos,const Size&p_size) {
+void FixedContainer::add_frame(Frame *p_frame,const Point& p_pos,const Size&p_size) {
 	
 	FixedElement * e=(FixedElement *)add_frame_internal( p_frame );
 	if (!e)

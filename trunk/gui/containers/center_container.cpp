@@ -72,7 +72,7 @@ void CenterContainer::resize_internal(const Size& p_new_size) {
 		
 		e->set_rect(final_rect);
 			
-		e->frame->resize_tree(min);
+		e->frame->resize_tree(final_rect.size);
 	}
 	
 }

@@ -1317,7 +1317,17 @@ void Window::tooltip_timer_cbk() {
 		if (!f)
 			return;
 		
-		String tooltip_text=f->get_tooltip(local_pos);
+		Frame *tf=f;
+		String tooltip_text;
+		
+		while (tf && tooltip_text=="") {
+		
+			tooltip_text=tf->get_tooltip(local_pos);
+			tf=tf->get_parent();
+		}
+		
+		
+		
 		if (tooltip_text=="")
 			return;
 		

@@ -24,7 +24,8 @@ class CenterContainer : public Container {
 	
 	Size get_minimum_size_internal();
 	void resize_internal(const Size& p_new_size);
-	
+	bool expand_h;
+	bool expand_v;
 public:
 	
 	void set_frame(Frame *p_frame);
@@ -35,6 +36,11 @@ public:
 		set_frame(p_frame);
 		return p_frame;
 	}
+	
+	void set_expand_h(bool p_expand);
+	bool has_expand_h() const;
+	void set_expand_v(bool p_expand);
+	bool has_expand_v() const;
 	
 	CenterContainer();
 	~CenterContainer();

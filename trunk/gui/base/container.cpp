@@ -285,7 +285,6 @@ Frame* Container::get_child_at_pos(const Point& p_pos,const Size &p_size,Point *
 	//Element * list = get_element_list();
 	Element * list = _cp->element_list_end;
 
-	
 	Point margin_ofs=get_margin_offset();
 	
 	while(list) {

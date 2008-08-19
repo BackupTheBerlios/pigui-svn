@@ -420,7 +420,7 @@ void Tree::draw_item_text(String p_text,BitmapID p_bitmap,bool p_tool,Rect p_rec
 int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) { //return height
 
 
- //   printf("p_x is %i p_x is %i\n",p_pos.x,p_pos.y);
+	//   printf("p_x is %i p_x is %i\n",p_pos.x,p_pos.y);
 
 	if (p_pos.y > (p_exposed.pos.y + p_exposed.size.y))
 		return -1; //draw no more!
@@ -485,7 +485,7 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 			if (i==0) {
 
                 if (p_item->cells[0].selected && select_mode==SELECT_ROW) {
-                    Rect row_rect = Rect( Point( ofs, pos.y ), Size( get_size_cache().width-ofs, label_h ));
+                    Rect row_rect = Rect( Point( 0, p_pos.y ), Size( get_size_cache().width, label_h ));
                     get_painter()->draw_stylebox(stylebox( SB_TREE_SELECTED ),row_rect.pos,row_rect.size );
                 }
 

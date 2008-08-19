@@ -101,6 +101,7 @@ friend struct ContainerPrivate;
 
 protected:	
 
+
 	virtual void skin_changed();	
 
 	/* Internal API */

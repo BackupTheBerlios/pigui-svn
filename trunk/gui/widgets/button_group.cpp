@@ -86,7 +86,7 @@ void ButtonGroup::set_current(int p_idx){
 }
 
 
-void ButtonGroup::add_button(BaseButton *p_button){
+BaseButton* ButtonGroup::add_button(BaseButton *p_button){
 
 	ButtonList *bl = GUI_NEW( ButtonList );
 
@@ -108,6 +108,7 @@ void ButtonGroup::add_button(BaseButton *p_button){
 
     	p_button->set_toggle_mode( true );
 
+	return p_button;
 }
 
 void ButtonGroup::remove(BaseButton *p_button){

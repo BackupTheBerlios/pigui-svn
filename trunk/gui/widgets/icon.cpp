@@ -11,26 +11,30 @@
 //
 #include "icon.h"
 #include "base/painter.h"
+#include "base/skin.h"
 namespace GUI {
 
 
 Size Icon::get_minimum_size_internal() {
 	
+	GUI::BitmapID icon_bitmap = (bitmapid<0) ? bitmap( BITMAP_ICON_DEFAULT ) : bitmapid;
 	
-	if (bitmap<0)
+	if (icon_bitmap<0)
 		return Size();
 	
-	return get_painter()->get_bitmap_size( bitmap );
+	return get_painter()->get_bitmap_size( icon_bitmap );
 }
 
 void Icon::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	
-	if (bitmap<0)
-		return;	
+	GUI::BitmapID icon_bitmap = (bitmapid<0) ? bitmap( BITMAP_ICON_DEFAULT ) : bitmapid;
 	
-	Point ofs=(p_size-get_painter()->get_bitmap_size( bitmap ))/2;
+	if (icon_bitmap<0)
+		return;
 	
-	get_painter()->draw_bitmap( bitmap, ofs );
+	Point ofs=(p_size-get_painter()->get_bitmap_size( icon_bitmap ))/2;
+	
+	get_painter()->draw_bitmap( icon_bitmap, ofs );
 	
 }
 
@@ -41,12 +45,12 @@ String Icon::get_type() {
 
 GUI::BitmapID Icon::get_bitmap() {
 	
-	return bitmap;
+	return bitmapid;
 };
 
 void Icon::set_bitmap(BitmapID p_bitmap) {
 	
-	bitmap=p_bitmap;
+	bitmapid=p_bitmap;
 	check_minimum_size();
 	update();
 }
@@ -54,7 +58,7 @@ void Icon::set_bitmap(BitmapID p_bitmap) {
 
 Icon::Icon(BitmapID p_bitmap) {
 	
-	bitmap=p_bitmap;
+	bitmapid=p_bitmap;
 }
 
 

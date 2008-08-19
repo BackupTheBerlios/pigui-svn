@@ -10,6 +10,7 @@
 //
 //
 #include "scroll_container.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -146,6 +147,7 @@ void ScrollContainer::h_scroll_changed(double p_new) {
 }
 
 void ScrollContainer::check_minimum_size() {
+
 
 	Container::check_minimum_size();
 	adjust_child_size();

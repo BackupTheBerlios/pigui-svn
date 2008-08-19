@@ -411,12 +411,13 @@ void PopUpMenu::clear()  {
 void PopUpMenu::popup() {
 	
 
+	pre_show_signal.call();
 	show();	
 	set_focus( 0 ); //clear focus	
 }
 void PopUpMenu::popup(const Point &p_pos) {
 	
-	
+	pre_show_signal.call();
 	set_pos(p_pos);
 	show();	
 	set_focus( 0 ); //clear focus	

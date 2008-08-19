@@ -1,6 +1,7 @@
 
 
 #include "container.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -502,12 +503,15 @@ void Container::check_minimum_size() {
 		if (get_parent()) {
 		
 			get_window()->frame_request_resize(get_parent());
-			get_parent()->check_minimum_size();			
+			get_parent()->check_minimum_size();	
 		} else {
 		
 			get_window()->frame_request_resize(0);		
 		}		
-	} 	
+	} else {
+	
+		get_window()->frame_request_resize(this);
+	}
 }
 
 Point Container::get_margin_offset() {

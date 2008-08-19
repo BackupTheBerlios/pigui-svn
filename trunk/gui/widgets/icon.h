@@ -24,7 +24,7 @@ class Icon : public Widget {
 	Size get_minimum_size_internal();
 	
 	void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
-	BitmapID bitmap;
+	BitmapID bitmapid;
 	
 protected:
 

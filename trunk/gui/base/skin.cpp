@@ -574,7 +574,7 @@ void Skin::set_default() {
 	SET_STYLEBOX( SB_LINE_EDIT_NORMAL, StyleBox( 2,  Color(240,240,240 ), Color( 60,60,60 ), Color( 150,150,150 ) ) );
 	SET_STYLEBOX( SB_LINE_EDIT_FOCUS, StyleBox( 1,  Color( 255,80,80 ), Color( 255,80,80 ) ) );
 
-	SET_CONSTANT( C_LINE_EDIT_MARGIN, 2 );
+	SET_CONSTANT( C_LINE_EDIT_MARGIN, 1 );
 	SET_CONSTANT( C_LINE_EDIT_MIN_WIDTH, 70 );
 
 	SET_FONT( FONT_LINE_EDIT, 0 );
@@ -683,6 +683,13 @@ void Skin::set_default() {
 	SET_COLOR(COLOR_KNOB_BG, Color( 110,110,110 ) );
 	SET_COLOR(COLOR_KNOB_HANDLE, Color(0) );
 	SET_BITMAP( BITMAP_KNOB_ANIMATION, -1 );
+	
+	/* set spinbox */
+	
+	SET_CONSTANT(C_SPINBOX_LINE_EDIT_MIN_WIDTH,35);
+	
+	SET_BITMAP( BITMAP_ICON_DEFAULT, INVALID_BITMAP_ID );
+	
 	set_default_extra();
 		
 }

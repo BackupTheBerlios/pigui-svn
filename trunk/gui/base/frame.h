@@ -29,13 +29,12 @@ protected:
 	virtual const Color& color(int p_which); ///< Get a certain color, from the enum. Override to create specific custom looking widgets.
 	
 
-	virtual void check_minimum_size();
-
 	virtual void set_in_window();
 	
 public:
 	
-	
+	virtual void check_minimum_size();
+		
 	void add_stylebox_override(int p_style, int p_with_style);
 	void add_font_override(int p_style, int p_with_style);
 	void add_bitmap_override(int p_style, int p_with_style);

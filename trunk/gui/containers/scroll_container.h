@@ -38,6 +38,7 @@ class ScrollContainer : public Container {
 	virtual void check_minimum_size();
 	void adjust_child_size();
 
+
 	void v_scroll_changed(double p_new);
 	void h_scroll_changed(double p_new);
 public:

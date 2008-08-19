@@ -52,7 +52,7 @@ public:
 	void set_current(int p_idx);
 	int get_current();
 	
-	void add_button(BaseButton *p_button); //< append at the end
+	BaseButton* add_button(BaseButton *p_button); //< append at the end
 
 	template<class T>
 	inline T* add(T* p_button) {

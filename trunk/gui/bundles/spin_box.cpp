@@ -100,6 +100,7 @@ void SpinBox::set_suffix(String p_suffix) {
 SpinBox::SpinBox(){
 
 	line_edit = add( GUI_NEW( LineEdit), 1);
+	line_edit->add_constant_override( C_LINE_EDIT_MIN_WIDTH, C_SPINBOX_LINE_EDIT_MIN_WIDTH);
 	updown= add( GUI_NEW( UpDown), 0);
 	
 		

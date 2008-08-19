@@ -283,7 +283,7 @@ Frame* Container::find_closest_focusable_to(Point p_point,Direction p_dir,int &m
 Frame* Container::get_child_at_pos(const Point& p_pos,const Size &p_size,Point *p_local_pos) {
 	
 	//Element * list = get_element_list();
-	list = element_list_end;
+	Element * list = _cp->element_list_end;
 
 	
 	Point margin_ofs=get_margin_offset();

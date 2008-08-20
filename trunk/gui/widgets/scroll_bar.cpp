@@ -184,9 +184,26 @@ void ScrollBar::draw(const Point& p_global,const Size& p_size,const Rect& p_expo
 	int minperp=(orientation==VERTICAL)?get_painter()->get_stylebox_min_size( sb_scrollbar_normal ).width : get_painter()->get_stylebox_min_size( sb_scrollbar_normal ).height;
 
 	if (orientation==VERTICAL) {
-		get_painter()->draw_stylebox( sb_scrollbar_grabber, pos , Size( size.width-minperp, get_grabber_size() ) );
+	
+		Size gbsize( size.width-minperp, get_grabber_size()+1 );
+		get_painter()->draw_stylebox( sb_scrollbar_grabber, pos , gbsize );
+		
+		if (bitmap( BITMAP_SCROLLBAR_GRIP_V)!=INVALID_BITMAP_ID ) {
+		
+			Point grip_pos=pos + (gbsize-get_painter()->get_bitmap_size( bitmap(BITMAP_SCROLLBAR_GRIP_V) ))/2;
+
+			get_painter()->draw_bitmap( bitmap(BITMAP_SCROLLBAR_GRIP_V), grip_pos);
+		}
 	} else {
-		get_painter()->draw_stylebox( sb_scrollbar_grabber, pos , Size( get_grabber_size() , size.height-minperp ) );
+	
+		Size gbsize( get_grabber_size()+1 , size.height-minperp );
+		get_painter()->draw_stylebox( sb_scrollbar_grabber, pos , gbsize );
+		
+		if (bitmap( BITMAP_SCROLLBAR_GRIP_H)!=INVALID_BITMAP_ID ) {
+		
+			get_painter()->draw_bitmap( bitmap(BITMAP_SCROLLBAR_GRIP_H), pos + (gbsize-get_painter()->get_bitmap_size( bitmap(BITMAP_SCROLLBAR_GRIP_H) ))/2);
+		}
+		
 	}
 
 
@@ -199,20 +216,17 @@ void ScrollBar::mouse_button(const Point& p_pos, int p_button,bool p_press,int p
 	if (p_button==BUTTON_WHEEL_UP && p_press) {
 
 		if (orientation==VERTICAL)
-			get_range()->step_decrement();
+			get_range()->set( get_range()->get() - get_range()->get_page() / 4.0 );
 		else
-			get_range()->step_increment();
+			get_range()->set( get_range()->get() + get_range()->get_page() / 4.0 );
 
 	}
 	if (p_button==BUTTON_WHEEL_DOWN && p_press) {
 
-
 		if (orientation==HORIZONTAL)
-			get_range()->step_decrement();
+			get_range()->set( get_range()->get() - get_range()->get_page() / 4.0 );
 		else
-			get_range()->step_increment();
-
-
+			get_range()->set( get_range()->get() + get_range()->get_page() / 4.0  );
 	}
 
 	if (p_button!=BUTTON_LEFT)

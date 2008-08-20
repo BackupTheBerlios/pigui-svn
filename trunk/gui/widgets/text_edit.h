@@ -17,14 +17,16 @@ class TextEdit : public RangeOwner  { // tolua_export
 	} cursor;
 
 
+	int max_chars;
 	bool readonly;
 	Size size;
 	std::vector<String> text; //needs to be removed
 	bool setting_row;
+	bool wrap;
 
 	int get_visible_rows();
 
-
+	int get_char_count();
 
 	int get_char_pos_for(int p_px,String p_pos);
 	int get_pixel_pos_for(int p_char,String p_pos);
@@ -66,6 +68,8 @@ public:
 
 	void set_readonly(bool p_readonly);
 
+	void set_max_chars(int p_max_chars);
+	void set_wrap(bool p_wrap);
 
 	void append_at_cursor(String p_text);
 	void clear();

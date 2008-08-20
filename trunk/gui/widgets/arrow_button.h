@@ -33,6 +33,8 @@ class ArrowButton : public BaseButton {
 	Size get_minimum_size_internal();
 	void draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed);
 
+	BitmapID get_bitmap();
+	
 	virtual String get_type();
 	void press_slot();
 public:

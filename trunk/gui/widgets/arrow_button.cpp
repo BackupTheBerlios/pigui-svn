@@ -41,6 +41,31 @@ void ArrowButton::_range_changed() {
 
 }
 
+BitmapID ArrowButton::get_bitmap() {
+
+	switch( dir ) {
+	
+		case UP: {
+				
+			return bitmap( BITMAP_ARROW_UP );
+		} break;
+		case DOWN: {
+			return bitmap( BITMAP_ARROW_DOWN );
+		
+		} break;
+		case LEFT: {
+			return bitmap( BITMAP_ARROW_LEFT );
+		
+		} break;
+		case RIGHT: {
+			return bitmap( BITMAP_ARROW_RIGHT );
+		
+		} break;
+	}
+	
+	return INVALID_BITMAP_ID;
+}
+
 void ArrowButton::press_slot(){
 
     switch( dir )
@@ -68,7 +93,11 @@ Size ArrowButton::get_minimum_size_internal() {
 
 	Size min=get_painter()->get_stylebox_min_size( stylebox( SB_ARROWBUTTON_NORMAL ) );
 
-	if (constant( C_ARROWBUTTON_ARROW_SIZE )>0 && !no_minsize ) {
+
+	if (get_bitmap()!=INVALID_BITMAP_ID) {
+
+		min+=get_painter()->get_bitmap_size( get_bitmap() );
+	} else if (constant( C_ARROWBUTTON_ARROW_SIZE )>0 && !no_minsize ) {
 
 		min.width+=constant( C_ARROWBUTTON_ARROW_SIZE );
 		min.height+=constant( C_ARROWBUTTON_ARROW_SIZE );
@@ -140,12 +169,16 @@ void ArrowButton::draw(const Point& p_pos,const Size& p_size,const Rect& p_expos
 		area_rect.pos+=Point( constant( C_ARROWBUTTON_DISPLACEMENT ), constant( C_ARROWBUTTON_DISPLACEMENT ) );
 
 
-	if (constant( C_ARROWBUTTON_ARROW_SIZE )>0) {
+	if (get_bitmap()!=INVALID_BITMAP_ID) {
+
+
+		Size bsize = get_painter()->get_bitmap_size( get_bitmap() );
+			
+		get_painter()->draw_bitmap( get_bitmap(), area_rect.pos + ( area_rect.size - bsize ) /2 );
+		
+	} else if (constant( C_ARROWBUTTON_ARROW_SIZE )>0) {
 
 		get_painter()->draw_arrow( area_rect.pos, area_rect.size, dir, color( COLOR_ARROWBUTTON_ARROW_COLOR ) );
-	} else {
-
-		//draw some pixmap
 	}
 
 	if (has_focus())

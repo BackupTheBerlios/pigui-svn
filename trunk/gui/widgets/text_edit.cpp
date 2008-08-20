@@ -1,4 +1,4 @@
-
+	
 #include "text_edit.h"
 #include "base/painter.h"
 #include "base/skin.h"
@@ -6,6 +6,19 @@
 
 namespace GUI {
 
+int TextEdit::get_char_count() {
+	
+	int totalsize=0;
+	
+	for (int i=0;i<text.size();i++) {
+		
+		if (i>0)
+			totalsize++; // incliude \n
+		totalsize+=text[i].length();
+	}
+	
+	return totalsize; // omit last \n
+}
 
 Size TextEdit::get_minimum_size_internal() {
 
@@ -384,8 +397,37 @@ void TextEdit::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed)
 
 void TextEdit::new_text_at_cursor(String p_char) {
 
-
-	while (cursor.x>(int)text[cursor.y].length()) text[cursor.y]+=' ';
+	if (max_chars > 0 ) {
+	
+		int rest = get_char_count() + p_char.length() - max_chars;
+		
+		if (rest>0) {
+			
+			p_char=p_char.substr(0,p_char.length() - rest);
+		}
+	}
+	
+	//while (cursor.x>(int)text[cursor.y].length()) 
+	//	text[cursor.y]+=' ';
+		
+	if ( wrap && get_painter()) {
+	 
+	 	if (get_painter()->get_font_string_width( font(FONT_TEXT_EDIT),text[cursor.y] ) > get_size_cache().width-get_painter()->get_stylebox_min_size( stylebox( SB_TEXT_EDIT ) ).width ) {
+	
+			int lastidx = text[cursor.y].find_last(" ");
+			
+			if (lastidx<0) { // can't be cut
+				
+				lastidx=text[cursor.y].length()/2;
+			}
+			int extraofs=text[cursor.y].length() - lastidx;
+			cursor.x=lastidx;
+			newline_at_cursor();
+			text[cursor.y]=text[cursor.y].substr(1,text[cursor.y].length());				
+			cursor.x+=extraofs-1;
+		}
+	}
+	
 	text[cursor.y].insert(cursor.x,p_char);
 	set_col(get_col()+p_char.length());
 
@@ -396,6 +438,9 @@ void TextEdit::new_text_at_cursor(String p_char) {
 
 void TextEdit::newline_at_cursor() {
 
+	if (max_chars > 0 && get_char_count() >= max_chars)
+		return;
+		
 	String newline;
 
 	if (cursor.x<(int)text[cursor.y].length()) {
@@ -472,6 +517,16 @@ void TextEdit::delete_at_cursor() {
 void TextEdit::append_at_cursor(String p_text) {
 
 	
+	if (max_chars > 0 ) {
+	
+		int rest = get_char_count() + p_text.length() - max_chars;
+		
+		if (rest>0) {
+			
+			p_text=p_text.substr(0,p_text.length() - rest);
+		}
+	}
+	
 	/* this will suck, better tomorrow */
 	int i;
 
@@ -544,12 +599,23 @@ void TextEdit::set_readonly(bool p_readonly) {
 	
 	readonly=p_readonly;
 }
+
+void TextEdit::set_wrap(bool p_wrap) {
+
+	wrap=p_wrap;
+}
+
+void TextEdit::set_max_chars(int p_max_chars) {
+
+	max_chars=p_max_chars;
+}
 TextEdit::TextEdit()  {
 
 	readonly=false;
 	setting_row=false;
+	max_chars=0;
 	clear();
-	
+	wrap=false;
 	set_focus_mode(FOCUS_ALL);
 }
 

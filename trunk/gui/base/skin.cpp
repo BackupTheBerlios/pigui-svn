@@ -164,7 +164,7 @@ int Skin::get_constant(unsigned int p_which){
 BitmapID Skin::get_bitmap(unsigned int p_which){
 
 	if (p_which<0 || p_which>=bitmap_count)
-		return 0;
+		return INVALID_BITMAP_ID;
 
 	return bitmap_array[p_which];
 
@@ -232,6 +232,7 @@ void Skin::set_color(int p_which,const Color& p_color){
 
 
 Skin::Skin(int p_stylebox_max,int p_constant_max,int p_bitmap_max,int p_font_max,int p_color_max) {
+
 
 	if (p_stylebox_max<SB_MAX)
 		p_stylebox_max=SB_MAX;
@@ -525,8 +526,8 @@ void Skin::set_default() {
 	SET_STYLEBOX( SB_SCROLLBAR_GRABBER_H, StyleBox( 2, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
 	SET_STYLEBOX( SB_SCROLLBAR_GRABBER_V, StyleBox( 2, Color( 150,150,150 ), Color( 250,250,250 ), Color( 50,50,50 ) ) );
 	SET_CONSTANT( C_SCROLLBAR_GRABBER_SIZE, 10 );
-	SET_BITMAP( BITMAP_SCROLLBAR_GRABBER, -1 );
-	SET_BITMAP( BITMAP_SCROLLBAR_GRABBER_HOVER, -1 );
+	SET_BITMAP( BITMAP_SCROLLBAR_GRIP_V, INVALID_BITMAP_ID );
+	SET_BITMAP( BITMAP_SCROLLBAR_GRIP_H, INVALID_BITMAP_ID );
 
 	/* List */
 
@@ -606,6 +607,11 @@ void Skin::set_default() {
 	SET_CONSTANT( C_ARROWBUTTON_ARROW_SIZE, 12);
 
 	SET_COLOR( COLOR_ARROWBUTTON_ARROW_COLOR, Color(0,0,0) );
+
+	SET_BITMAP( BITMAP_ARROW_UP, INVALID_BITMAP_ID );
+	SET_BITMAP( BITMAP_ARROW_DOWN, INVALID_BITMAP_ID );
+	SET_BITMAP( BITMAP_ARROW_LEFT, INVALID_BITMAP_ID );
+	SET_BITMAP( BITMAP_ARROW_RIGHT, INVALID_BITMAP_ID );
 
 	/* UpDown */
 

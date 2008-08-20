@@ -124,7 +124,7 @@ enum StyleBoxList{
 
 	SB_TABBOX,
 
-	SB_MAX
+	SB_MAX //** must always be at end
 };
 
 enum ColorList {
@@ -171,7 +171,7 @@ enum ColorList {
 
 	COLOR_KNOB_BG,
 	COLOR_KNOB_HANDLE,
-	COLOR_MAX
+	COLOR_MAX //** must always be at end
 };
 
 enum ConstantList {
@@ -232,7 +232,7 @@ enum ConstantList {
 	C_KNOB_HANDLE_SIZE,
 	C_KNOB_ANGLE_BEGIN,
 	C_SPINBOX_LINE_EDIT_MIN_WIDTH,
-	C_MAX
+	C_MAX //** must always be at end
 };
 
 enum FontList {
@@ -254,7 +254,7 @@ enum FontList {
 	FONT_WINDOWTOP,
 	FONT_WINDOWBUTTON,
 	FONT_TEXT_VIEW,
-	FONT_MAX
+	FONT_MAX //** must always be at end
 };
 
 enum BitmapList {
@@ -274,9 +274,15 @@ enum BitmapList {
 	BITMAP_WINDOWBUTTON_CLOSE,
 	BITMAP_WINDOWBUTTON_MAXIMIZE,
 	BITMAP_WINDOWBUTTON_MINIMIZE,
-	BITMAP_MAX,
-	BITMAP_SCROLLBAR_GRABBER,
-	BITMAP_SCROLLBAR_GRABBER_HOVER,
+	
+	BITMAP_SCROLLBAR_GRIP_V,
+	BITMAP_SCROLLBAR_GRIP_H,
+
+
+	BITMAP_ARROW_UP,
+	BITMAP_ARROW_DOWN,
+	BITMAP_ARROW_LEFT,
+	BITMAP_ARROW_RIGHT,
 
 	BITMAP_BUTTON_NORMAL,
 	BITMAP_BUTTON_PRESSED,
@@ -288,6 +294,7 @@ enum BitmapList {
 	
 	BITMAP_KNOB_ANIMATION,
 
+	BITMAP_MAX,
 };
 
 

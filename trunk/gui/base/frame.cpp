@@ -134,7 +134,7 @@ const StyleBox& Frame::stylebox(int p_which) {
 FontID Frame::font(int p_which){
 	
 	if (!_fp->skin)
-		return 0;
+		return INVALID_FONT_ID;
 	
 	if (_fp->font_overrides)
 		p_which=_fp->font_overrides->get(p_which);
@@ -144,8 +144,9 @@ FontID Frame::font(int p_which){
 }
 BitmapID Frame::bitmap(int p_which){
 	
+	
 	if (!_fp->skin)
-		return 0;
+		return INVALID_BITMAP_ID;
 	
 	if (_fp->bitmap_overrides) {
 		p_which=_fp->bitmap_overrides->get(p_which);

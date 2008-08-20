@@ -15,7 +15,9 @@
 #include "bundles/spin_box.h"
 #include "widgets/line_edit.h"
 #include "widgets/label.h"
+#include "widgets/button.h"
 #include "base/window.h"
+#include "bundles/window_box.h"
 #include "bundles/margin_group.h"
 #include "bundles/combo_box.h"
 
@@ -62,7 +64,7 @@ public:
 
 class QuestionInputDialog : public Window {
 
-	VBoxContainer *vb;
+	WindowBox *vb;
 	Label *l;
 	HBoxContainer* button_hbox;
 
@@ -71,9 +73,9 @@ public:
 
 	void clear();
 
-	void add_button(int p_id, String p_text);
+	Button* add_button(int p_id, String p_text);
 	void show(String p_question);
-	VBoxContainer *get_vb() { return vb; }
+	WindowBox *get_vb() { return vb; }
 
 	Signal< Method1<int> > button_pressed_signal;
 
@@ -84,7 +86,7 @@ class OptionInputDialog : public Window {
 
 	MarginGroup *question;
 	ComboBox *combo;
-	
+
 	void option_select_callback();
 public:
 

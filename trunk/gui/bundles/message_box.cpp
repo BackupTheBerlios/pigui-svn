@@ -16,6 +16,11 @@
 #include <stdio.h>
 namespace GUI {
 
+Button* MessageBox::get_ok_button() {
+
+    return ok_button;
+}
+
 void MessageBox::show(String p_text) {
 
 
@@ -29,7 +34,8 @@ MessageBox::MessageBox(Window *p_parent,SizeMode p_size_mode) : Window(p_parent,
 	set_root_frame( window_box );
 	custom_vb= window_box->add(GUI_NEW( VBoxContainer),1);
 	text = window_box->add(GUI_NEW(Label));
-	window_box->add( GUI_NEW( CenterContainer) )->set( GUI_NEW( Button("Ok")) )->pressed_signal.connect( static_cast<Window*>(this), &Window::hide );
+	ok_button = GUI_NEW( Button("OK"));
+	window_box->add( GUI_NEW( CenterContainer) )->set( ok_button )->pressed_signal.connect( static_cast<Window*>(this), &Window::hide );
 
 }
 

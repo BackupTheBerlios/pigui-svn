@@ -96,6 +96,7 @@ public:
 	
 	int get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_margin);
 	Size get_stylebox_min_size(const StyleBox& p_stylebox,bool p_with_center=false);
+	Point get_stylebox_offset(const StyleBox& p_stylebox);
 	
 	void draw_arrow( const Point& p_pos, const Size& p_size, Direction p_dir, const Color& p_color,bool p_trianglify=true);
 	/** Updating **/

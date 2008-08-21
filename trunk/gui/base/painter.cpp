@@ -825,6 +825,13 @@ void Painter::draw_stylebox(const StyleBox& p_stylebox,const Point& p_pos, const
 
 }
 
+Point Painter::get_stylebox_offset(const StyleBox& p_stylebox) {
+
+	return Point( 
+		get_stylebox_margin( p_stylebox, MARGIN_LEFT ), 
+		get_stylebox_margin( p_stylebox, MARGIN_TOP ) );
+}
+
 int Painter::get_stylebox_margin(const StyleBox& p_stylebox,const Margin& p_margin) {
 
 

@@ -412,7 +412,7 @@ void Tree::draw_item_text(String p_text,BitmapID p_bitmap,bool p_tool,Rect p_rec
 	if (p_tool)
 		p_rect.size.x-=p_rect.size.y/2;
 
-	p_rect.pos.y+=get_painter()->get_font_ascent( font(FONT_TREE) );
+	p_rect.pos.y+=(p_rect.size.y-get_painter()->get_font_height( font(FONT_TREE) ))/2 +get_painter()->get_font_ascent( font(FONT_TREE) );
 	get_painter()->draw_text( font(FONT_TREE), p_rect.pos, p_text, p_color,p_rect.size.x );
 
 }
@@ -440,15 +440,13 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 
 	Point guide_from;
 
-    bool skip=(p_item==root && hide_root);
+    	bool skip=(p_item==root && hide_root);
    // printf("skip (%p == %p && %i) %i\n",p_item,root,hide_root,skip);
 
 	if (!skip && (pos.y+label_h)>p_exposed.pos.y) {
 
       //  printf("entering\n");
-		int height=label_h-constant( C_TREE_VSPACING );
-
-		pos.y+=constant( C_TREE_VSPACING );
+		int height=label_h;
 
 		Point guide_space=Point( constant( C_TREE_GUIDE_WIDTH ) , height );
 
@@ -473,7 +471,7 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 
 		//draw separation.
 //		if (p_item->get_parent()!=root || !hide_root)
-        pos.x+=constant( C_TREE_GUIDE_WIDTH );
+		pos.x+=constant( C_TREE_GUIDE_WIDTH );
 
 		int font_ascent=get_painter()->get_font_ascent( font( FONT_TREE ) );
 
@@ -511,7 +509,7 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 
 			Color col=p_item->cells[i].custom_color?p_item->cells[i].color:color( p_item->cells[i].selected?COLOR_TREE_FONT_SELECTED:COLOR_TREE_FONT );
 			Point text_pos=item_rect.pos;
-			text_pos.y+=font_ascent;
+			text_pos.y+=(item_rect.size.y-get_painter()->get_font_height( font(FONT_TREE)))/2 + font_ascent;
 
 			switch (p_item->cells[i].mode) {
 
@@ -538,7 +536,7 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 
 					text_pos.x+=check_w;
 
-
+					
 					get_painter()->draw_text( font(FONT_TREE), text_pos, p_item->cells[i].string, col,item_rect.size.x-check_w );
 
 				} break;
@@ -640,10 +638,12 @@ int Tree::draw_item(const Point& p_pos,const Rect& p_exposed,TreeItem *p_item) {
 	}
 
 
-	htotal+=label_h;
-	pos.y+=htotal;
-	if (!skip)
-        pos.x+=constant( C_TREE_GUIDE_WIDTH );
+	if (!skip) {
+		pos.x+=constant( C_TREE_GUIDE_WIDTH );
+		htotal+=label_h;
+		pos.y+=htotal;
+     	   
+	}
 
 
 	if (!p_item->collapsed) { /* if not collapsed, check the childs */
@@ -920,9 +920,9 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		if (!skip) {
 			x_ofs+=constant( C_TREE_GUIDE_WIDTH );
 			new_pos.x-=constant( C_TREE_GUIDE_WIDTH );
+			y_ofs+=item_h;
+			new_pos.y-=item_h;			
 		}
-		y_ofs+=item_h;
-		new_pos.y-=item_h;
 		
 
 		if (!p_item->collapsed) { /* if not collapsed, check the childs */
@@ -1003,7 +1003,8 @@ void Tree::mouse_doubleclick(const Point& p_pos,int p_modifier_mask) {
 	if (!root)
 		return;
 
-	propagate_mouse_event(p_pos,0,0,true,root,BUTTON_LEFT,p_modifier_mask);
+	Point pos = p_pos - get_painter()->get_stylebox_offset( stylebox( SB_TREE_NORMAL ) );
+	propagate_mouse_event(pos,0,0,true,root,BUTTON_LEFT,p_modifier_mask);
 
 }
 
@@ -1016,7 +1017,8 @@ void Tree::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modi
 	if (!root)
 		return;
 
-	propagate_mouse_event(p_pos,0,0,false,root,p_button,p_modifier_mask);
+	Point pos = p_pos - get_painter()->get_stylebox_offset( stylebox( SB_TREE_NORMAL ) );
+	propagate_mouse_event(pos,0,0,false,root,p_button,p_modifier_mask);
 
 }
 
@@ -1030,7 +1032,7 @@ void Tree::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	if (!root)
 		return;
 
-	draw_item(Point(), p_exposed,root);
+	draw_item(get_painter()->get_stylebox_offset( stylebox( SB_TREE_FOCUS ) ) , p_exposed,root);
 
 	int ofs=0;
 	int from_y=p_exposed.pos.y+get_painter()->get_stylebox_margin( stylebox(SB_TREE_NORMAL), MARGIN_TOP);

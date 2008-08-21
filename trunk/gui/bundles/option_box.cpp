@@ -120,6 +120,7 @@ void OptionBox::add_item(BitmapID p_ID,const String& p_str,int p_id,unsigned int
 		popup->add_item( p_ID, p_str,NULL,p_shortcut,p_shortcut_active );
 
 }
+
 void OptionBox::add_separator() {
 
 	if (!popup) {
@@ -152,15 +153,29 @@ void OptionBox::add_to_defered_list( DeferredAdd *p_elem ) {
 
 void OptionBox::select(int p_at) {
 	
-	if (!popup)
-		return;
-	
-	if (!popup->has_ID(p_at))
-		return;
-	
-	selected=p_at;
-	set_text( popup->get_item_text( p_at ) );
-	set_icon( popup->get_item_icon( p_at ) );
+	if (!popup) {
+		
+		DeferredAdd *dfl = deferred_add_list;
+		
+		while (dfl) {
+		
+			if (dfl->id==p_at) {
+			
+				selected=p_at;
+				set_icon( dfl->bitmap );
+				set_text( dfl->text );
+				return;
+			}
+			
+			dfl=dfl->next;
+		}
+		
+	} else if (popup->has_ID(p_at)) {
+			
+		selected=p_at;
+		set_text( popup->get_item_text( p_at ) );
+		set_icon( popup->get_item_icon( p_at ) );
+	}
 		
 }
 int OptionBox::get_selected() {
@@ -215,6 +230,7 @@ OptionBox::OptionBox(String p_text,BitmapID p_bitmap_ID) : Button(p_text,p_bitma
 
 	deferred_add_list=0;
 	popup=0;
+	selected=0;
 }
 
 

@@ -751,7 +751,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		if (col==-1)
 			return -1;
 		else if (col==0)
-			x=p_pos.x-constant(C_TREE_GUIDE_WIDTH);;
+			x=p_pos.x-constant(C_TREE_GUIDE_WIDTH)-constant(C_TREE_HSPACING);;
 
 		TreeItem::Cell &c = p_item->cells[col];
 

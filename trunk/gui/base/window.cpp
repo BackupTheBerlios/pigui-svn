@@ -64,7 +64,7 @@ Point Window::get_global_pos() {
 
 void Window::set_tree_size_changed() {
 
-
+	size_update_needed=true;
 }
 
 Timer *Window::get_timer() {
@@ -158,11 +158,11 @@ Point Window::get_pos() {
 
 void Window::top_frame_resized(Size p_size) {
 
-	set_size(p_size);
+	set_size(p_size,true);
 
 }
 
-void Window::set_size(const Size& p_size) {
+void Window::set_size(const Size& p_size,bool p_force) {
 
 
 	if (!root_frame) {
@@ -185,6 +185,7 @@ void Window::set_size(const Size& p_size) {
 	if (new_size==size)
 		return;
 	size=new_size;
+	root_frame->resize_tree( new_size );
 	root_frame->resize_tree( new_size );
 	Rect size_update( get_global_pos(), size );
 
@@ -306,21 +307,30 @@ void Window::check_size_updates() {
 
 			from=root_frame;
 		}
-
-		if (from == root_frame) {
-
-			Size rfminsize = root_frame->get_minimum_size();
-
-			if (rfminsize.width > size.width || rfminsize.height > size.height)
-				set_size(rfminsize);
-			else
-				from->resize_tree(size);
-
-		} else {
-
-			from->resize_tree( from->get_size_cache() );
-		}
-
+		
+		for (int i=0;i<2;i++) {
+			// try a few times
+			size_update_needed=false;
+			if (from == root_frame) {
+	
+				Size rfminsize = root_frame->get_minimum_size();
+	
+				if (rfminsize.width > size.width || rfminsize.height > size.height)
+					set_size(rfminsize,true);
+				else {
+					from->resize_tree(size);
+					from->resize_tree(size); //@ TODO must fix this.
+				}
+	
+			} else {
+	
+				from->resize_tree( from->get_size_cache() );
+				from->resize_tree( from->get_size_cache() );
+			}
+			if (!size_update_needed)
+				break;
+		}	
+		
 		size_update_needed=false;
 		size_update_from=NULL;
 
@@ -1058,7 +1068,7 @@ void Window::adjust_size_type() {
 
 		case SIZE_CENTER: {
 
-			set_size( root_frame->get_minimum_size() );
+			set_size( root_frame->get_minimum_size(),true );
 			pos=(get_painter()->get_display_size()-size)/2;
 			if (parent)
 				pos-=parent->get_global_pos();
@@ -1066,7 +1076,7 @@ void Window::adjust_size_type() {
 		} break;
 		case SIZE_TOPLEVEL_CENTER: {
 
-			set_size( get_painter()->get_display_size()*3/4 );
+			set_size( get_painter()->get_display_size()*3/4,true );
 
 			pos=(get_painter()->get_display_size()-size)/2;
 			if (parent)
@@ -1332,7 +1342,7 @@ void Window::tooltip_timer_cbk() {
 			return;
 		
 		root_data->tooltip_label->set_text(tooltip_text);
-		root_data->tooltip->set_size(Size(1,1));
+		root_data->tooltip->set_size(Size(1,1),true);
 		root_data->tooltip->set_pos(root_data->last_mouse_pos+Point(root_data->skin->get_constant( C_TOOLTIP_DISPLACEMENT),root_data->skin->get_constant( C_TOOLTIP_DISPLACEMENT)));
 		root_data->tooltip->raise();
 		root_data->tooltip->show();

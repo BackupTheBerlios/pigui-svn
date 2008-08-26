@@ -106,6 +106,7 @@ Container::Element* Container::add_frame_internal( Frame * p_frame, bool p_front
 		get_window()->set_tree_size_changed();
 	}
 	
+	
 	return new_elem;
 }
 
@@ -506,10 +507,12 @@ void Container::check_minimum_size() {
 		} else {
 		
 			get_window()->frame_request_resize(0);		
+			get_window()->set_tree_size_changed();
 		}		
 	} else {
 	
 		get_window()->frame_request_resize(this);
+		get_window()->set_tree_size_changed();
 	}
 }
 

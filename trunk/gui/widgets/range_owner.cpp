@@ -87,6 +87,11 @@ void RangeOwner::set_auto_hide(bool p_auto_hide) {
 	if (!p_auto_hide && !is_visible()) {
 
 	    show();
+	} 
+	
+	if (p_auto_hide && is_visible()) {
+	
+		hide();
 	}
 }
 RangeOwner::RangeOwner(){

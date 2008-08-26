@@ -87,7 +87,7 @@ ScrollBox::ScrollBox( bool p_buttons ) : GridContainer(2)
 	vbox = GridContainer::add( GUI_NEW( VBoxContainer ), false, true );
 	hbox = GridContainer::add( GUI_NEW( HBoxContainer ), true, false );
 	//set_separation(0);
-	vbox->set_separation(0);
+	vbox->set_separation(0);	
 	hbox->set_separation(0);
 	
 	if ( p_buttons ) {

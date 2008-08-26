@@ -241,6 +241,7 @@ ScrollContainer::ScrollContainer()
 	h_scroll.value_changed_signal.connect( this, &ScrollContainer::h_scroll_changed );
 	v_scroll.value_changed_signal.connect( this, &ScrollContainer::v_scroll_changed );
 	
+	
 }
 
 

@@ -176,7 +176,7 @@ public:
 
 	void set_pos(const Point &p_pos);
 	Point get_pos();
-	void set_size(const Size& p_size);
+	void set_size(const Size& p_size,bool p_force=false);
 	Size get_size();
 
 	Point get_global_pos();

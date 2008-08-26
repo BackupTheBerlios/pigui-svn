@@ -385,6 +385,8 @@ void Frame::show() {
 		_fp->parent->adjust_minimum_size();
 	check_minimum_size();
 	update();
+	if (get_window())
+		get_window()->set_tree_size_changed();
 }
 void Frame::hide() {
 	

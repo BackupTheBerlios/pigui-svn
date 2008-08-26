@@ -29,12 +29,12 @@ class ScrollBox : public GridContainer {
 	HScrollBar *hbar;
 	VScrollBar *vbar;
 
-    VBoxContainer *vbox;
-    HBoxContainer *hbox;
+	VBoxContainer *vbox;
+	HBoxContainer *hbox;
 	ArrowButton *vbar_button_up;
-    ArrowButton *vbar_button_down;
-    ArrowButton *hbar_button_left;
-    ArrowButton *hbar_button_right;
+	ArrowButton *vbar_button_down;
+	ArrowButton *hbar_button_left;
+	ArrowButton *hbar_button_right;
 
 public:
 

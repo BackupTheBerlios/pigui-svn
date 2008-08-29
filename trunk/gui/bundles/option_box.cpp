@@ -46,6 +46,7 @@ const Color& OptionBox::color(int p_which) {
 	switch (p_which) {
 		
 		case COLOR_BUTTON_FONT: return Frame::color(COLOR_OPTIONBOX_FONT); break;
+		case COLOR_BUTTON_FONT_HOVER: return Frame::color(COLOR_OPTIONBOX_FONT_HOVER); break;
 		
 	}
 	

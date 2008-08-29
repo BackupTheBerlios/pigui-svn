@@ -485,7 +485,7 @@ void Skin::set_default() {
 
 	SET_COLOR(COLOR_OPTIONBOX_FONT,Color(0));
 	SET_COLOR(COLOR_OPTIONBOX_SHORTCUT_FONT,Color(110));
-
+	SET_COLOR(COLOR_OPTIONBOX_FONT_HOVER,Color(0));
 	
 	/* Menu Box */
 

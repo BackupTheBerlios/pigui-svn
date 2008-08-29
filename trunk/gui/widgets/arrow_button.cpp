@@ -18,6 +18,10 @@
 namespace GUI {
 
 
+void ArrowButton::set_page_increment(bool p_increment) {
+
+	page_increment=p_increment;
+}
 
 void ArrowButton::_check_auto_hide() {
 
@@ -72,13 +76,14 @@ void ArrowButton::press_slot(){
     {
         case GUI::UP:
         case GUI::LEFT:
-            range->set( range->get()-range->get_step() );
+        	
+            range->set( range->get()-(page_increment?(range->get_page()/4.0):range->get_step()) );
 
         break;
 
         case GUI::DOWN:
         case GUI::RIGHT:
-            range->set( range->get()+range->get_step() );
+            range->set( range->get()+(page_increment?(range->get_page()/4.0):range->get_step()) );
         break;
     }
 }
@@ -210,12 +215,13 @@ ArrowButton::ArrowButton(Direction p_dir,bool p_no_minsize)
 	no_minsize=p_no_minsize;
 	dir=p_dir;
 	auto_hide=false;
-
+	page_increment=false;
 }
 
 
-ArrowButton::~ArrowButton()
-{
+ArrowButton::~ArrowButton() {
+
+	
 }
 
 

@@ -27,6 +27,7 @@ class ArrowButton : public BaseButton {
 	bool no_minsize;
 	RangeBase *range;
 	bool auto_hide;
+	bool page_increment;
 
 	void _check_auto_hide();
 	void _range_changed();
@@ -38,6 +39,8 @@ class ArrowButton : public BaseButton {
 	virtual String get_type();
 	void press_slot();
 public:
+
+	void set_page_increment(bool p_increment);
 	void set_dir(Direction p_dir);
 	Direction get_dir () const;
 	void set_range( RangeBase *p_range );

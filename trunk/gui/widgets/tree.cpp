@@ -803,7 +803,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 			case CELL_MODE_CHECK: {
 
 				bring_up_editor=false; //checkboxes are not edited with editor
-				
+				x-=constant(C_TREE_HSPACING);
 				if (x>=0 && x<= constant(C_TREE_CHECK_SIZE) ) {
 
 					c.data.checked = !c.data.checked;
@@ -867,11 +867,11 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 						// scroll bar here
 						
 						//printf("scroll bar popup!\n");
-						scroll_bar->set_range(c.data.range);
+						slider->set_range(c.data.range);
 						line_edit->hide();
-						scroll_bar->show();
+						slider->show();
 						line_edit_window->set_pos(get_global_pos() + Point(col_ofs,y_ofs + item_h) );
-						line_edit_window->set_size( Size(get_column_width(col),item_h));
+						line_edit_window->set_size( Size(get_column_width(col),0));
 						line_edit_window->show();
 						
 						bring_up_editor=false;
@@ -909,7 +909,7 @@ int Tree::propagate_mouse_event(const Point &p_pos,int x_ofs,int y_ofs,bool p_do
 		line_edit_window->set_size( Size(get_column_width(col),item_h));
 		line_edit->clear();
 		line_edit->set_text( editor_text );
-		scroll_bar->hide();
+		slider->hide();
 		line_edit->show();
 		line_edit_window->show();
 
@@ -1252,8 +1252,8 @@ void Tree::clear() {
 	};
 
 	check_minimum_size();
-	if (scroll_bar)
-		scroll_bar->set_range(NULL);
+	if (slider)
+		slider->set_range(NULL);
 };
 
 
@@ -1277,7 +1277,7 @@ void Tree::set_in_window() {
 	VBoxContainer *vbc = GUI_NEW( VBoxContainer );
 	line_edit_window->set_root_frame( vbc );
 	line_edit = vbc->add( GUI_NEW( LineEdit ) );
-	scroll_bar = vbc->add( GUI_NEW( HScrollBar ) );
+	slider = vbc->add( GUI_NEW( HSlider ) );
 	line_edit_window->hide();
 	line_edit->text_enter_signal.connect(this,&Tree::line_edit_enter_slot);
 	vbc->set_stylebox_override( stylebox(SB_LIST_EDITOR_BG) );
@@ -1389,7 +1389,7 @@ Tree::Tree(int p_columns) {
 	root=0;
 	popup_menu=NULL;
 	popup_edited_item=NULL;
-	scroll_bar = NULL;
+	slider = NULL;
 }
 
 

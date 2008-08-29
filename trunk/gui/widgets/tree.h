@@ -16,7 +16,7 @@
 #include "base/widget.h"
 #include "base/range.h"
 #include "widgets/line_edit.h"
-#include "widgets/scroll_bar.h"
+#include "widgets/slider.h"
 #include "bundles/popup_menu.h"
 
 namespace GUI {
@@ -192,7 +192,7 @@ private:
 
 	Window *line_edit_window;
 	LineEdit *line_edit;
-	HScrollBar* scroll_bar;
+	HSlider* slider;
 	PopUpMenu *popup_menu;
 
 	TreeItem *popup_edited_item;

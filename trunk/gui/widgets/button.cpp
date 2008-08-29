@@ -246,7 +246,8 @@ void Button::draw(const Point& p_pos,const Size& p_size,const Rect& p_exposed) {
 	label_ofs.y+=(area_rect.size.height-p->get_font_height( font( FONT_BUTTON ) ))/2+p->get_font_ascent( font( FONT_BUTTON ) );
 
 
-	p->draw_text( font( FONT_BUTTON ) ,  label_ofs, label_text, color(COLOR_BUTTON_FONT) );
+	
+	p->draw_text( font( FONT_BUTTON ) ,  label_ofs, label_text, color(draw_mode==DRAW_HOVER?COLOR_BUTTON_FONT_HOVER:COLOR_BUTTON_FONT) );
 	if (accel_char >= 0) {
 		int width = 0;
 		for (int i=0; i<accel_char; i++) {

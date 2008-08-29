@@ -109,6 +109,10 @@ ScrollBox::ScrollBox( bool p_buttons ) : GridContainer(2)
 		vbar_button_down->set_auto_hide(true);
 		hbar_button_left->set_auto_hide(true);
 		hbar_button_right->set_auto_hide(true);
+		vbar_button_up->set_page_increment(true);
+		vbar_button_down->set_page_increment(true);
+		hbar_button_left->set_page_increment(true);
+		hbar_button_right->set_page_increment(true);
 
 	} else {
 

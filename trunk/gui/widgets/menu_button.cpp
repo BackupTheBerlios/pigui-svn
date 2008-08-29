@@ -40,6 +40,7 @@ const Color& MenuButton::color(int p_which) {
 	switch (p_which) {
 		
 		case COLOR_BUTTON_FONT: return Frame::color(COLOR_MENUBUTTON_FONT); break;
+		case COLOR_BUTTON_FONT_HOVER: return Frame::color(COLOR_MENUBUTTON_FONT_HOVER); break;
 		case COLOR_BUTTON_SHORTCUT_FONT: return Frame::color(COLOR_MENUBUTTON_SHORTCUT_FONT); break;
 		
 	}

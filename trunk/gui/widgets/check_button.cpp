@@ -59,6 +59,7 @@ const Color& CheckButton::color(int p_which) {
 	switch (p_which) {
 		
 		case COLOR_BUTTON_FONT: return Frame::color(COLOR_CHECKBUTTON_FONT); break;
+		case COLOR_BUTTON_FONT_HOVER: return Frame::color(COLOR_CHECKBUTTON_FONT_HOVER); break;
 		case COLOR_BUTTON_SHORTCUT_FONT: return Frame::color(COLOR_CHECKBUTTON_SHORTCUT_FONT); break;
 		
 	}

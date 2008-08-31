@@ -1,0 +1,18 @@
+
+Import('env')
+
+base_files=[\
+	"constants.cpp",\
+	"container.cpp",\
+	"font.cpp",\
+	"frame.cpp",\
+	"geometry.cpp",\
+	"painter.cpp",\
+	"pixmap.cpp",\
+	"platform.cpp",\
+	"style_box.cpp",\
+	"widget.cpp",\
+	"window.cpp",\
+]
+
+env.Library("base",base_files)

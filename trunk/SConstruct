@@ -1,0 +1,50 @@
+import os
+import sys
+
+
+env = Environment()
+
+win32=(os.name == 'nt')
+
+
+opts=Options()
+opts.Add('optimize', 'Optimize (0|1).', 0)
+opts.Add('debug', 'Add debug symbols (0|1).', 1)
+opts.Add('prefix', 'The installation prefix', '/usr/local/')
+# opts.Add('PNG','Enable LibPNG (0|1).',1)
+
+
+if (win32):
+
+	#
+	print("not supported yet")
+else:
+
+	# pkg-config configuration
+
+      	env.Append(CPPFLAGS=['-DPIGUI_UNIX_ENABLED'])
+	
+	errorval=os.system("pkg-config --version > /dev/null");
+
+	if (errorval):
+		print "**Error: cant execute pkg-config, please install pkg-config"
+		sys.exit(1);
+	     
+	# LibX11 (xlib)
+	
+	errorval=os.system("pkg-config x11 --modversion");
+	
+	if (not errorval):
+
+		env.ParseConfig('pkg-config x11 --cflags --libs')
+		env.Append(CPPFLAGS=['-DPIGUI_X11_ENABLED']);
+
+
+
+	
+env.Append(CPPPATH=['#'])
+Export('env');
+
+SConscript('base/SCsub');
+SConscript('examples/SCsub');
+

@@ -13,6 +13,14 @@
 
 namespace GUI {
 
+Platform *Platform::singleton=NULL;
+
+Platform *Platform::get_singleton() {
+
+	return singleton;
+}
+
+
 PlatformTheme::~PlatformTheme() {
 
 }
@@ -182,6 +190,8 @@ PlatformTimer::~PlatformTimer() {
 }
 
 Platform::Platform() {
+
+	singleton=this;
 }
 
 

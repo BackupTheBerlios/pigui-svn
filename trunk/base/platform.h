@@ -81,7 +81,7 @@ public:
 	/* drawing interface */
 
 	virtual void draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill=true)=0;
-	virtual void draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width=1)=0;
+	virtual void draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width=1,bool p_round_endpoints=false)=0;
 	virtual void draw_poly(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill=true)=0;
 	virtual void draw_circle(const Point p_center, int p_radius,const Color& p_color,bool p_fill=true)=0;
 	virtual void draw_arrow(const Point& p_from,const Size& p_size,Direction p_dir,const Color& p_color,bool p_fill=true)=0;
@@ -101,6 +101,10 @@ public:
 	Signal< Method3<const Point&, const Point&, int > > mouse_motion_event_signal;
 	// unicode, scan code, pressed, keyrepeat, modifier mask
 	Signal< Method5< unsigned int, unsigned int, bool, bool, int >  > key_event_signal;
+	// update notify (rect area to update)
+	Signal< Method1<const Rect&> > update_event_signal;
+	// rect changed notify
+	Signal< Method1<const Rect&> > rect_changed_event_signal;
 
 
 	virtual ~PlatformWindow();
@@ -272,6 +276,8 @@ protected:
 		return pf;
 	}
 
+
+	static Platform *singleton;
 public:
 
 	

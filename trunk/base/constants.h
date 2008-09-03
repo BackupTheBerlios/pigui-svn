@@ -121,6 +121,8 @@ enum PixmapFormat {
 	PIXMAP_FORMAT_RGB,
 	PIXMAP_FORMAT_RGBA,
 };
+
+
 //needing to include math.h/cmath for an integer/float abs function is asking too much
 
 template<class T>

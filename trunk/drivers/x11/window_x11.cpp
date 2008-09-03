@@ -73,11 +73,52 @@ bool WindowX11::is_root() {
 	return false;
 }
 
-void WindowX11::draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill) {
+unsigned long WindowX11::_map_color(const Color& p_color) {
+	
+	unsigned long col_r = p_color.r;
+	if (r_shift>0)
+		col_r<<=r_shift;
+	else if (r_shift<0)
+		col_r>>=-r_shift;
+
+	unsigned long col_g = p_color.g;
+	if (g_shift>0)
+		col_g<<=g_shift;
+	else if (g_shift<0)
+		col_g>>=-g_shift;
+
+	unsigned long col_b = p_color.b;
+	if (b_shift>0)
+		col_b<<=b_shift;
+	else if (b_shift<0)
+		col_b>>=-b_shift;
+			
+	return (col_r|col_g|col_b);
 
 }
-void WindowX11::draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width) {
 
+void WindowX11::draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill) {
+
+	XGCValues xgcvalues;
+	xgcvalues.fill_style=FillSolid;
+	xgcvalues.foreground=_map_color(p_color);
+	xgcvalues.background=_map_color(p_color);
+
+	XChangeGC(x11_display, x11_gc, GCForeground|GCBackground|GCFillStyle, &xgcvalues);
+
+	XFillRectangle(x11_display, x11_window, x11_gc, p_from.x,p_from.y, p_size.width,p_size.height);
+
+}
+void WindowX11::draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width,bool p_round_endpoints) {
+
+	XGCValues xgcvalues;
+	xgcvalues.line_width=p_width;
+	xgcvalues.cap_style=p_round_endpoints?CapRound:CapButt;
+	xgcvalues.foreground=_map_color(p_color);
+
+	XChangeGC(x11_display, x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
+
+	XDrawLine(x11_display, x11_window, x11_gc, p_from.x,p_from.y, p_to.x, p_to.y );
 }
 void WindowX11::draw_poly(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill) {
 
@@ -160,7 +201,11 @@ void WindowX11::process_x11_event(const XEvent& p_event) {
 		} break;
 		case Expose: {
 
-			printf("expose\n");
+			// should stack them, but fro now..
+			Rect expose_rect( Point( p_event.xexpose.x, p_event.xexpose.y), Size(p_event.xexpose.width, p_event.xexpose.height ));
+
+			update_event_signal.call( expose_rect );
+			
 
 		} break;
 		case GraphicsExpose: {
@@ -276,6 +321,52 @@ void WindowX11::process_x11_event(const XEvent& p_event) {
 	}
 }
 
+static void _configure_shift_and_mask(int& p_shift, unsigned long& p_mask, unsigned long p_src) {
+
+	int state=0; // searching
+	int bit_start=-1,bit_end=-1;
+
+	for (int i=(sizeof(unsigned long)*8);i>=0;i--) {
+
+		bool bit;
+
+		if (i==0)
+			bit=0;
+		else
+			bit=(p_src&(1UL<<(i-1)))?true:false;
+			
+
+		switch(state) {
+			case 0: // waiting for a bit to happen
+
+				if (bit) {
+					state=1;
+					bit_start=i;
+				}
+			break;
+			case 1: // waiting for no bit
+				if (!bit) {
+					state=2;
+					bit_end=i;
+				}
+			break;
+			default: {}
+
+		}
+	}
+
+	if (bit_start<0 || bit_end<0) {
+
+		GUI_PRINT_ERROR("Invalid BitMask.");
+		return;
+	}
+
+	p_shift=bit_start-8;
+	unsigned long len = bit_start-bit_end;
+	p_mask=(len-1) << (8-len);
+
+}
+
 WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x11_window, WindowX11 * p_next ) : PlatformWindow( p_platform ) {
 
 	x11_window=p_x11_window;
@@ -299,6 +390,17 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x1
 	XSelectInput(x11_display, x11_window, events);
 	XMapWindow(x11_display, x11_window);
 
+ 	x11_gc = XCreateGC(x11_display, x11_window, 0, 0);
+	Visual* visual = DefaultVisual( x11_display, 0 );
+
+	// calculate r_shift, 
+	_configure_shift_and_mask(r_shift,r_mask,visual->red_mask);
+	_configure_shift_and_mask(g_shift,g_mask,visual->green_mask);
+	_configure_shift_and_mask(b_shift,b_mask,visual->blue_mask);
+
+	printf("r_shift %i, r_mask %i\n",r_shift,r_mask);
+	printf("g_shift %i, g_mask %i\n",g_shift,g_mask);
+	printf("b_shift %i, b_mask %i\n",b_shift,b_mask);
 
 }
 

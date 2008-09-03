@@ -35,6 +35,15 @@ friend class PlatformX11;
 
 	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x11_window,WindowX11 * p_next=NULL );
 
+	GC x11_gc;
+
+	unsigned long r_mask;	
+	unsigned long g_mask;	
+	unsigned long b_mask;	
+	int r_shift,g_shift,b_shift;
+
+	unsigned long _map_color(const Color& p_color);
+
 	// logic
 
 	bool visible;
@@ -63,7 +72,7 @@ public:
 	/* drawing interface */
 
 	virtual void draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill=true);
-	virtual void draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width=1);
+	virtual void draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width=1,bool p_round_endpoints=false);
 	virtual void draw_poly(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill=true);
 	virtual void draw_circle(const Point p_center, int p_radius,const Color& p_color,bool p_fill=true);
 	virtual void draw_arrow(const Point& p_from,const Size& p_size,Direction p_dir,const Color& p_color,bool p_fill=true);

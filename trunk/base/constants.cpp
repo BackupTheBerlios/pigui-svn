@@ -11,10 +11,9 @@
 //
 #include "constants.h"
 
-namespace GUI {
 
 
-void (*_print_error_func)(const char *,int,const char*)=NULL;
+void (*_GUI_print_error_func)(const char *,int,const char*)=NULL;
 
 
-}
+

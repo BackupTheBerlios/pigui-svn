@@ -17,14 +17,16 @@
 #include <stddef.h> 
 #include "base/memory.h"
 
+extern void (*_GUI_print_error_func)(const char *,int,const char*);
+
 namespace GUI {
 
 
 //#define PRINT_ERROR(m_err)
 
-extern void (*_print_error_func)(const char *,int,const char*);
 
-#define GUI_PRINT_ERROR(m_err) { if (_print_error_func) _print_error_func(__FILE__,__LINE__,m_err); };
+
+#define GUI_PRINT_ERROR(m_err) { if (_GUI_print_error_func) _GUI_print_error_func(__FILE__,__LINE__,m_err); };
 
 enum MouseButton { 
 

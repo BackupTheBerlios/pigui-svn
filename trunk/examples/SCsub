@@ -1,0 +1,5 @@
+
+Import('env')
+
+
+env.Program('test_widgets',['test_widgets.cpp'])

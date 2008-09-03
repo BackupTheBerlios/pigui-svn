@@ -181,8 +181,7 @@ PlatformTimer::~PlatformTimer() {
 
 }
 
-Platform::Platform()
-{
+Platform::Platform() {
 }
 
 

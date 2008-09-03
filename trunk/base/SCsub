@@ -2,6 +2,8 @@
 Import('env')
 
 base_files=[\
+	"pstring.cpp",\
+	"signals.cpp",\
 	"constants.cpp",\
 	"container.cpp",\
 	"font.cpp",\

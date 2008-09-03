@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <math.h>
-#include "base/defs.h"
+#include "base/constants.h"
 
 #define MAX_DIGITS 6
 
@@ -129,7 +129,7 @@ void String::resize_shared(int p_newsize) {
 void String::create_shared(int p_length) {
 	
 	if (shared!=NULL) {
-		PRINT_ERROR(" Shared != NULL ");
+		GUI_PRINT_ERROR(" Shared != NULL ");
 		return;
 	}
 	
@@ -253,7 +253,7 @@ const String::CharType& String::operator[](int p_idx) const {
 	static CharType errv=0;
 	if (p_idx <0 || p_idx>=shared->len) {
 		
-		PRINT_ERROR("p_idx <0 || p_idx>=shared->len");
+		GUI_PRINT_ERROR("p_idx <0 || p_idx>=shared->len");
 		return errv;
 	};
 
@@ -267,7 +267,7 @@ String::CharType& String::operator[](int p_idx) {
 	errv=0; //dont change it, damnit
 	if (p_idx <0 || p_idx>=shared->len) {
 		
-		PRINT_ERROR("p_idx <0 || p_idx>=shared->len");
+		GUI_PRINT_ERROR("p_idx <0 || p_idx>=shared->len");
 		return errv;
 	};
 	
@@ -1049,7 +1049,7 @@ int String::find(String p_str,int p_from) {
 			
 			if (read_pos>=length()) {
 		
-				PRINT_ERROR("read_pos>=length()");
+				GUI_PRINT_ERROR("read_pos>=length()");
 				return -1;
 			};
 
@@ -1086,7 +1086,7 @@ int String::findn(String p_str,int p_from) {
 			
 			if (read_pos>=length()) {
 		
-				PRINT_ERROR("read_pos>=length()");
+				GUI_PRINT_ERROR("read_pos>=length()");
 				return -1;
 			};
 

@@ -40,11 +40,14 @@ else:
 		env.Append(CPPFLAGS=['-DPIGUI_X11_ENABLED']);
 
 
-
+env.Append(LIBS=['drivers_x11','base'])
+env.Append(LIBPATH=['#drivers/x11','#base'])
 	
 env.Append(CPPPATH=['#'])
+
 Export('env');
 
 SConscript('base/SCsub');
+SConscript('drivers/SCsub');
 SConscript('examples/SCsub');
 

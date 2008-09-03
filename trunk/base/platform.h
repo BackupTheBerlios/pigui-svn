@@ -121,7 +121,7 @@ public:
 	virtual PixmapFormat get_format() const=0;
 	virtual bool is_valid() const=0;
 
-	virtual PlatformPixmap *copy();
+	virtual PlatformPixmap *copy()=0;
 
 	virtual ~PlatformPixmap();
 };
@@ -285,6 +285,8 @@ public:
 	virtual PlatformFileSystem *create_file_system()=0;
 	virtual PlatformTimer *create_timer()=0;
 	
+
+	virtual int run()=0;
 
 	static Platform *get_singleton();
 

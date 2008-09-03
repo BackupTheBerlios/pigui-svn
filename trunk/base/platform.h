@@ -82,7 +82,7 @@ public:
 
 	virtual void draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill=true)=0;
 	virtual void draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width=1,bool p_round_endpoints=false)=0;
-	virtual void draw_poly(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill=true)=0;
+	virtual void draw_polygon(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill=true,int p_line_width=1)=0;
 	virtual void draw_circle(const Point p_center, int p_radius,const Color& p_color,bool p_fill=true)=0;
 	virtual void draw_arrow(const Point& p_from,const Size& p_size,Direction p_dir,const Color& p_color,bool p_fill=true)=0;
 		

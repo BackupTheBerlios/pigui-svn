@@ -31,7 +31,7 @@ PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
  
 	int black = BlackPixel(x11_display, DefaultScreen(x11_display));
 	Window w = XCreateSimpleWindow(x11_display, DefaultRootWindow(x11_display), 0, 0, 
-				     50, 50, 0, black, black);
+				     350, 350, 0, black, black);
 	
 	if (w==0) {
 
@@ -45,6 +45,7 @@ PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
 
 	return new_window;
 }
+
 PlatformPixmap* PlatformX11::create_pixmap() {
 
 	return NULL;
@@ -83,7 +84,7 @@ void PlatformX11::iteration() {
 	XFlush(x11_display);
 
 	XEvent event;
-	XNextEvent(x11_display, &event);
+	XNextEvent(x11_display, &event); // wait for event
 
 	// dispatch the event to whoever owns it (TODO must optimize this)
 	WindowX11 *w = window_list;
@@ -98,6 +99,7 @@ void PlatformX11::iteration() {
 		w=w->get_next();
 	}
 
+	XFlush(x11_display);
 }
 
 PlatformX11::PlatformX11() {

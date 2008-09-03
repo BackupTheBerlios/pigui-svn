@@ -15,7 +15,7 @@
 #include "window_x11.h"
 #include "drivers/x11/platform_x11.h"
 #include <stdio.h>
-
+#include <alloca.h>
 
 namespace GUI {
 
@@ -120,9 +120,58 @@ void WindowX11::draw_line(const Point& p_from,const Point& p_to,const Color& p_c
 
 	XDrawLine(x11_display, x11_window, x11_gc, p_from.x,p_from.y, p_to.x, p_to.y );
 }
-void WindowX11::draw_poly(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill) {
+void WindowX11::draw_polygon(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill,int p_line_width) {
 
+	if (p_point_count<=0 || p_point_count > 256) {
+	
+		GUI_PRINT_ERROR("Two many points!");
+	}
+		
+	if (p_fill) {
+			
+		XPoint *xpoints = (XPoint*)alloca( p_point_count * sizeof(XPoint ) );
+		
+		//@TODO check against clip region before cancelling the poly
+		
+		for (int i=0;i<p_point_count;i++) {
+			
+			if (p_points[i].x<-32768 || p_points[i].x>32767 || p_points[i].y<-32768 || p_points[i].y>32767) {
+				
+				return; // polygon too big for x11 coordinate
+			}
+			xpoints[i].x=p_points[i].x;
+			xpoints[i].y=p_points[i].y;
+		}
+		
+		XGCValues xgcvalues;
+		xgcvalues.fill_style=FillSolid;
+		xgcvalues.foreground=_map_color(p_color);
+		xgcvalues.background=_map_color(p_color);
+	
+		XChangeGC(x11_display, x11_gc, GCForeground|GCBackground|GCFillStyle, &xgcvalues);
+	
+		XFillPolygon(x11_display, x11_window, x11_gc, xpoints, p_point_count,Complex,CoordModeOrigin);
+	} else {
+	
+		XGCValues xgcvalues;
+		xgcvalues.line_width=p_line_width;
+		xgcvalues.cap_style=CapRound;
+		xgcvalues.foreground=_map_color(p_color);
+	
+		XChangeGC(x11_display, x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
+	
+		for (int i=0;i<p_point_count;i++) {
+		
+			int prev_i=(i==0)?p_point_count-1:i-1;
+			
+			
+			
+			XDrawLine(x11_display, x11_window, x11_gc, p_points[prev_i].x,p_points[prev_i].y,p_points[i].x, p_points[i].y );
+		}
+	}
+	
 }
+
 void WindowX11::draw_circle(const Point p_center, int p_radius,const Color& p_color,bool p_fill) {
 
 }
@@ -401,6 +450,7 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x1
 	printf("r_shift %i, r_mask %i\n",r_shift,r_mask);
 	printf("g_shift %i, g_mask %i\n",g_shift,g_mask);
 	printf("b_shift %i, b_mask %i\n",b_shift,b_mask);
+	printf("brgb %i\n",visual->bits_per_rgb);
 
 }
 

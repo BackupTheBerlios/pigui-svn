@@ -20,6 +20,10 @@ class PWTEST : public GUI::SignalTarget {
 		w->draw_rect( GUI::Point(10,10),GUI::Size(20,20),GUI::Color(255,0,255) );
 		w->draw_rect( GUI::Point(20,20),GUI::Size(40,5),GUI::Color(100,200,255) );
 		w->draw_line( GUI::Point(5,5),GUI::Size(15,73),GUI::Color(255,200,80), 5 );
+		
+		GUI::Point poly[4]={ GUI::Point(50,50), GUI::Point(70,50), GUI::Point(75,80),GUI::Point(43,77) };
+		
+		w->draw_polygon(poly,4,GUI::Color(180,170,120),false,3);
 	}	
 public:
 

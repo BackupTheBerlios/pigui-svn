@@ -87,7 +87,7 @@ public:
 	virtual void draw_arrow(const Point& p_from,const Size& p_size,Direction p_dir,const Color& p_color,bool p_fill=true)=0;
 		
 	virtual void draw_pixmap(const Pixmap& p_pixmap, const Point& p_pos,const Rect& p_source)=0;	
-	virtual void draw_string(const Font& p_font,const Point& p_point,Direction p_dir,int p_clip_len=-1)=0;
+	virtual void draw_string(const Font& p_font,const Point& p_pos,const Color& p_color,const String& p_string,Direction p_dir=RIGHT)=0;
 
 	virtual void draw_stylebox( const StyleBox& p_style,const Point& p_from,const Size& p_size)=0;
 	
@@ -116,10 +116,13 @@ protected:
 public:
 	virtual Error create(const Size& p_size,PixmapFormat p_format=PIXMAP_FORMAT_RGB)=0;
 
-	virtual Error load(const String& p_file)=0;
-	virtual Error save(const String& p_file)=0;
-	virtual void set_pixel(const Point& p_pos,const Color& p_color,unsigned char p_alpha=255)=0;
-	virtual Color get_pixel(const Point& p_pos,unsigned char *p_alpha=NULL) const=0;
+	virtual Error load_file(const String& p_file)=0;
+	virtual Error save_file(const String& p_file)=0;
+	
+	virtual void load_pixels( const void * p_pixels, const Size& p_size, PixmapFormat p_format )=0;
+	virtual void save_pixels( void * p_pixels ) const=0;
+
+	virtual void copy_rect_to( const Rect& p_src_rect,PlatformPixmap * p_to_pixmap,const Point& p_dst_pos ) const=0;
 
 	virtual Size get_size() const=0;
 	virtual PixmapFormat get_format() const=0;
@@ -135,10 +138,10 @@ class PlatformFont : public PlatformBase {
 protected:
 	PlatformFont(Platform *p_owner) : PlatformBase(p_owner) {};
 public:
-	virtual Error load(const String& p_name,int p_size,unsigned int p_flags=0)=0;
+	virtual Error load(const String& p_name,float p_size,unsigned int p_font_style_flags=0)=0;
 	
 	virtual String get_name() const=0;
-	virtual int get_size() const=0;
+	virtual float get_size() const=0;
 
 	virtual bool has_character(unsigned int p_code) const=0;
 	
@@ -261,7 +264,7 @@ protected:
 	inline PlatformPixmap *extract_platform_pixmap(const Pixmap& p_pixmap) {
 
 		PlatformPixmap *pp=p_pixmap.get_platform_pixmap();
-		if (pp->get_owner()!=this) // make sure we OWN this
+		if (!pp || pp->get_owner()!=this) // make sure we OWN this
 			return NULL;
 
 		return pp;
@@ -270,7 +273,7 @@ protected:
 	inline PlatformFont *extract_platform_font(const Font& p_font) {
 
 		PlatformFont *pf=p_font.get_platform_font();
-		if (pf->get_owner()!=this) // make sure we OWN this
+		if (!pf || pf->get_owner()!=this) // make sure we OWN this
 			return NULL;
 
 		return pf;

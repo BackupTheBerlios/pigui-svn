@@ -14,6 +14,7 @@
 #ifdef PIGUI_X11_ENABLED
 
 #include <unistd.h>
+#include <stdio.h>
 
 namespace GUI {
 
@@ -32,7 +33,7 @@ PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
 	int black = BlackPixel(x11_display, DefaultScreen(x11_display));
 	Window w = XCreateSimpleWindow(x11_display, DefaultRootWindow(x11_display), 0, 0, 
 				     350, 350, 0, black, black);
-	
+	printf("window ID is %i\n",w);
 	if (w==0) {
 
 		GUI_PRINT_ERROR("XCreateSimpleWindow failed.")
@@ -48,11 +49,11 @@ PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
 
 PlatformPixmap* PlatformX11::create_pixmap() {
 
-	return NULL;
+	return GUI_NEW( PixmapX11(this,x11_display) );
 }
 PlatformFont* PlatformX11::create_font() {
 
-	return NULL;
+	return GUI_NEW( FontX11( this, x11_display ) );
 }
 PlatformFile *PlatformX11::create_file() {
 
@@ -102,6 +103,105 @@ void PlatformX11::iteration() {
 	XFlush(x11_display);
 }
 
+static int _cmpstringp(const void *p1, const void *p2) {
+	
+	return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+
+void PlatformX11::generate_font_list() {
+	
+	font_info = NULL;
+	FcFontSet  *font_set;
+	FcPattern   *font_pattern;
+	FcObjectSet *font_obj_set = 0; 
+	
+	font_pattern = FcPatternCreate();
+	font_obj_set = FcObjectSetBuild(FC_FAMILY, FC_STYLE, (void *)0);
+	font_set = FcFontList(0, font_pattern, font_obj_set);
+	
+	FcPatternDestroy(font_pattern);
+	
+	if (font_set) {
+		
+		
+		char **font_list = (char**)malloc( sizeof(char*)*font_set->nfont );
+		
+		for(int i=0;i<font_set->nfont;i++) {
+			
+			font_list[i]=(char*)FcNameUnparse(font_set->fonts[i]);
+		}
+		
+		qsort(font_list, font_set->nfont, sizeof(char*), _cmpstringp);
+		
+		FontInfoListX11 *fonts=NULL;
+		
+		font_info_count=0;
+		
+		for(int i=0;i<font_set->nfont;i++) {
+			
+			String fontstring;
+			fontstring.parse_utf8(font_list[i]);
+								
+			String name = fontstring.get_slice(":",0);
+			if (name.find(",")!=-1)
+				name=name.get_slice(",",0);
+			
+			FontInfoListX11 * font=0;;
+			
+			if (fonts && fonts->name==name) {
+				
+				font=fonts;
+			} else {
+				
+				font = new FontInfoListX11;
+				font->next=fonts;
+				fonts=font;
+				font->name=name;
+				font_info_count++;
+				printf("font: %s\n",fontstring.ascii().get_data());				
+			}
+			
+			String styles=fontstring.get_slice(":",1);
+			// could really optimize this
+			for (int j=0;j<styles.get_slice_count(",");j++) {
+				
+				String style=styles.get_slice(",",j);
+				
+				if (style.find("Italic")!=-1 || style.find("Oblique")!=-1) {
+					
+					font->flags|=FONT_STYLE_ITALIC;
+				}
+				if (style.find("Bold")) {
+					
+					font->flags|=FONT_STYLE_BOLD;
+				}				
+			}
+		}
+		
+		// clean up temporary allocated font space
+		for(int i=0;i<font_set->nfont;i++) {
+			
+			free(font_list[i]);
+		}
+		
+		free(font_list);
+		
+		font_info = new FontInfoListX11*[font_info_count];
+		
+		
+		for (int i=font_info_count-1;i>=0;i--) {
+			
+			font_info[i]=fonts;
+			fonts=fonts->next;
+		}
+		
+	}
+	
+	FcFontSetDestroy(font_set);	
+	
+}
+
 PlatformX11::PlatformX11() {
 	
 	exit=false;
@@ -112,13 +212,26 @@ PlatformX11::PlatformX11() {
 		_exit(255);
 	}
 	
+	XftInitFtLibrary();
 	
+	best_pixmap_depth = DefaultDepth( x11_display, DefaultScreen(x11_display) );
+	printf("default depth %i\n",best_pixmap_depth);
 
+	generate_font_list();
+	
 }
 
 
 PlatformX11::~PlatformX11() {
 
+	if (font_info) {
+		for (int i=0;i<font_info_count;i++)
+			delete font_info[i];
+		
+		delete[] font_info;
+	}
+		
+		
 }
 
 }

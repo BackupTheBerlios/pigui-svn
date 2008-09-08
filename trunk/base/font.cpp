@@ -209,13 +209,13 @@ Error Font::custom_get_char(unsigned int p_char, Pixmap& r_pixmap, Rect& r_rect,
 
 /* SYSYEM FONT METHODS */
 
-Error Font::system_load(const String& p_name,int p_size,unsigned int p_flags) {
+Error Font::system_load(const String& p_name,float p_size,unsigned int p_font_tyle_flags) {
 
 	unreference();
 
 	_fp = GUI_NEW( FontPrivate );
 	_fp->font = Platform::get_singleton()->create_font();
-	Error err = _fp->font->load(p_name,p_size,p_flags);
+	Error err = _fp->font->load(p_name,p_size,p_font_tyle_flags);
 	if (err) {
 
 		unreference();
@@ -233,7 +233,7 @@ String Font::system_get_name() const {
 
 	return _fp->font->get_name();
 }
-int Font::system_get_size() const {
+float Font::system_get_size() const {
 
 	if (!_fp || !_fp->font)
 		return -1;

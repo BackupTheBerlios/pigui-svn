@@ -15,5 +15,7 @@
 
 void (*_GUI_print_error_func)(const char *,int,const char*)=NULL;
 
+void (*_GUI_print_warning_func)(const char *,int,const char*)=NULL;
+
 
 

@@ -18,15 +18,13 @@
 #include "base/memory.h"
 
 extern void (*_GUI_print_error_func)(const char *,int,const char*);
+extern void (*_GUI_print_warning_func)(const char *,int,const char*);
 
 namespace GUI {
 
 
-//#define PRINT_ERROR(m_err)
-
-
-
 #define GUI_PRINT_ERROR(m_err) { if (_GUI_print_error_func) _GUI_print_error_func(__FILE__,__LINE__,m_err); };
+#define GUI_PRINT_WARNING(m_err) { if (_GUI_print_warning_func) _GUI_print_error_func(__FILE__,__LINE__,m_err); };
 
 enum MouseButton { 
 
@@ -90,11 +88,10 @@ enum Orientation {
 };
 
 
-enum FontFlags {
+enum FontStyleFlags {
 
-	FONT_BOLD=1,
-	FONT_UNDERLINE=2,
-	FONT_ITALIC=4
+	FONT_STYLE_BOLD=1,
+	FONT_STYLE_ITALIC=2
 };
 
 enum WindowFlags {
@@ -169,6 +166,7 @@ enum Error {
 	ERR_INVALID_PARAMETER,
 	ERR_IN_USE,
 	ERR_UNCONFIGURED,
+	ERR_UNSUPPORTED,
 };
 
 

@@ -41,11 +41,13 @@ public:
 
 	Error create(const Size& p_size,PixmapFormat p_format=PIXMAP_FORMAT_RGB);
 	
-	Error load(const String& p_file);
-	Error save(const String& p_file);
+	Error load_file(const String& p_file);
+	Error save_file(const String& p_file);
 
-	void set_pixel(const Point& p_pos,const Color& p_color,unsigned char p_alpha=255);
-	Color get_pixel(const Point& p_pos,unsigned char *p_alpha=NULL) const;
+	void load_pixels( const void * p_pixels, const Size& p_size, PixmapFormat p_format );
+	void save_pixels( void * p_pixels ) const;	
+
+	void copy_rect_to( const Rect& p_src_rect,Pixmap &p_pixmap,const Point& p_dst_pos ) const;
 
 	Size get_size() const;
 	PixmapFormat get_format() const;

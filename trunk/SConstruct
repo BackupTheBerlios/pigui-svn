@@ -13,6 +13,8 @@ opts.Add('debug', 'Add debug symbols (0|1).', 1)
 opts.Add('prefix', 'The installation prefix', '/usr/local/')
 # opts.Add('PNG','Enable LibPNG (0|1).',1)
 
+opts.Update(env)
+Help(opts.GenerateHelpText(env))
 
 if (win32):
 
@@ -32,14 +34,26 @@ else:
 	     
 	# LibX11 (xlib)
 	
-	errorval=os.system("pkg-config x11 --modversion");
-	
-	if (not errorval):
+	x11_error=os.system("pkg-config x11 --modversion > /dev/null ");
+	xrender_error=os.system("pkg-config xrender --modversion > /dev/null");
+	xrender_error=os.system("pkg-config xft --modversion > /dev/null");
+		
+	if (not x11_error and not xrender_error):
 
 		env.ParseConfig('pkg-config x11 --cflags --libs')
-		env.Append(CPPFLAGS=['-DPIGUI_X11_ENABLED']);
+		env.ParseConfig('pkg-config xrender --cflags --libs')
+		env.ParseConfig('pkg-config xft --cflags --libs')
+		env.ParseConfig('pkg-config fontconfig --cflags --libs')
+		
+		env.Append(CPPFLAGS=['-DPIGUI_X11_ENABLED']);	
+	else:
+		print("** X11 + XRender + Xft not available.");
 
 
+if (env["debug"]):
+	
+	env.Append(CPPFLAGS=['-g3','-Wall'])
+		
 env.Append(LIBS=['drivers_x11','base'])
 env.Append(LIBPATH=['#drivers/x11','#base'])
 	

@@ -137,6 +137,7 @@ struct Rect {
 	}
 	
 	Rect( const Point& p_pos=Point(), const Size& p_size=Size() ) { pos=p_pos; size=p_size; }
+	Rect( int p_x,int p_y, int p_width,int p_height ) { pos.x=p_x; pos.y=p_y; size.width=p_width; size.height=p_height;  }
 };
 
 struct Color {		
@@ -144,10 +145,11 @@ struct Color {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
+	unsigned char a;
 	
 	unsigned char get_v() { return ((int)r+(int)g+(int)b)/3; }
-	Color( unsigned char p_mono=0 ) { r=p_mono; g=p_mono; b=p_mono; }
-	Color( unsigned char p_r, unsigned char p_g, unsigned char p_b) { r=p_r; g=p_g; b=p_b; }
+	Color( unsigned char p_mono=0 ) { r=p_mono; g=p_mono; b=p_mono; a=255; }
+	Color( unsigned char p_r, unsigned char p_g, unsigned char p_b,unsigned char p_a=255) { r=p_r; g=p_g; b=p_b; a=p_a; }
 	
 };
 

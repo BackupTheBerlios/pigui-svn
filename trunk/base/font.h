@@ -46,11 +46,11 @@ public:
 
 	/* SYSYEM FONT METHODS */
 
-	virtual Error system_load(const String& p_name,int p_size,unsigned int p_flags=0); ///< Load a system font (erases custom font)
+	virtual Error system_load(const String& p_name,float p_size,unsigned int p_font_tyle_flags=0); ///< Load a system font (erases custom font)
 	
 
 	virtual String system_get_name() const; ///< get system font name
-	virtual int system_get_size() const; ///< get system font size
+	virtual float system_get_size() const; ///< get system font size
 
 	/* COMMON METHODS */
 

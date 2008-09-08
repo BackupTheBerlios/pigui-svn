@@ -16,6 +16,8 @@
 
 #include "base/platform.h"
 #include <X11/Xlib.h>
+#include "X11/extensions/Xrender.h"
+#include "X11/Xft/Xft.h"
 
 
 namespace GUI {
@@ -29,11 +31,14 @@ friend class PlatformX11;
 
 	// x11
 
-	Window x11_window; // this is the actuall X11 window
+	::Window x11_window; // this is the actuall X11 window
 	Display *x11_display;
+	::Picture xrender_picture;
+	XftDraw *xft_draw;
 	WindowX11 * next;
-
-	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x11_window,WindowX11 * p_next=NULL );
+	PlatformX11 *platform_x11;
+	
+	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL );
 
 	GC x11_gc;
 
@@ -78,7 +83,7 @@ public:
 	virtual void draw_arrow(const Point& p_from,const Size& p_size,Direction p_dir,const Color& p_color,bool p_fill=true);
 		
 	virtual void draw_pixmap(const Pixmap& p_pixmap, const Point& p_pos,const Rect& p_source);	
-	virtual void draw_string(const Font& p_font,const Point& p_point,Direction p_dir,int p_clip_len=-1);
+	virtual void draw_string(const Font& p_font,const Point& p_pos,const Color& p_color,const String& p_string,Direction p_dir=RIGHT);
 
 	virtual void draw_stylebox( const StyleBox& p_style,const Point& p_from,const Size& p_size);
 	

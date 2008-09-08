@@ -14,6 +14,7 @@
 
 #include "window_x11.h"
 #include "drivers/x11/platform_x11.h"
+#include "drivers/x11/pixmap_x11.h"
 #include <stdio.h>
 #include <alloca.h>
 
@@ -99,16 +100,16 @@ unsigned long WindowX11::_map_color(const Color& p_color) {
 
 void WindowX11::draw_rect(const Point& p_from,const Size& p_size,const Color& p_color,bool p_fill) {
 
-	XGCValues xgcvalues;
-	xgcvalues.fill_style=FillSolid;
-	xgcvalues.foreground=_map_color(p_color);
-	xgcvalues.background=_map_color(p_color);
+	XRenderColor xrcolor;
+	xrcolor.red=(unsigned short)p_color.r << 8;
+	xrcolor.green=(unsigned short)p_color.g << 8;
+	xrcolor.blue=(unsigned short)p_color.b << 8;
+	xrcolor.alpha=(unsigned short)p_color.a << 8;
 
-	XChangeGC(x11_display, x11_gc, GCForeground|GCBackground|GCFillStyle, &xgcvalues);
-
-	XFillRectangle(x11_display, x11_window, x11_gc, p_from.x,p_from.y, p_size.width,p_size.height);
+	XRenderFillRectangle( x11_display, PictOpOver, xrender_picture, &xrcolor, p_from.x,p_from.y,p_size.width,p_size.height );
 
 }
+
 void WindowX11::draw_line(const Point& p_from,const Point& p_to,const Color& p_color,int p_width,bool p_round_endpoints) {
 
 	XGCValues xgcvalues;
@@ -181,9 +182,49 @@ void WindowX11::draw_arrow(const Point& p_from,const Size& p_size,Direction p_di
 	
 void WindowX11::draw_pixmap(const Pixmap& p_pixmap, const Point& p_pos,const Rect& p_source) {
 
-}
-void WindowX11::draw_string(const Font& p_font,const Point& p_point,Direction p_dir,int p_clip_len) {
+	PixmapX11 *pp = platform_x11->extract_pixmap_x11(p_pixmap);
 
+	if (!pp || !pp->is_valid())
+		return;
+
+	XRenderComposite (x11_display,PictOpOver,pp->get_xrender_picture(),0,xrender_picture,0,0,0,0,p_pos.x,p_pos.y,pp->get_size().width,pp->get_size().height );
+	
+}
+void WindowX11::draw_string(const Font& p_font,const Point& p_pos,const Color& p_color,const String& p_string,Direction p_dir) {
+
+	FontX11 *fnt = platform_x11->extract_font_x11( p_font );
+	if (!fnt)
+		return;
+	
+	XftFont *xft_font = fnt->get_xft_font();
+	
+	if (!xft_font)
+		return;
+	
+	XftColor xft_color;
+	xft_color.pixel=_map_color(p_color);
+	xft_color.color.red=(unsigned short)p_color.r << 8;
+	xft_color.color.green=(unsigned short)p_color.g << 8;
+	xft_color.color.blue=(unsigned short)p_color.b << 8;
+	xft_color.color.alpha=(unsigned short)p_color.a << 8;
+		
+	switch(sizeof(String::CharType)) {
+		
+		case 1: {
+			
+			XftDrawString8( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar8*)p_string.c_str(), p_string.length() );
+			
+		} break;
+		case 2: {
+			
+			XftDrawString16( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar16*)p_string.c_str(), p_string.length() );
+		} break;
+		case 4: {
+			
+			XftDrawString32( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar32*)p_string.c_str(), p_string.length() );
+		} break;
+	}
+	
 }
 
 void WindowX11::draw_stylebox( const StyleBox& p_style,const Point& p_from,const Size& p_size) {
@@ -416,10 +457,12 @@ static void _configure_shift_and_mask(int& p_shift, unsigned long& p_mask, unsig
 
 }
 
-WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x11_window, WindowX11 * p_next ) : PlatformWindow( p_platform ) {
+WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window, WindowX11 * p_next ) : PlatformWindow( p_platform ) {
 
 	x11_window=p_x11_window;
 	x11_display=p_x11_display;
+	platform_x11=p_platform;
+
 	next=p_next;
 	visible=true;
 
@@ -438,9 +481,17 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,Window p_x1
 
 	XSelectInput(x11_display, x11_window, events);
 	XMapWindow(x11_display, x11_window);
-
- 	x11_gc = XCreateGC(x11_display, x11_window, 0, 0);
+	
+	x11_gc = XCreateGC(x11_display, x11_window, 0, 0);
 	Visual* visual = DefaultVisual( x11_display, 0 );
+
+	XRenderPictFormat * fmt = XRenderFindVisualFormat(x11_display, visual);
+	XRenderPictureAttributes att;
+	att.component_alpha = 1;
+	att.repeat = 0;
+	xrender_picture = XRenderCreatePicture(x11_display, x11_window, fmt, CPRepeat | CPComponentAlpha, &att);
+	
+	xft_draw = XftDrawCreate( x11_display, x11_window, visual, DefaultColormap( x11_display, DefaultScreen( x11_display ) ) );
 
 	// calculate r_shift, 
 	_configure_shift_and_mask(r_shift,r_mask,visual->red_mask);

@@ -57,34 +57,44 @@ PlatformPixmap *Pixmap::get_platform_pixmap() const {
 }
 
 
-Error Pixmap::load(const String& p_file) {
+Error Pixmap::load_file(const String& p_file) {
 		
 	copy_on_write();
 
-	return _pp->pixmap->load( p_file );
+	return _pp->pixmap->load_file( p_file );
 }
-Error Pixmap::save(const String& p_file) {
+Error Pixmap::save_file(const String& p_file) {
 
 	if (!_pp || !_pp->pixmap->is_valid())
 		return ERR_UNCONFIGURED;
 
-	return _pp->pixmap->save( p_file );
+	return _pp->pixmap->save_file( p_file );
 }
-void Pixmap::set_pixel(const Point& p_pos,const Color& p_color,unsigned char p_alpha) {
 
-	if (!_pp || !_pp->pixmap->is_valid())
-		return ;
+void Pixmap::load_pixels( const void * p_pixels, const Size& p_size, PixmapFormat p_format ) {
 
 	copy_on_write();
-
-	_pp->pixmap->set_pixel(p_pos,p_color,p_alpha);
+	
+	_pp->pixmap->load_pixels(p_pixels,p_size,p_format);
 }
-Color Pixmap::get_pixel(const Point& p_pos,unsigned char *p_alpha) const {
+void Pixmap::save_pixels( void * p_pixels ) const {
 
 	if (!_pp || !_pp->pixmap->is_valid())
-		return Color();
-	
-	return _pp->pixmap->get_pixel(p_pos,p_alpha);
+		return;
+
+	_pp->pixmap->save_pixels(p_pixels);
+}	
+
+void Pixmap::copy_rect_to( const Rect& p_src_rect,Pixmap &p_pixmap,const Point& p_dst_pos ) const {
+
+	if (!_pp || !_pp->pixmap->is_valid())
+		return;
+		
+	if (!p_pixmap._pp || !p_pixmap._pp->pixmap->is_valid())
+		return;
+		
+	p_pixmap.copy_on_write();
+	_pp->pixmap->copy_rect_to( p_src_rect, p_pixmap.get_platform_pixmap(), p_dst_pos );
 }
 
 Size Pixmap::get_size() const {

@@ -16,8 +16,11 @@
 
 #include "base/platform.h"
 #include "drivers/x11/window_x11.h"
+#include "drivers/x11/pixmap_x11.h"
+#include "drivers/x11/font_x11.h"
 
 #include <X11/Xlib.h>
+#include <X11/Xft/Xft.h>
 
 
 namespace GUI {
@@ -29,8 +32,35 @@ class PlatformX11 : public Platform {
 
 	bool exit;
 	WindowX11 *window_list;
+	int best_pixmap_depth;
 	
 	Display *x11_display;
+
+	struct FontInfoListX11 {
+		
+		String name;
+		unsigned int flags;
+		FontInfoListX11 *next;		
+		FontInfoListX11() { flags=0; next=0; }
+	};
+	
+	FontInfoListX11 **font_info;
+	int font_info_count;
+	
+	void generate_font_list();
+	
+friend class WindowX11;
+
+	inline PixmapX11 * extract_pixmap_x11( const Pixmap& p_pixmap ) {
+
+		return static_cast<PixmapX11*>( extract_platform_pixmap(p_pixmap) );
+	}
+
+	inline FontX11 * extract_font_x11( const Font& p_font ) {
+		
+		return static_cast<FontX11*>( extract_platform_font(p_font) );
+	}
+	
 public:
 
 	virtual PlatformTheme *get_theme() const;

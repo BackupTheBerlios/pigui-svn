@@ -6,7 +6,8 @@ x11_sources=[\
 	'platform_x11.cpp',\
 	'window_x11.cpp',\
 	'pixmap_x11.cpp',\
-	'font_x11.cpp'\
+	'font_x11.cpp',\
+	'key_mapping_x11.cpp'\
 ]
 
 env.Library("drivers_x11",x11_sources)

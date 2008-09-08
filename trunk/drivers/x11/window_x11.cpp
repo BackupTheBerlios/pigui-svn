@@ -17,6 +17,7 @@
 #include "drivers/x11/pixmap_x11.h"
 #include <stdio.h>
 #include <alloca.h>
+#include "key_mapping_x11.h"
 
 namespace GUI {
 
@@ -234,19 +235,91 @@ void WindowX11::draw_stylebox( const StyleBox& p_style,const Point& p_from,const
 void WindowX11::draw_set_clipping(bool p_enabled,const Rect& p_rect) {
 
 }
+static void
+dump (char *str, int len)
+{
+    printf("(");
+    len--;
+    while (len-- > 0)
+        printf("%02x ", (unsigned char) *str++);
+    printf("%02x)", (unsigned char) *str++);
+}
+
+void WindowX11::handle_key_event(XKeyEvent *p_event) {
+
+			
+	// X11 functions don't know what const is
+	XKeyEvent *xkeyevent = p_event;
+	
+	/* Phase 1, obtain a proper keysym */
+	
+	// For reasons unknown to mankind, 
+	// XKeycodeToKeysym doesn't work with kb. layouts.
+	// XLookupString must be used instead,
+	// which is kinda heavier.
+	
+	KeySym keysym_keycode; // keysym used to find a keycode
+	KeySym keysym_unicode; // keysym used to find unicode
+					
+	int nbytes=0; // bytes the string takes
+						 
+	// XLookupString returns keysyms usable as nice scancodes/
+	char str[256+1];
+	nbytes=XLookupString(xkeyevent, str, 256, &keysym_keycode, NULL);
+						 
+ 	// Meanwhile, XLookupString returns keysyms useful for unicode.
+
+	if (!_xmbstring) {
+		// keep a temporary buffer for the string
+		_xmbstring=(char*)malloc(sizeof(char)*8);
+		_xmblen=8;
+	}			 
+	
+	if (xkeyevent->type == KeyPress && xic) {
+
+		Status status;
+		do {
+			
+			int mnbytes = XmbLookupString (xic, xkeyevent, _xmbstring, _xmblen - 1, &keysym_unicode, &status);
+			_xmbstring[mnbytes] = '\0';
+
+			if (status == XBufferOverflow) {
+				_xmblen = mnbytes + 1;
+				_xmbstring = (char*)realloc (_xmbstring, _xmblen);
+			} else {
+			
+				printf("xmbs %s\n",_xmbstring);
+			}
+		} while (status == XBufferOverflow);
+		
+		
+	} 		
+
+	printf("keysym_keycode is %i (%s)\n",keysym_keycode,XKeysymToString(keysym_keycode));
+	printf("keysym_unicode is %i (%s)\n",keysym_unicode,XKeysymToString(keysym_unicode));
+
+	/* Phase 2, obtain a pigui keycode from the keysym */
+
+	unsigned int keycode = KeyMappingX11::get_keycode(keysym_keycode);
+	
+	/* Phase 3, obtain an unicode character from the keysym */
+	
+	unsigned int unicode = KeyMappingX11::get_unicode_from_keysym(keysym_unicode);
+	
+	printf("unicode is %i, keycode %i\n",unicode,keycode);
+
+	
+}
 
 void WindowX11::process_x11_event(const XEvent& p_event) {
 
 	switch(p_event.type) {
 
-		case KeyPress: {
-
-			printf("key press\n");
-		} break;
+		case KeyPress:
 		case KeyRelease: {
 
-			printf("key release\n");
-
+			handle_key_event( (XKeyEvent*)&p_event );
+			
 		} break;
 		case ButtonPress: {
 
@@ -407,6 +480,8 @@ void WindowX11::process_x11_event(const XEvent& p_event) {
 
 			printf("mapping notify \n");
 
+			XMappingEvent *e = (XMappingEvent *)&p_event;
+			XRefreshKeyboardMapping(e);
 		} break;
 	}
 }
@@ -467,6 +542,7 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	visible=true;
 
 	unsigned long events=0;
+	/*
 	events|=KeyPressMask;
 	events|=KeyReleaseMask;
 	events|=ButtonPressMask;
@@ -477,10 +553,35 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	events|=ExposureMask;
 	events|=FocusChangeMask;
 	events|=StructureNotifyMask; // map/unmap/destroy/etc/etc/etc
-	
+	events|=KeymapStateMask;
+	events|=OwnerGrabButtonMask;
+	*/
+	events|=KeyPressMask | KeyReleaseMask | ButtonPressMask |
+			   ButtonReleaseMask | EnterWindowMask |
+			   LeaveWindowMask | PointerMotionMask | 
+			   Button1MotionMask |
+			   Button2MotionMask | Button3MotionMask |
+			   Button4MotionMask | Button5MotionMask |
+			   ButtonMotionMask | KeymapStateMask |
+			   ExposureMask | VisibilityChangeMask | 
+			   StructureNotifyMask | /* ResizeRedirectMask | */
+			   SubstructureNotifyMask | SubstructureRedirectMask |
+			   FocusChangeMask | PropertyChangeMask |
+			   ColormapChangeMask | OwnerGrabButtonMask;
 
 	XSelectInput(x11_display, x11_window, events);
 	XMapWindow(x11_display, x11_window);
+	
+	/* Set XIC */
+	
+	if (p_platform->get_xim() && p_platform->get_xim_style()) {
+	
+		xic = XCreateIC (p_platform->get_xim(),XNInputStyle, p_platform->get_xim_style(),XNClientWindow,x11_window,XNFocusWindow, x11_window, NULL);
+	} else {
+	
+		xic=NULL;
+	}
+	
 	
 	x11_gc = XCreateGC(x11_display, x11_window, 0, 0);
 	Visual* visual = DefaultVisual( x11_display, 0 );
@@ -493,21 +594,22 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	
 	xft_draw = XftDrawCreate( x11_display, x11_window, visual, DefaultColormap( x11_display, DefaultScreen( x11_display ) ) );
 
+
 	// calculate r_shift, 
 	_configure_shift_and_mask(r_shift,r_mask,visual->red_mask);
 	_configure_shift_and_mask(g_shift,g_mask,visual->green_mask);
 	_configure_shift_and_mask(b_shift,b_mask,visual->blue_mask);
-
-	printf("r_shift %i, r_mask %i\n",r_shift,r_mask);
-	printf("g_shift %i, g_mask %i\n",g_shift,g_mask);
-	printf("b_shift %i, b_mask %i\n",b_shift,b_mask);
-	printf("brgb %i\n",visual->bits_per_rgb);
+	
+	_xmbstring=0;
+	_xmblen=0;
 
 }
 
 
 WindowX11::~WindowX11() {
 
+	if (_xmbstring)
+		free(_xmbstring);
 }
 
 

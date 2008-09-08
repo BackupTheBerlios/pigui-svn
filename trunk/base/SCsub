@@ -9,6 +9,7 @@ base_files=[\
 	"font.cpp",\
 	"frame.cpp",\
 	"geometry.cpp",\
+	"keyboard.cpp",\
 	"painter.cpp",\
 	"pixmap.cpp",\
 	"platform.cpp",\

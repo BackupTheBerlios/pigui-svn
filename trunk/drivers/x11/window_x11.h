@@ -35,9 +35,13 @@ friend class PlatformX11;
 	Display *x11_display;
 	::Picture xrender_picture;
 	XftDraw *xft_draw;
+	::XIC xic;
 	WindowX11 * next;
 	PlatformX11 *platform_x11;
 	
+	char *_xmbstring;
+	int _xmblen;
+    	
 	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL );
 
 	GC x11_gc;
@@ -48,6 +52,8 @@ friend class PlatformX11;
 	int r_shift,g_shift,b_shift;
 
 	unsigned long _map_color(const Color& p_color);
+
+	void handle_key_event(XKeyEvent *p_event);
 
 	// logic
 

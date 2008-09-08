@@ -15,7 +15,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
-
+#include <X11/Xlocale.h>
 namespace GUI {
 
 
@@ -159,7 +159,7 @@ void PlatformX11::generate_font_list() {
 				fonts=font;
 				font->name=name;
 				font_info_count++;
-				printf("font: %s\n",fontstring.ascii().get_data());				
+//				printf("font: %s\n",fontstring.ascii().get_data());				
 			}
 			
 			String styles=fontstring.get_slice(":",1);
@@ -203,6 +203,10 @@ void PlatformX11::generate_font_list() {
 }
 
 PlatformX11::PlatformX11() {
+
+	if (setlocale(LC_ALL,"") == NULL) {
+		fprintf(stderr, "warning: could not set default locale\n");
+	}	
 	
 	exit=false;
 	x11_display = XOpenDisplay(NULL);
@@ -211,11 +215,53 @@ PlatformX11::PlatformX11() {
 		GUI_PRINT_ERROR("Unable to open X11 x11_display.");
 		_exit(255);
 	}
+	/* we're testing the default input method */
 	
+	char * modifiers = XSetLocaleModifiers ("@im=none");
+	if (modifiers == NULL) {
+		fprintf (stderr, "XSetLocaleModifiers failed\n");
+		_exit(255);
+	}
+	
+	xim = XOpenIM (x11_display, NULL, NULL, NULL);
+	if (xim == NULL) {
+        	fprintf (stderr, "XOpenIM failed\n");
+//        	_exit(255);
+		xim_style=NULL;
+    	} else {
+		::XIMStyles *xim_styles;
+		xim_style=0;
+		char *imvalret;	
+		imvalret = XGetIMValues(xim, XNQueryInputStyle, &xim_styles, NULL);
+		if (imvalret != NULL || xim_styles == NULL) {
+			fprintf (stderr, "Input method doesn't support any styles\n");
+		}
+		
+		if (xim_styles) {
+			xim_style = 0;
+            		for (int i=0;i<xim_styles->count_styles;i++) {
+                	
+				if (xim_styles->supported_styles[i] ==
+					(XIMPreeditNothing | XIMStatusNothing)) {
+				
+					xim_style = xim_styles->supported_styles[i];
+					break;
+				}
+			}
+			
+			XFree (xim_styles);
+                }
+    	}
+    	
+    	
 	XftInitFtLibrary();
 	
+		::XIM xim;
+	::XIMStyles *xim_styles;
+	::XIMStyle xim_style;
+
+	
 	best_pixmap_depth = DefaultDepth( x11_display, DefaultScreen(x11_display) );
-	printf("default depth %i\n",best_pixmap_depth);
 
 	generate_font_list();
 	

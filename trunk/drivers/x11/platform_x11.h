@@ -34,7 +34,9 @@ class PlatformX11 : public Platform {
 	WindowX11 *window_list;
 	int best_pixmap_depth;
 	
-	Display *x11_display;
+	::Display *x11_display;
+	::XIM xim;
+	::XIMStyle xim_style;
 
 	struct FontInfoListX11 {
 		
@@ -62,6 +64,9 @@ friend class WindowX11;
 	}
 	
 public:
+
+	inline ::XIM get_xim() { return xim; }
+	inline ::XIMStyle get_xim_style() { return xim_style; }
 
 	virtual PlatformTheme *get_theme() const;
 	virtual PlatformPointer *get_pointer() const;

@@ -277,6 +277,11 @@ PlatformX11::~PlatformX11() {
 		delete[] font_info;
 	}
 		
+	if (xim)
+		XCloseIM( xim );
+	
+	if (x11_display)
+		XCloseDisplay( x11_display );
 		
 }
 

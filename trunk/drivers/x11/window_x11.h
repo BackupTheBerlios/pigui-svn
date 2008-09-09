@@ -38,6 +38,7 @@ friend class PlatformX11;
 	::XIC xic;
 	WindowX11 * next;
 	PlatformX11 *platform_x11;
+	GC x11_gc;
 	
 	/* XIM */
 	char *_xmbstring;
@@ -56,8 +57,6 @@ friend class PlatformX11;
     	Rect rect;
     	
 	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL );
-
-	GC x11_gc;
 
 	unsigned long r_mask;	
 	unsigned long g_mask;	

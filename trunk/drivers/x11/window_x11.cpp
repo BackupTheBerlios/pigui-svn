@@ -780,8 +780,23 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 
 WindowX11::~WindowX11() {
 
+	if (xic)
+		XDestroyIC(xic);
+		
+	if (xrender_picture)
+		XRenderFreePicture( x11_display, xrender_picture );
+		
+	if (xft_draw)
+		XftDrawDestroy(xft_draw);
+	
+	if (x11_gc)
+		XFreeGC(x11_display,x11_gc);
+		
 	if (_xmbstring)
 		free(_xmbstring);
+		
+	if (x11_window)
+		XDestroyWindow( x11_display, x11_window );
 }
 
 

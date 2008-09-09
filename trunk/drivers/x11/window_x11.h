@@ -39,8 +39,21 @@ friend class PlatformX11;
 	WindowX11 * next;
 	PlatformX11 *platform_x11;
 	
+	/* XIM */
 	char *_xmbstring;
 	int _xmblen;
+	::Time last_keyrelease_time;
+    	
+    	/* MOUSE EVENTS */
+    	
+    	Point last_mouse_pos;
+    	bool last_mouse_pos_valid;
+    	
+    	/* MISC X Info */
+    	
+    	bool occluded;
+    	bool visible;
+    	Rect rect;
     	
 	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL );
 
@@ -53,11 +66,12 @@ friend class PlatformX11;
 
 	unsigned long _map_color(const Color& p_color);
 
+	unsigned int fill_modifier_button_mask(unsigned int p_x11_state);
+	
 	void handle_key_event(XKeyEvent *p_event);
 
 	// logic
 
-	bool visible;
 public:
 
 	virtual void set_title(String p_title);
@@ -95,7 +109,7 @@ public:
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect());
 
-	void process_x11_event(const XEvent& p_event);
+	void process_x11_event(XEvent* p_event);
 	inline WindowX11 *get_next() const { return next; }
 	inline Window get_x11_window() const { return x11_window; }
 

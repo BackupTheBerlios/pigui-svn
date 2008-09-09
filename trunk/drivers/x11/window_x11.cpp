@@ -235,14 +235,44 @@ void WindowX11::draw_stylebox( const StyleBox& p_style,const Point& p_from,const
 void WindowX11::draw_set_clipping(bool p_enabled,const Rect& p_rect) {
 
 }
-static void
-dump (char *str, int len)
-{
-    printf("(");
-    len--;
-    while (len-- > 0)
-        printf("%02x ", (unsigned char) *str++);
-    printf("%02x)", (unsigned char) *str++);
+
+unsigned int WindowX11::fill_modifier_button_mask(unsigned int p_x11_state) {
+
+	unsigned int mask=0;
+
+	if (p_x11_state&ShiftMask)
+		mask|=KEY_MASK_SHIFT;
+	
+	if (p_x11_state&ControlMask)
+		mask|=KEY_MASK_CTRL;
+
+	if (p_x11_state&Mod1Mask || p_x11_state&Mod5Mask)
+		mask|=KEY_MASK_ALT;	
+		
+	if (p_x11_state&Mod4Mask)
+		mask|=KEY_MASK_META;
+
+	if (p_x11_state&Button1Mask) {
+		
+		mask|=BUTTON_MASK_LEFT;
+	}
+	
+	if (p_x11_state&Button3Mask) {
+		
+		mask|=BUTTON_MASK_RIGHT;
+	}
+	
+	if (p_x11_state&Button4Mask) {
+		
+		mask|=BUTTON_MASK_WHEEL_UP;
+	}
+	
+	if (p_x11_state&Button5Mask) {
+		
+		mask|=BUTTON_MASK_WHEEL_DOWN;
+	}
+	
+	return mask;
 }
 
 void WindowX11::handle_key_event(XKeyEvent *p_event) {
@@ -251,13 +281,25 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	// X11 functions don't know what const is
 	XKeyEvent *xkeyevent = p_event;
 	
+	// This code was pretty difficult to write.
+	// The docs stink and every toolkit seems to
+	// do it in a different way. 
+	
 	/* Phase 1, obtain a proper keysym */
 	
-	// For reasons unknown to mankind, 
-	// XKeycodeToKeysym doesn't work with kb. layouts.
-	// XLookupString must be used instead,
-	// which is kinda heavier.
-	
+	// This was also very difficult to figure out.
+	// You'd expect you could just use Keysym provided by
+	// XKeycodeToKeysym to obtain internationalized 
+	// input.. WRONG!! 
+	// you must use XLookupString (???) which not only wastes
+	// cycles generating an unnecesary string, but also
+	// still works in half the cases. (won't handle deadkeys)
+	// For more complex input methods (deadkeys and more advanced)
+	// you have to use XmbLookupString (??).
+	// So.. then you have to chosse which of both results
+	// you want to keep.
+	// This is a real bizarreness and cpu waster.
+		
 	KeySym keysym_keycode; // keysym used to find a keycode
 	KeySym keysym_unicode; // keysym used to find unicode
 					
@@ -286,25 +328,34 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 			if (status == XBufferOverflow) {
 				_xmblen = mnbytes + 1;
 				_xmbstring = (char*)realloc (_xmbstring, _xmblen);
-			} else {
-			
-				printf("xmbs %s\n",_xmbstring);
-			}
+			} 
 		} while (status == XBufferOverflow);
-		
-		
 	} 		
 
 	/* Phase 2, obtain a pigui keycode from the keysym */
-
+	
+	// KeyMappingX11 just translated the X11 keysym to a PIGUI
+	// keysym, so it works in all platforms the same.
+	
 	unsigned int keycode = KeyMappingX11::get_keycode(keysym_keycode);
 	
 	/* Phase 3, obtain an unicode character from the keysym */
 	
+	// KeyMappingX11 also translates keysym to unicode.
+	// It does a binary search on a table to translate
+	// most properly. 
+	
 	unsigned int unicode = KeyMappingX11::get_unicode_from_keysym(keysym_unicode);
 	
 	
-	/* Extra Info */
+	/* Phase 4, determine if event must be filtered */
+	
+	// This seems to be a side-effect of using XIM.
+	// XEventFilter looks like a core X11 funciton,
+	// but it's actually just used to see if we must
+	// ignore a deadkey, or events XIM determines
+	// must not reach the actual toolkit.
+	// Guess it was a design problem of the extension/
 	
 	bool keypress = xkeyevent->type == KeyPress;
 	
@@ -316,198 +367,286 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	if (keycode==0 && unicode==0)
 		return;
 		
-	unsigned int mask=0;
-	
-	if (keycode!=KEY_SHIFT && keycode!=KEY_CONTROL && keycode!=KEY_META && keycode!=KEY_ALT) {
-	
-		if (xkeyevent->state&ShiftMask)
-			mask|=KEY_MASK_SHIFT;
+	/* Phase 5, determine modifier mask */
 		
-		if (xkeyevent->state&ControlMask)
-			mask|=KEY_MASK_CTRL;
+	// No problems here, except I had no way to
+	// know Mod1 was ALT and Mod4 was META (applekey/winkey)
+	// just tried Mods until i found them.
 	
-		if (xkeyevent->state&Mod1Mask || xkeyevent->state&Mod5Mask)
-			mask|=KEY_MASK_ALT;	
+	unsigned int mask=fill_modifier_button_mask(xkeyevent->state);	
+	
+	/* Phase 6, determine echo character */
+	
+	// Echo characters in X11 are a keyrelease and a keypress
+	// one after the other with the (almot) same timestamp.
+	// To detect them, i use XPeekEvent and check that their
+	// difference in time is below a treshold.
+	
+	bool echo=false;
+	
+	if (xkeyevent->type == KeyPress) {
 			
-		if (xkeyevent->state&Mod4Mask)
-			mask|=KEY_MASK_META;
+		// saved the time of the last keyrelease to see
+		// if it's the same as this keypress.
+		if (xkeyevent->time==last_keyrelease_time)
+			echo=true;
+
+	} else {
+	
+		// make sure there are events pending,
+		// so this call won't block.
+		if (XPending(x11_display)>0) {
+			XEvent peek_event;
+			XPeekEvent(x11_display, &peek_event);
+			
+			// I'm using a treshold of 5 msecs, 
+			// since sometimes there seems to be a little
+			// jitter. I'm still not convinced that all this approach
+			// is correct, but the xorg developers are
+			// not very helpful today.
+			
+			Time tresh=abs(peek_event.xkey.time-xkeyevent->time);
+			if (peek_event.type == KeyPress && tresh<5 )
+				echo=true;
+				
+			// use the time from peek_event so it always works
+			last_keyrelease_time=peek_event.xkey.time;
+		} else {
+			last_keyrelease_time=xkeyevent->time;
+		}
+	
+		// save the time to check for echo when keypress happens
+		
 	}
 	
-	key_event_signal.call( unicode, keycode, keypress, false, mask );
 	
-	printf("%s ,  unicode is %i, keycode %i\n",keypress?"KeyPress":"KeyRelease",unicode,keycode);
+	/* Phase 7, send event to Window */
 	
+	key_event_signal.call( unicode, keycode, keypress, echo, mask );
 	
 }
 
-void WindowX11::process_x11_event(const XEvent& p_event) {
+void WindowX11::process_x11_event(XEvent* p_event) {
 
-	switch(p_event.type) {
+	switch(p_event->type) {
 
 		case KeyPress:
 		case KeyRelease: {
 
-			handle_key_event( (XKeyEvent*)&p_event );
+			// key event is a little complex, so
+			// it will be handled in it's own function.
+			handle_key_event( (XKeyEvent*)p_event );
 			
 		} break;
-		case ButtonPress: {
-
-			printf("button press\n");
-
-		} break;
+		case ButtonPress:
 		case ButtonRelease: {
+						
+			// ButtonPress and ButtonRelease are pretty
+			// standard. No changes need to be made.
 			
-
-			printf("button release\n");
-
+			Point pos( p_event->xbutton.x, p_event->xbutton.y );
+			int button=p_event->xbutton.button;
+			bool pressed=(p_event->type==ButtonPress);
+			
+			unsigned int mask=fill_modifier_button_mask(p_event->xbutton.state);
+;
+			mouse_button_event_signal.call(pos,button,pressed,mask);
+			
 		} break;
 		case MotionNotify: {
 
-			printf("motion notify\n");
+			// Motion is also simple.
+			// A little hack is in order
+			// to be able to send relative motion events.
+			
+			Point pos( p_event->xmotion.x, p_event->xmotion.y );			
+
+			if (!last_mouse_pos_valid) {
+			
+				last_mouse_pos=pos;
+				last_mouse_pos_valid=true;
+			}
+			
+			Point rel = pos - last_mouse_pos;
+			unsigned int mask=fill_modifier_button_mask(p_event->xmotion.state);
+			
+			last_mouse_pos=pos;
+			
+			mouse_motion_event_signal.call(pos,rel,mask);
 
 		} break;
-		case EnterNotify: {
-
-			printf("enter notify\n");
-
-		} break;
+		case EnterNotify:
 		case LeaveNotify: {
-
-			printf("leave notify\n");
+	
+			// if any of the buttons is being pressed,
+			// just ignore the enter/leave event,
+			// because this means something is being
+			// grabbed.
+			if (	p_event->xcrossing.state&
+				(Button1Mask|Button2Mask|Button3Mask|
+				 Button4Mask|Button5Mask) )
+				 	break;
+				 	
+			if (p_event->type==EnterNotify) {
+				// invalidate previous motion
+				last_mouse_pos_valid=false;
+				mouse_entered_window_signal.call();
+			} else {
+				mouse_left_window_signal.call();
+			}
 
 		} break;
 		case FocusIn: {
-
-			printf("focus in\n");
-
+	
+			gained_focus_signal.call();	
 		} break;
 		case FocusOut: {
 
-			printf("focus out\n");
-
+			lost_focus_signal.call();
 		} break;
 		case KeymapNotify: {
 
-			printf("key map\n");
-
+			// I never gt this event.. i have no idea what
+			// to do with it.
+			//printf("key map\n");
 		} break;
 		case Expose: {
 
 			// should stack them, but fro now..
-			Rect expose_rect( Point( p_event.xexpose.x, p_event.xexpose.y), Size(p_event.xexpose.width, p_event.xexpose.height ));
+			Rect expose_rect( Point( p_event->xexpose.x, p_event->xexpose.y), Size(p_event->xexpose.width, p_event->xexpose.height ));
 
 			update_event_signal.call( expose_rect );
-			
 
 		} break;
 		case GraphicsExpose: {
 
-			printf("graphics expose\n");
+			// I also have no idea what to do with this.
+			//printf("graphics expose\n");
 
 		} break;
 		case NoExpose: {
-
-			printf("no expose\n");
+			// Fine, no expose (??)
+			//printf("no expose\n");
 
 		} break;
 		case VisibilityNotify: {
 
-			printf("visibility notify\n");
+			occluded=p_event->xvisibility.state==VisibilityFullyObscured;
 
 		} break;
 		case CreateNotify: {
-
-			printf("create notify\n");
+			// I know i was created. Else i wouldn't be here.
+			//printf("create notify\n");
 
 		} break;
 		case DestroyNotify: {
-
-			printf("destroy notify\n");
+			// Seems this was killed.
+			// printf("destroy notify\n");
 
 		} break;
 		case UnmapNotify: {
 
-			printf("unmap notify\n");
-
+			//printf("unmap notify\n");
+			visible=false;
 		} break;
 		case MapNotify: {
 
-			printf("map notify\n");
-
+			visible=true;
+			//printf("map notify\n");
 		} break;
 		case MapRequest: {
-
-			printf("map request\n");
+			// never got this.
+			//printf("map request\n");
 
 		} break;
 		case ReparentNotify: {
-
-			printf("reparent notify \n");
+			// don't think i'll ever need this
+			//printf("reparent notify \n");
 
 		} break;
 		case ConfigureNotify: {
 
-			printf("configure notify\n");
+			/* Check wether window pos/size changed */
 
+			Rect new_rect( 
+				p_event->xconfigure.x,
+				p_event->xconfigure.y,
+				p_event->xconfigure.width,
+				p_event->xconfigure.height );
+			
+			bool pos_changed=( new_rect.pos != rect.pos );
+			bool size_changed=( new_rect.size != rect.size );
+			
+			rect=new_rect;
+			
+			if ( pos_changed )
+				position_changed_signal.call( rect.pos );
+			
+			if ( size_changed )
+				size_changed_signal.call( rect.size );
+			
 		} break;
 		case ConfigureRequest: {
 
-			printf("configure request\n");
+			//printf("configure request\n");
 
 		} break;
 		case GravityNotify: {
-
-			printf("gravity notify\n");
+			
+			//can't say i ever got this
+			//printf("gravity notify\n");
 
 		} break;
 		case ResizeRequest: {
-
-			printf("resize notify\n");
+			//can't say i ever got this
+			//printf("resize notify\n");
 
 		} break;
 		case CirculateNotify: {
 
-			printf("circulate notify\n");
+			//can't say i ever got this
+			//printf("circulate notify\n");
 
 		} break;
 		case CirculateRequest: {
 
-			printf("circulate request\n");
+			//can't say i ever got this
+			//printf("circulate request\n");
 
 		} break;
 		case PropertyNotify: {
 
-			printf("property notify\n");
+			//printf("property notify\n");
 
 		} break;
 		case SelectionClear: {
 
-			printf("selection clear notify\n");
+			//printf("selection clear notify\n");
 
 		} break;
 		case SelectionRequest: {
 
-			printf("selection request notify\n");
+			//printf("selection request notify\n");
 
 		} break;
 		case SelectionNotify: {
 
 
-			printf("selection notify\n");
+			//printf("selection notify\n");
 		} break;
 		case ColormapNotify: {
 
-			printf("colormap notify\n");
+			//printf("colormap notify\n");
 
 		} break;
 		case ClientMessage: {
 
-			printf("client message\n");
+			//printf("client message\n");
 
 		} break;
 		case MappingNotify: {
 
-			printf("mapping notify \n");
+			//printf("mapping notify \n");
 
 			XMappingEvent *e = (XMappingEvent *)&p_event;
 			XRefreshKeyboardMapping(e);
@@ -631,6 +770,10 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	
 	_xmbstring=0;
 	_xmblen=0;
+	last_keyrelease_time=0;
+	last_mouse_pos_valid=false;
+	occluded=false;
+	visible=false;
 
 }
 

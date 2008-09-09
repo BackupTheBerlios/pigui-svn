@@ -93,19 +93,28 @@ public:
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect())=0;
 
-	// point, button, pressed, modifier mask
-	Signal< Method4<const Point&, int, bool, int > > mouse_button_event_signal;
-	// point, modifier mask
-	Signal< Method2<const Point&, int > > mouse_doubleclick_event_signal;
-	// new position, relative motion, modifier mask
-	Signal< Method3<const Point&, const Point&, int > > mouse_motion_event_signal;
-	// unicode, scan code, pressed, keyrepeat, modifier mask
+	// point, button, pressed, modifier/button mask
+	Signal< Method4<const Point&, int, bool, unsigned int > > mouse_button_event_signal;
+	// point, modifier/button mask
+	Signal< Method2<const Point&, unsigned int > > mouse_doubleclick_event_signal;
+	// new position, relative motion, modifier/button mask
+	Signal< Method3<const Point&, const Point&, unsigned int > > mouse_motion_event_signal;
+	// mouse left the window
+	Signal<> mouse_left_window_signal;
+	// mouse entered the window
+	Signal<> mouse_entered_window_signal;
+	// unicode, scan code, pressed, keyrepeat, modifier/button mask
 	Signal< Method5< unsigned int, unsigned int, bool, bool, int >  > key_event_signal;
 	// update notify (rect area to update)
 	Signal< Method1<const Rect&> > update_event_signal;
 	// rect changed notify
 	Signal< Method1<const Rect&> > rect_changed_event_signal;
 
+	Signal<> gained_focus_signal;
+	Signal<> lost_focus_signal;
+	
+	Signal< Method1< const Point& > > position_changed_signal;
+	Signal< Method1< const Size& > > size_changed_signal;
 
 	virtual ~PlatformWindow();
 };

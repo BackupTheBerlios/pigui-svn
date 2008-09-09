@@ -94,7 +94,7 @@ void PlatformX11::iteration() {
 
 		if (w->get_x11_window() == event.xany.window) {
 
-			w->process_x11_event(event);
+			w->process_x11_event(&event);
 			break;
 		}
 		w=w->get_next();

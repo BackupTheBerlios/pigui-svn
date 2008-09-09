@@ -295,9 +295,6 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 		
 	} 		
 
-	printf("keysym_keycode is %i (%s)\n",keysym_keycode,XKeysymToString(keysym_keycode));
-	printf("keysym_unicode is %i (%s)\n",keysym_unicode,XKeysymToString(keysym_unicode));
-
 	/* Phase 2, obtain a pigui keycode from the keysym */
 
 	unsigned int keycode = KeyMappingX11::get_keycode(keysym_keycode);
@@ -306,8 +303,40 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	
 	unsigned int unicode = KeyMappingX11::get_unicode_from_keysym(keysym_unicode);
 	
-	printf("unicode is %i, keycode %i\n",unicode,keycode);
-
+	
+	/* Extra Info */
+	
+	bool keypress = xkeyevent->type == KeyPress;
+	
+	if (xkeyevent->type == KeyPress && xic) {
+                if (XFilterEvent((XEvent*)xkeyevent, x11_window))
+                	return;  
+	}
+	
+	if (keycode==0 && unicode==0)
+		return;
+		
+	unsigned int mask=0;
+	
+	if (keycode!=KEY_SHIFT && keycode!=KEY_CONTROL && keycode!=KEY_META && keycode!=KEY_ALT) {
+	
+		if (xkeyevent->state&ShiftMask)
+			mask|=KEY_MASK_SHIFT;
+		
+		if (xkeyevent->state&ControlMask)
+			mask|=KEY_MASK_CTRL;
+	
+		if (xkeyevent->state&Mod1Mask || xkeyevent->state&Mod5Mask)
+			mask|=KEY_MASK_ALT;	
+			
+		if (xkeyevent->state&Mod4Mask)
+			mask|=KEY_MASK_META;
+	}
+	
+	key_event_signal.call( unicode, keycode, keypress, false, mask );
+	
+	printf("%s ,  unicode is %i, keycode %i\n",keypress?"KeyPress":"KeyRelease",unicode,keycode);
+	
 	
 }
 

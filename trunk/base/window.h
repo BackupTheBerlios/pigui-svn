@@ -46,7 +46,7 @@ public:
 
 	Theme *get_theme();
 
-	Window(unsigned int p_flags=WINDOW_FLAGS_DEFAULT);	
+	Window();	
 	~Window();
 
 };

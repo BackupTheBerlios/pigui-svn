@@ -13,6 +13,8 @@
 
 #ifdef PIGUI_X11_ENABLED
 
+#include "drivers/x11/atoms_x11.h"
+
 #include <unistd.h>
 #include <stdio.h>
 #include <X11/Xlocale.h>
@@ -28,8 +30,10 @@ PlatformPointer *PlatformX11::get_pointer() const {
 	return NULL;
 }
 
-PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
+PlatformWindow* PlatformX11::create_window(PlatformWindow* p_parent) {
  
+ 
+ 	WindowX11 * parent = (p_parent && p_parent->get_owner()==this) ? static_cast<WindowX11*>(p_parent) : NULL;
 	int black = BlackPixel(x11_display, DefaultScreen(x11_display));
 	Window w = XCreateSimpleWindow(x11_display, DefaultRootWindow(x11_display), 0, 0, 
 				     350, 350, 0, black, black);
@@ -40,7 +44,7 @@ PlatformWindow* PlatformX11::create_window(unsigned int p_flags) {
 		return NULL;
 	}
 
-	window_list = GUI_NEW( WindowX11( this, x11_display, w, window_list ) );
+	window_list = GUI_NEW( WindowX11( this, x11_display, w, window_list,parent ) );
 
 	WindowX11 * new_window = window_list;
 
@@ -215,6 +219,9 @@ PlatformX11::PlatformX11() {
 		GUI_PRINT_ERROR("Unable to open X11 x11_display.");
 		_exit(255);
 	}
+	
+	AtomsX11::x11_display=x11_display;
+	
 	/* we're testing the default input method */
 	
 	char * modifiers = XSetLocaleModifiers ("@im=none");
@@ -256,12 +263,9 @@ PlatformX11::PlatformX11() {
     	
 	XftInitFtLibrary();
 	
-		::XIM xim;
-	::XIMStyles *xim_styles;
-	::XIMStyle xim_style;
-
-	
 	best_pixmap_depth = DefaultDepth( x11_display, DefaultScreen(x11_display) );
+	
+	window_list=0;
 
 	generate_font_list();
 	

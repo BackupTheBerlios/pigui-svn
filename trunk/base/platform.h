@@ -67,16 +67,10 @@ public:
 	virtual void set_size(const Point& p_pos)=0;
 	virtual Size get_size() const=0;
 
-	virtual void set_flags(unsigned int p_flags)=0;
-	virtual unsigned int get_flags()=0;
-
 	virtual void set_icon(const Pixmap& p_icon)=0;
-
-	virtual void set_visible(bool p_visible)=0;
-	virtual bool is_visible() const=0;
-
-	virtual void make_root()=0;
-	virtual bool is_root()=0;
+	
+	virtual void set_state(WindowState p_state,bool p_enabled)=0;
+	virtual bool get_state(WindowState p_state)=0;
 
 	/* drawing interface */
 
@@ -115,6 +109,8 @@ public:
 	
 	Signal< Method1< const Point& > > position_changed_signal;
 	Signal< Method1< const Size& > > size_changed_signal;
+
+	Signal<> close_requested_signal;
 
 	virtual ~PlatformWindow();
 };
@@ -296,7 +292,7 @@ public:
 	virtual PlatformTheme *get_theme() const=0;
 	virtual PlatformPointer *get_pointer() const=0;
 
-	virtual PlatformWindow* create_window(unsigned int p_flags=WINDOW_FLAGS_DEFAULT)=0;
+	virtual PlatformWindow* create_window(PlatformWindow* p_parent=NULL)=0;
 	virtual PlatformPixmap* create_pixmap()=0;
 	virtual PlatformFont* create_font()=0;
 	virtual PlatformFile *create_file()=0;

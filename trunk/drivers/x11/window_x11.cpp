@@ -15,6 +15,7 @@
 #include "window_x11.h"
 #include "drivers/x11/platform_x11.h"
 #include "drivers/x11/pixmap_x11.h"
+#include "drivers/x11/atoms_x11.h"
 #include <stdio.h>
 #include <alloca.h>
 #include "key_mapping_x11.h"
@@ -23,7 +24,9 @@ namespace GUI {
 
 void WindowX11::set_title(String p_title) {
 
+
 }
+
 String WindowX11::get_title() const {
 
 	return "";
@@ -45,34 +48,130 @@ Size WindowX11::get_size() const {
 	return Size();
 }
 
-void WindowX11::set_flags(unsigned int p_flags) {
-
-
-}
-unsigned int WindowX11::get_flags() {
-
-	return 0;
-}
-
 void WindowX11::set_icon(const Pixmap& p_icon) {
 
 }
 
-void WindowX11::set_visible(bool p_visible) {
+void WindowX11::set_state(WindowState p_state,bool p_enabled) {
+
+	if (p_state<0 || p_state>=WINDOW_STATE_MAX)
+		return;
+
+	
+	if (!mapped) {
+		window_states[p_state]=p_enabled;
+	
+		return;
+	}
+		
+
+	switch(p_state) { 
+		case WINDOW_STATE_CAN_CLOSE: {
+		
+		} break;
+		case WINDOW_STATE_RESIZABLE: {
+		
+		
+		} break;
+		case WINDOW_STATE_MODAL: {
+		
+			if (parent) {
+			
+				if (p_enabled) 
+					XSetTransientForHint(x11_display, x11_window, parent->x11_window);
+				else
+					XSetTransientForHint(x11_display, x11_window, 0);
+				
+			}
+			AtomsX11::set_netwm_single_state( x11_window, "_NET_WM_STATE_MODAL",p_state);
+			
+#if 0			
+			if (p_enabled) {
+			
+				if (transient_for!=0)
+					break; // already transient for someone
+					
+				transient_for=parent->x11_window; // attempt to be transient for the parent
+				
+				while(true) {
+				
+					::Window for_redirecting=0;
+					
+					XGetTransientForHint(x11_display, transient_for, &for_redirecting);
+					
+					if (for_redirecting!=0) {
+						// transient_for is redirecting somewhere, capture that!
+						if (for_redirecting==x11_window) {
+							// make sure we aren't in the middle of the mess
+							transient_for=0;
+							for_redirecting=0;
+						} else {
+							transient_for=for_redirecting;
+						}
+					}
+					
+					if (for_redirecting==0)
+						break;
+				}
+				
+				if (transient_for!=0) {
+				
+					XSetTransientForHint(x11_display, transient_for, x11_window);
+				}
+			} else {
+			
+				if (transient_for!=0) {
+				
+					XSetTransientForHint(x11_display, transient_for, 0);
+					transient_for=0;
+				}
+				
+			}
+#endif			
+		} break;
+		case WINDOW_STATE_POPUP: {
+		
+		
+		} break;
+		case WINDOW_STATE_VISIBLE: {
+		
+			if (p_enabled == mapped)
+				break; // avoid unnecesary events
+				
+			if (p_enabled)
+				XMapWindow(x11_display,x11_window);
+			else
+				XUnmapWindow(x11_display,x11_window);
+			mapped=p_enabled;
+		
+		} break;
+		case WINDOW_STATE_BORDERLESS: {
+			
+			XSetWindowAttributes xwa;
+			xwa.override_redirect=p_enabled?1:0;
+			XChangeWindowAttributes(x11_display, x11_window, CWOverrideRedirect,&xwa);
+		} break;
+		case WINDOW_STATE_SHADED: {
+		
+			AtomsX11::set_netwm_single_state( x11_window, "_NET_WM_STATE_SHADED",p_state);
+		
+		} break;
+		case WINDOW_STATE_SKIP_TASKBAR: {
+		
+		
+		} break;
+		case WINDOW_STATE_MAX: break;
+	}
+
+	XFlush(x11_display); // depending when called, may need to flush
+	
+	window_states[p_state]=p_enabled;
 
 }
-bool WindowX11::is_visible() const {
+bool WindowX11::get_state(WindowState p_state) {
+
 
 	return true;
-}
-
-void WindowX11::make_root() {
-
-}
-
-bool WindowX11::is_root() {
-
-	return false;
 }
 
 unsigned long WindowX11::_map_color(const Color& p_color) {
@@ -426,6 +525,40 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	
 }
 
+bool WindowX11::redirect_focus() {
+
+	// since X11 doesn't really support "MODAL" Windows
+	
+	return false;
+	
+	::Window redirect_to=x11_window;
+	
+	while(true) {
+	
+		::Window dst=0;
+		
+		XGetTransientForHint(x11_display, redirect_to, &dst);
+		
+		if (dst!=0) {
+		
+			redirect_to=dst;
+			continue;
+		} else {
+		
+			break;
+		}
+	}
+	
+	
+	if (redirect_to==x11_window)
+		return false; //nothing happened
+	
+	AtomsX11::request_active_window( x11_window, redirect_to );
+
+	return true;
+
+}
+
 void WindowX11::process_x11_event(XEvent* p_event) {
 
 	switch(p_event->type) {
@@ -433,6 +566,9 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		case KeyPress:
 		case KeyRelease: {
 
+			if (redirect_focus())
+				break;
+				
 			// key event is a little complex, so
 			// it will be handled in it's own function.
 			handle_key_event( (XKeyEvent*)p_event );
@@ -440,6 +576,9 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case ButtonPress:
 		case ButtonRelease: {
+						
+			if (redirect_focus())
+				break;
 						
 			// ButtonPress and ButtonRelease are pretty
 			// standard. No changes need to be made.
@@ -452,6 +591,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 ;
 			mouse_button_event_signal.call(pos,button,pressed,mask);
 			
+			printf("mouse %s, time is %i\n",pressed?"press":"release",p_event->xbutton.time);
 		} break;
 		case MotionNotify: {
 
@@ -547,21 +687,27 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		case UnmapNotify: {
 
 			//printf("unmap notify\n");
-			visible=false;
+			mapped=false;
 		} break;
 		case MapNotify: {
 
-			visible=true;
-			//printf("map notify\n");
+			mapped=true;
+				// most false by default
+			for (int i=0;i<WINDOW_STATE_MAX;i++) {
+			
+				set_state(WindowState(i),window_states[i]);
+			}
+
+			printf("map notify\n");
 		} break;
 		case MapRequest: {
 			// never got this.
-			//printf("map request\n");
+			printf("map request\n");
 
 		} break;
 		case ReparentNotify: {
 			// don't think i'll ever need this
-			//printf("reparent notify \n");
+			printf("reparent notify \n");
 
 		} break;
 		case ConfigureNotify: {
@@ -616,8 +762,12 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case PropertyNotify: {
 
+			
 			//printf("property notify\n");
-
+			char * name = XGetAtomName(x11_display,p_event->xproperty.atom);
+			
+			printf("been set property %s\n",name);
+			XFree(name);
 		} break;
 		case SelectionClear: {
 
@@ -641,13 +791,20 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case ClientMessage: {
 
-			//printf("client message\n");
-
+			if ((int)p_event->xclient.data.l[0] == (int)wm_delete) {
+			
+				close_requested_signal.call();
+				if (window_states[WINDOW_STATE_CAN_CLOSE]) {
+					set_state(WINDOW_STATE_VISIBLE,false);
+					// should check if all roots are hidden(closed?) and exit
+					// the app
+				}
+			}
+			
 		} break;
 		case MappingNotify: {
 
 			//printf("mapping notify \n");
-
 			XMappingEvent *e = (XMappingEvent *)&p_event;
 			XRefreshKeyboardMapping(e);
 		} break;
@@ -700,14 +857,15 @@ static void _configure_shift_and_mask(int& p_shift, unsigned long& p_mask, unsig
 
 }
 
-WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window, WindowX11 * p_next ) : PlatformWindow( p_platform ) {
+WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window, WindowX11 * p_next,WindowX11 *p_parent ) : PlatformWindow( p_platform ) {
 
+	parent=p_parent;
 	x11_window=p_x11_window;
 	x11_display=p_x11_display;
 	platform_x11=p_platform;
 
 	next=p_next;
-	visible=true;
+	mapped=true;
 
 	unsigned long events=0;
 	/*
@@ -761,6 +919,9 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	xrender_picture = XRenderCreatePicture(x11_display, x11_window, fmt, CPRepeat | CPComponentAlpha, &att);
 	
 	xft_draw = XftDrawCreate( x11_display, x11_window, visual, DefaultColormap( x11_display, DefaultScreen( x11_display ) ) );
+   
+	wm_delete = XInternAtom(x11_display, "WM_DELETE_WINDOW", false);
+	XSetWMProtocols(x11_display, x11_window, &wm_delete, 1);
 
 
 	// calculate r_shift, 
@@ -773,8 +934,16 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 	last_keyrelease_time=0;
 	last_mouse_pos_valid=false;
 	occluded=false;
-	visible=false;
-
+	mapped=false;
+	modal_refcount=0;
+	// most false by default
+	for (int i=0;i<WINDOW_STATE_MAX;i++) {
+	
+		window_states[i]=false;
+	}
+	
+	window_states[WINDOW_STATE_VISIBLE]=true;
+	window_states[WINDOW_STATE_CAN_CLOSE]=true;
 }
 
 

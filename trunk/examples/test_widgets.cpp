@@ -16,6 +16,7 @@ class PWTEST : public GUI::SignalTarget {
 	GUI::Pixmap pixmap;
 	GUI::Pixmap pixmap_copy;
 	GUI::Font font;
+	GUI::String name;
 	
 	void update( const GUI::Rect& p_rect ) {
 
@@ -32,12 +33,14 @@ class PWTEST : public GUI::SignalTarget {
 		w->draw_pixmap( pixmap_copy, GUI::Point( 170,220 ), GUI::Rect(0,0,32,32) );
 		
 		
-		w->draw_string( font, GUI::Point(10,180),GUI::Color(100,150,250),"TEXT RENDERING!");
+		w->draw_string( font, GUI::Point(10,180),GUI::Color(100,150,250),name);
 	}	
 public:
+	GUI::PlatformWindow *get_w() { return w; }
 
-	PWTEST() { 
+	PWTEST(GUI::String p_name, GUI::PlatformWindow *parent=NULL) { 
 
+		name=p_name;
 		unsigned char * pm1mem = new unsigned char[32*32*3];
 		for (int x=0;x<32;x++) {
 
@@ -54,7 +57,7 @@ public:
 		pixmap_copy=pixmap;
 		pixmap.copy_rect_to(GUI::Rect(0,0,16,16),pixmap_copy,GUI::Point(16,16));
 		
-		w=GUI::Platform::get_singleton()->create_window(); 
+		w=GUI::Platform::get_singleton()->create_window(parent); 
 		w->update_event_signal.connect( this, &PWTEST::update );
 		if (!font.system_load("FreeSans",12,GUI::FONT_STYLE_BOLD)) {
 			
@@ -70,7 +73,12 @@ int main(int argc, char *argv[]) {
 	_GUI_print_error_func=print_error_test;
 	GUI::PlatformX11 platform_x11;
 
-	PWTEST pwtest;
+	PWTEST pwtest("Base");
+	PWTEST pwtest2("Dialog",pwtest.get_w());
+	
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_MODAL,true);
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_SHADED,true);
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_BORDERLESS,true);
 
 	return platform_x11.run();
 

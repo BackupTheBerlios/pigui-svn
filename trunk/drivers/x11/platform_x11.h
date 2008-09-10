@@ -19,6 +19,7 @@
 #include "drivers/x11/pixmap_x11.h"
 #include "drivers/x11/font_x11.h"
 
+
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
@@ -71,7 +72,7 @@ public:
 	virtual PlatformTheme *get_theme() const;
 	virtual PlatformPointer *get_pointer() const;
 
-	virtual PlatformWindow* create_window(unsigned int p_flags=WINDOW_FLAGS_DEFAULT);
+	virtual PlatformWindow* create_window(PlatformWindow* p_parent=NULL);
 	virtual PlatformPixmap* create_pixmap();
 	virtual PlatformFont* create_font();
 	virtual PlatformFile *create_file();

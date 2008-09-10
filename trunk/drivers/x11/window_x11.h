@@ -40,6 +40,11 @@ friend class PlatformX11;
 	PlatformX11 *platform_x11;
 	GC x11_gc;
 	
+	Atom wm_delete;
+	
+	WindowX11 *parent;
+	int modal_refcount;
+	
 	/* XIM */
 	char *_xmbstring;
 	int _xmblen;
@@ -52,11 +57,13 @@ friend class PlatformX11;
     	
     	/* MISC X Info */
     	
+    	bool window_states[WINDOW_STATE_MAX];
+    	
     	bool occluded;
-    	bool visible;
+    	bool mapped;
     	Rect rect;
     	
-	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL );
+	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL,WindowX11 *p_parent=NULL );
 
 	unsigned long r_mask;	
 	unsigned long g_mask;	
@@ -69,8 +76,11 @@ friend class PlatformX11;
 	
 	void handle_key_event(XKeyEvent *p_event);
 
-	// logic
 
+	bool redirect_focus();
+	// logic
+	
+	
 public:
 
 	virtual void set_title(String p_title);
@@ -82,16 +92,11 @@ public:
 	virtual void set_size(const Point& p_pos);
 	virtual Size get_size() const;
 
-	virtual void set_flags(unsigned int p_flags);
-	virtual unsigned int get_flags();
-
 	virtual void set_icon(const Pixmap& p_icon);
 
-	virtual void set_visible(bool p_visible);
-	virtual bool is_visible() const;
+	virtual void set_state(WindowState p_state,bool p_enabled);
+	virtual bool get_state(WindowState p_state);
 
-	virtual void make_root();
-	virtual bool is_root();
 
 	/* drawing interface */
 

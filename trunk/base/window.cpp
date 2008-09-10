@@ -63,9 +63,9 @@ void Window::add_dirty_container(Container *p_container) {
 
 }
 
-Window::Window(unsigned int p_flags) {
+Window::Window() {
 
-	platform_window = Platform::get_singleton()->create_window(p_flags);
+	platform_window = Platform::get_singleton()->create_window();
 }
 
 

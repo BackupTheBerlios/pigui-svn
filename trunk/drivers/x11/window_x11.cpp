@@ -100,7 +100,7 @@ void WindowX11::set_pos(const Point& p_pos) {
 }
 Point WindowX11::get_pos() const {
 
-	return Point();
+	return wp->rect.pos;
 }
 
 void WindowX11::set_size(const Point& p_pos) {
@@ -108,7 +108,7 @@ void WindowX11::set_size(const Point& p_pos) {
 }
 Size WindowX11::get_size() const {
 
-	return Size();
+	return wp->rect.size;
 }
 
 void WindowX11::set_icon(const Pixmap& p_icon) {

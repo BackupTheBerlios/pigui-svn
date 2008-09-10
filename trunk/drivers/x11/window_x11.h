@@ -26,49 +26,15 @@ class PlatformX11;
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
+
+class WindowX11Private;
+
 class WindowX11 : public PlatformWindow {
 friend class PlatformX11;
 
-	// x11
-
-	::Window x11_window; // this is the actuall X11 window
-	Display *x11_display;
-	::Picture xrender_picture;
-	XftDraw *xft_draw;
-	::XIC xic;
-	WindowX11 * next;
-	PlatformX11 *platform_x11;
-	GC x11_gc;
-	
-	Atom wm_delete;
-	
-	WindowX11 *parent;
-	int modal_refcount;
-	
-	/* XIM */
-	char *_xmbstring;
-	int _xmblen;
-	::Time last_keyrelease_time;
-    	
-    	/* MOUSE EVENTS */
-    	
-    	Point last_mouse_pos;
-    	bool last_mouse_pos_valid;
-    	
-    	/* MISC X Info */
-    	
-    	bool window_states[WINDOW_STATE_MAX];
-    	
-    	bool occluded;
-    	bool mapped;
-    	Rect rect;
+	WindowX11Private *wp;
     	
 	WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window,WindowX11 * p_next=NULL,WindowX11 *p_parent=NULL );
-
-	unsigned long r_mask;	
-	unsigned long g_mask;	
-	unsigned long b_mask;	
-	int r_shift,g_shift,b_shift;
 
 	unsigned long _map_color(const Color& p_color);
 
@@ -76,10 +42,15 @@ friend class PlatformX11;
 	
 	void handle_key_event(XKeyEvent *p_event);
 
-
-	bool redirect_focus();
+	void check_hide_popup_stack();
+	
+	bool redirect_focus(bool p_force=true);
 	// logic
 	
+	void set_modal(); 
+	void remove_modal();
+	void set_popup(); 
+	void remove_popup();
 	
 public:
 
@@ -114,8 +85,8 @@ public:
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect());
 
 	void process_x11_event(XEvent* p_event);
-	inline WindowX11 *get_next() const { return next; }
-	inline Window get_x11_window() const { return x11_window; }
+	WindowX11 *get_next(); 
+	Window get_x11_window();
 
 	WindowX11();	
 	~WindowX11();

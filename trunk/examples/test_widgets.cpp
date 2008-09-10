@@ -74,11 +74,19 @@ int main(int argc, char *argv[]) {
 	GUI::PlatformX11 platform_x11;
 
 	PWTEST pwtest("Base");
+	pwtest.get_w()->set_state(GUI::WINDOW_STATE_VISIBLE,true);
+	pwtest.get_w()->set_state(GUI::WINDOW_STATE_SKIP_TASKBAR,true);
+	
+	
+
 	PWTEST pwtest2("Dialog",pwtest.get_w());
 	
-	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_MODAL,true);
+	
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_POPUP,true);
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_SHADED,true);
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_BORDERLESS,true);
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_VISIBLE,true);
+	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_SKIP_TASKBAR,true);
 
 	return platform_x11.run();
 

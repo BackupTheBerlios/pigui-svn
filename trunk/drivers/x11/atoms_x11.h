@@ -35,7 +35,7 @@ public:
 	static Atom create_atom(String p_atom);
 
 	static void set_netwm_single_state( ::Window p_window, String p_name,bool p_state);
-	static void request_active_window( ::Window p_who, ::Window p_which );
+	static void request_active_window( ::Window p_current, ::Window p_next,unsigned long p_timestamp );
 
 
 };

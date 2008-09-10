@@ -11,6 +11,7 @@
 //
 #include "atoms_x11.h"
 #include <stdio.h>
+#include <string.h>
 
 namespace GUI {
 
@@ -41,6 +42,8 @@ void AtomsX11::set_netwm_single_state( ::Window p_window, String p_name,bool p_s
 
 	XClientMessageEvent clientmsg;
 	
+	memset(&clientmsg, 0, sizeof (clientmsg));
+	
 	clientmsg.type=ClientMessage;
 	clientmsg.serial=0;
 	clientmsg.display=x11_display;
@@ -51,25 +54,27 @@ void AtomsX11::set_netwm_single_state( ::Window p_window, String p_name,bool p_s
 	clientmsg.data.l[1]=get_atom(p_name);
 	clientmsg.data.l[2]=0;
 	
-	XSendEvent (x11_display, p_window, false,SubstructureRedirectMask | SubstructureNotifyMask,(XEvent*)&clientmsg);
+	XSendEvent(x11_display, DefaultRootWindow(x11_display), false,SubstructureRedirectMask | SubstructureNotifyMask,(XEvent*)&clientmsg);
 
 }
 
-void AtomsX11::request_active_window( ::Window p_who, ::Window p_which ) {
+void AtomsX11::request_active_window( ::Window p_current, ::Window p_next,unsigned long p_timestamp ) {
 	
 	XClientMessageEvent clientmsg;
+	memset(&clientmsg, 0, sizeof (clientmsg));
 
 	clientmsg.type=ClientMessage;
 	clientmsg.serial=0;
 	clientmsg.display=x11_display;
-	clientmsg.window=p_which;
+	clientmsg.window=p_next;
 	clientmsg.message_type=get_atom("_NET_ACTIVE_WINDOW");
 	clientmsg.format=32;
 	clientmsg.data.l[0]=1;
-	clientmsg.data.l[1]=0;
-	clientmsg.data.l[2]=p_who;
+	clientmsg.data.l[1]=p_timestamp;
+	clientmsg.data.l[2]=p_current;
 
-	XSendEvent (x11_display, p_which, false,SubstructureRedirectMask | SubstructureNotifyMask,(XEvent*)&clientmsg);
+
+	XSendEvent(x11_display,  DefaultRootWindow(x11_display), false,SubstructureRedirectMask | SubstructureNotifyMask,(XEvent*)&clientmsg);
 }
 
 }

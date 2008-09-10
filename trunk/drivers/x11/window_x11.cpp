@@ -22,6 +22,69 @@
 
 namespace GUI {
 
+
+class WindowX11Private {
+public:
+	// x11
+
+	::Window x11_window; // this is the actuall X11 window
+	Display *x11_display;
+	::Picture xrender_picture;
+	XftDraw *xft_draw;
+	::XIC xic;
+	WindowX11 * next;
+	PlatformX11 *platform_x11;
+	GC x11_gc;
+	unsigned long last_timestamp;
+	
+	Atom wm_delete;
+	
+	WindowX11 *parent;
+	
+	struct ModalStack {
+	
+		WindowX11 *window;
+		ModalStack *next;
+		ModalStack() { window=NULL; next=NULL; }
+	};
+	
+	ModalStack *modal_stack;
+		
+	struct PopupStack {
+	
+		WindowX11 *window;
+		PopupStack *next;
+		PopupStack() { window=NULL; next=NULL; }
+	};
+	
+	PopupStack *popup_stack;
+		
+	/* XIM */
+	char *xmbstring;
+	int xmblen;
+	::Time last_keyrelease_time;
+    	
+    	/* MOUSE EVENTS */
+    	
+    	Point last_mouse_pos;
+    	bool last_mouse_pos_valid;
+    	
+    	/* MISC X Info */
+    	
+    	bool window_states[WINDOW_STATE_MAX];
+    	
+    	bool occluded;
+    	bool mapped;
+    	Rect rect;
+    	
+	unsigned long r_mask;	
+	unsigned long g_mask;	
+	unsigned long b_mask;	
+	int r_shift,g_shift,b_shift;
+    	
+};
+
+
 void WindowX11::set_title(String p_title) {
 
 
@@ -57,17 +120,9 @@ void WindowX11::set_state(WindowState p_state,bool p_enabled) {
 	if (p_state<0 || p_state>=WINDOW_STATE_MAX)
 		return;
 
-	
-	if (!mapped) {
-		window_states[p_state]=p_enabled;
-	
-		return;
-	}
-		
-
 	switch(p_state) { 
 		case WINDOW_STATE_CAN_CLOSE: {
-		
+			// just handled by the flag
 		} break;
 		case WINDOW_STATE_RESIZABLE: {
 		
@@ -75,97 +130,70 @@ void WindowX11::set_state(WindowState p_state,bool p_enabled) {
 		} break;
 		case WINDOW_STATE_MODAL: {
 		
-			if (parent) {
-			
-				if (p_enabled) 
-					XSetTransientForHint(x11_display, x11_window, parent->x11_window);
-				else
-					XSetTransientForHint(x11_display, x11_window, 0);
-				
-			}
-			AtomsX11::set_netwm_single_state( x11_window, "_NET_WM_STATE_MODAL",p_state);
-			
-#if 0			
+			// popup and modal can't coexist
+			if ( p_enabled && wp->window_states[WINDOW_STATE_POPUP] )
+				set_state( WINDOW_STATE_POPUP, false );
+		
 			if (p_enabled) {
-			
-				if (transient_for!=0)
-					break; // already transient for someone
-					
-				transient_for=parent->x11_window; // attempt to be transient for the parent
+				set_modal();
 				
-				while(true) {
-				
-					::Window for_redirecting=0;
-					
-					XGetTransientForHint(x11_display, transient_for, &for_redirecting);
-					
-					if (for_redirecting!=0) {
-						// transient_for is redirecting somewhere, capture that!
-						if (for_redirecting==x11_window) {
-							// make sure we aren't in the middle of the mess
-							transient_for=0;
-							for_redirecting=0;
-						} else {
-							transient_for=for_redirecting;
-						}
-					}
-					
-					if (for_redirecting==0)
-						break;
-				}
-				
-				if (transient_for!=0) {
-				
-					XSetTransientForHint(x11_display, transient_for, x11_window);
-				}
 			} else {
-			
-				if (transient_for!=0) {
-				
-					XSetTransientForHint(x11_display, transient_for, 0);
-					transient_for=0;
-				}
-				
+				remove_modal();
 			}
-#endif			
+			AtomsX11::set_netwm_single_state( wp->x11_window, "_NET_WM_STATE_MODAL",p_state);
+			
+					
 		} break;
 		case WINDOW_STATE_POPUP: {
 		
+			// popup and modal can't coexist
+			if ( p_enabled && wp->window_states[WINDOW_STATE_MODAL] )
+				set_state( WINDOW_STATE_MODAL, false );
+			
+			if (p_enabled)
+				set_popup();
+			else
+				remove_popup();
+		
+			AtomsX11::set_netwm_single_state( wp->x11_window, "_NET_WM_STATE_POPUP",p_state);
 		
 		} break;
 		case WINDOW_STATE_VISIBLE: {
 		
-			if (p_enabled == mapped)
+			if (p_enabled == wp->mapped)
 				break; // avoid unnecesary events
 				
-			if (p_enabled)
-				XMapWindow(x11_display,x11_window);
-			else
-				XUnmapWindow(x11_display,x11_window);
-			mapped=p_enabled;
+			if (p_enabled) {
+				XMapWindow(wp->x11_display,wp->x11_window);
+				printf("mapping window\n");
+			} else {
+				XUnmapWindow(wp->x11_display,wp->x11_window);
+			}
+			wp->mapped=p_enabled;
 		
 		} break;
 		case WINDOW_STATE_BORDERLESS: {
 			
 			XSetWindowAttributes xwa;
 			xwa.override_redirect=p_enabled?1:0;
-			XChangeWindowAttributes(x11_display, x11_window, CWOverrideRedirect,&xwa);
+			XChangeWindowAttributes(wp->x11_display, wp->x11_window, CWOverrideRedirect,&xwa);
 		} break;
 		case WINDOW_STATE_SHADED: {
 		
-			AtomsX11::set_netwm_single_state( x11_window, "_NET_WM_STATE_SHADED",p_state);
+			AtomsX11::set_netwm_single_state( wp->x11_window, "_NET_WM_STATE_SHADED",p_state);
 		
 		} break;
 		case WINDOW_STATE_SKIP_TASKBAR: {
 		
+			AtomsX11::set_netwm_single_state( wp->x11_window, "_NET_WM_STATE_SKIP_TASKBAR",p_state);
 		
 		} break;
 		case WINDOW_STATE_MAX: break;
 	}
 
-	XFlush(x11_display); // depending when called, may need to flush
+	XFlush(wp->x11_display); // depending when called, may need to flush
 	
-	window_states[p_state]=p_enabled;
+	wp->window_states[p_state]=p_enabled;
 
 }
 bool WindowX11::get_state(WindowState p_state) {
@@ -177,22 +205,22 @@ bool WindowX11::get_state(WindowState p_state) {
 unsigned long WindowX11::_map_color(const Color& p_color) {
 	
 	unsigned long col_r = p_color.r;
-	if (r_shift>0)
-		col_r<<=r_shift;
-	else if (r_shift<0)
-		col_r>>=-r_shift;
+	if (wp->r_shift>0)
+		col_r<<=wp->r_shift;
+	else if (wp->r_shift<0)
+		col_r>>=-wp->r_shift;
 
 	unsigned long col_g = p_color.g;
-	if (g_shift>0)
-		col_g<<=g_shift;
-	else if (g_shift<0)
-		col_g>>=-g_shift;
+	if (wp->g_shift>0)
+		col_g<<=wp->g_shift;
+	else if (wp->g_shift<0)
+		col_g>>=-wp->g_shift;
 
 	unsigned long col_b = p_color.b;
-	if (b_shift>0)
-		col_b<<=b_shift;
-	else if (b_shift<0)
-		col_b>>=-b_shift;
+	if (wp->b_shift>0)
+		col_b<<=wp->b_shift;
+	else if (wp->b_shift<0)
+		col_b>>=-wp->b_shift;
 			
 	return (col_r|col_g|col_b);
 
@@ -206,7 +234,7 @@ void WindowX11::draw_rect(const Point& p_from,const Size& p_size,const Color& p_
 	xrcolor.blue=(unsigned short)p_color.b << 8;
 	xrcolor.alpha=(unsigned short)p_color.a << 8;
 
-	XRenderFillRectangle( x11_display, PictOpOver, xrender_picture, &xrcolor, p_from.x,p_from.y,p_size.width,p_size.height );
+	XRenderFillRectangle( wp->x11_display, PictOpOver, wp->xrender_picture, &xrcolor, p_from.x,p_from.y,p_size.width,p_size.height );
 
 }
 
@@ -217,9 +245,9 @@ void WindowX11::draw_line(const Point& p_from,const Point& p_to,const Color& p_c
 	xgcvalues.cap_style=p_round_endpoints?CapRound:CapButt;
 	xgcvalues.foreground=_map_color(p_color);
 
-	XChangeGC(x11_display, x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
+	XChangeGC(wp->x11_display, wp->x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
 
-	XDrawLine(x11_display, x11_window, x11_gc, p_from.x,p_from.y, p_to.x, p_to.y );
+	XDrawLine(wp->x11_display, wp->x11_window, wp->x11_gc, p_from.x,p_from.y, p_to.x, p_to.y );
 }
 void WindowX11::draw_polygon(const Point *p_points, int p_point_count,const Color& p_color,bool p_fill,int p_line_width) {
 
@@ -249,9 +277,9 @@ void WindowX11::draw_polygon(const Point *p_points, int p_point_count,const Colo
 		xgcvalues.foreground=_map_color(p_color);
 		xgcvalues.background=_map_color(p_color);
 	
-		XChangeGC(x11_display, x11_gc, GCForeground|GCBackground|GCFillStyle, &xgcvalues);
+		XChangeGC(wp->x11_display, wp->x11_gc, GCForeground|GCBackground|GCFillStyle, &xgcvalues);
 	
-		XFillPolygon(x11_display, x11_window, x11_gc, xpoints, p_point_count,Complex,CoordModeOrigin);
+		XFillPolygon(wp->x11_display, wp->x11_window, wp->x11_gc, xpoints, p_point_count,Complex,CoordModeOrigin);
 	} else {
 	
 		XGCValues xgcvalues;
@@ -259,7 +287,7 @@ void WindowX11::draw_polygon(const Point *p_points, int p_point_count,const Colo
 		xgcvalues.cap_style=CapRound;
 		xgcvalues.foreground=_map_color(p_color);
 	
-		XChangeGC(x11_display, x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
+		XChangeGC(wp->x11_display, wp->x11_gc, GCForeground|GCCapStyle|GCLineWidth, &xgcvalues);
 	
 		for (int i=0;i<p_point_count;i++) {
 		
@@ -267,7 +295,7 @@ void WindowX11::draw_polygon(const Point *p_points, int p_point_count,const Colo
 			
 			
 			
-			XDrawLine(x11_display, x11_window, x11_gc, p_points[prev_i].x,p_points[prev_i].y,p_points[i].x, p_points[i].y );
+			XDrawLine(wp->x11_display, wp->x11_window, wp->x11_gc, p_points[prev_i].x,p_points[prev_i].y,p_points[i].x, p_points[i].y );
 		}
 	}
 	
@@ -282,17 +310,17 @@ void WindowX11::draw_arrow(const Point& p_from,const Size& p_size,Direction p_di
 	
 void WindowX11::draw_pixmap(const Pixmap& p_pixmap, const Point& p_pos,const Rect& p_source) {
 
-	PixmapX11 *pp = platform_x11->extract_pixmap_x11(p_pixmap);
+	PixmapX11 *pp = wp->platform_x11->extract_pixmap_x11(p_pixmap);
 
 	if (!pp || !pp->is_valid())
 		return;
 
-	XRenderComposite (x11_display,PictOpOver,pp->get_xrender_picture(),0,xrender_picture,0,0,0,0,p_pos.x,p_pos.y,pp->get_size().width,pp->get_size().height );
+	XRenderComposite (wp->x11_display,PictOpOver,pp->get_xrender_picture(),0,wp->xrender_picture,0,0,0,0,p_pos.x,p_pos.y,pp->get_size().width,pp->get_size().height );
 	
 }
 void WindowX11::draw_string(const Font& p_font,const Point& p_pos,const Color& p_color,const String& p_string,Direction p_dir) {
 
-	FontX11 *fnt = platform_x11->extract_font_x11( p_font );
+	FontX11 *fnt = wp->platform_x11->extract_font_x11( p_font );
 	if (!fnt)
 		return;
 	
@@ -312,16 +340,16 @@ void WindowX11::draw_string(const Font& p_font,const Point& p_pos,const Color& p
 		
 		case 1: {
 			
-			XftDrawString8( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar8*)p_string.c_str(), p_string.length() );
+			XftDrawString8( wp->xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar8*)p_string.c_str(), p_string.length() );
 			
 		} break;
 		case 2: {
 			
-			XftDrawString16( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar16*)p_string.c_str(), p_string.length() );
+			XftDrawString16( wp->xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar16*)p_string.c_str(), p_string.length() );
 		} break;
 		case 4: {
 			
-			XftDrawString32( xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar32*)p_string.c_str(), p_string.length() );
+			XftDrawString32( wp->xft_draw, &xft_color, xft_font, p_pos.x, p_pos.y, (const FcChar32*)p_string.c_str(), p_string.length() );
 		} break;
 	}
 	
@@ -410,23 +438,23 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 						 
  	// Meanwhile, XLookupString returns keysyms useful for unicode.
 
-	if (!_xmbstring) {
+	if (!wp->xmbstring) {
 		// keep a temporary buffer for the string
-		_xmbstring=(char*)malloc(sizeof(char)*8);
-		_xmblen=8;
+		wp->xmbstring=(char*)malloc(sizeof(char)*8);
+		wp->xmblen=8;
 	}			 
 	
-	if (xkeyevent->type == KeyPress && xic) {
+	if (xkeyevent->type == KeyPress && wp->xic) {
 
 		Status status;
 		do {
 			
-			int mnbytes = XmbLookupString (xic, xkeyevent, _xmbstring, _xmblen - 1, &keysym_unicode, &status);
-			_xmbstring[mnbytes] = '\0';
+			int mnbytes = XmbLookupString (wp->xic, xkeyevent, wp->xmbstring, wp->xmblen - 1, &keysym_unicode, &status);
+			wp->xmbstring[mnbytes] = '\0';
 
 			if (status == XBufferOverflow) {
-				_xmblen = mnbytes + 1;
-				_xmbstring = (char*)realloc (_xmbstring, _xmblen);
+				wp->xmblen = mnbytes + 1;
+				wp->xmbstring = (char*)realloc (wp->xmbstring, wp->xmblen);
 			} 
 		} while (status == XBufferOverflow);
 	} 		
@@ -458,8 +486,8 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	
 	bool keypress = xkeyevent->type == KeyPress;
 	
-	if (xkeyevent->type == KeyPress && xic) {
-                if (XFilterEvent((XEvent*)xkeyevent, x11_window))
+	if (xkeyevent->type == KeyPress && wp->xic) {
+                if (XFilterEvent((XEvent*)xkeyevent, wp->x11_window))
                 	return;  
 	}
 	
@@ -487,16 +515,16 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 			
 		// saved the time of the last keyrelease to see
 		// if it's the same as this keypress.
-		if (xkeyevent->time==last_keyrelease_time)
+		if (xkeyevent->time==wp->last_keyrelease_time)
 			echo=true;
 
 	} else {
 	
 		// make sure there are events pending,
 		// so this call won't block.
-		if (XPending(x11_display)>0) {
+		if (XPending(wp->x11_display)>0) {
 			XEvent peek_event;
-			XPeekEvent(x11_display, &peek_event);
+			XPeekEvent(wp->x11_display, &peek_event);
 			
 			// I'm using a treshold of 5 msecs, 
 			// since sometimes there seems to be a little
@@ -509,9 +537,9 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 				echo=true;
 				
 			// use the time from peek_event so it always works
-			last_keyrelease_time=peek_event.xkey.time;
+			wp->last_keyrelease_time=peek_event.xkey.time;
 		} else {
-			last_keyrelease_time=xkeyevent->time;
+			wp->last_keyrelease_time=xkeyevent->time;
 		}
 	
 		// save the time to check for echo when keypress happens
@@ -525,49 +553,164 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	
 }
 
-bool WindowX11::redirect_focus() {
+void WindowX11::set_modal() {
 
-	// since X11 doesn't really support "MODAL" Windows
-	
-	return false;
-	
-	::Window redirect_to=x11_window;
-	
-	while(true) {
-	
-		::Window dst=0;
+	if (!wp->parent)
+		return;
 		
-		XGetTransientForHint(x11_display, redirect_to, &dst);
+	/* check we are there */
+	
+	WindowX11Private::ModalStack *ms=wp->parent->wp->modal_stack;
+	
+	XSetTransientForHint(wp->x11_display, wp->x11_window, wp->parent->wp->x11_window);
+	
+	while(ms) {
+	
+		if (ms->window==this)
+			return; // there already
 		
-		if (dst!=0) {
-		
-			redirect_to=dst;
-			continue;
-		} else {
-		
-			break;
-		}
+		ms=ms->next;
 	}
 	
-	
-	if (redirect_to==x11_window)
-		return false; //nothing happened
-	
-	AtomsX11::request_active_window( x11_window, redirect_to );
+	ms = GUI_NEW( WindowX11Private::ModalStack );
+	ms->window=this;
+	ms->next=wp->parent->wp->modal_stack;
+	wp->parent->wp->modal_stack=ms;
+		
+		
+}
+void WindowX11::remove_modal() {
 
-	return true;
+	/* check we are there */
+	
+	if (!wp->parent)
+		return;
+	
+	WindowX11Private::ModalStack *ms=wp->parent->wp->modal_stack,*prev=NULL;
+	
+	XSetTransientForHint(wp->x11_display, wp->x11_window, 0);
+		
+	while(ms) {
+	
+		if (ms->window==this) {
+		
+			if (prev) {
+				
+				prev->next=ms->next;
+			} else {
+			
+				wp->parent->wp->modal_stack=ms->next;
+			}
+			
+			GUI_DELETE(ms);
+			return;
+		}
+		prev=ms;
+		ms=ms->next;		
+	}
+}
+
+
+void WindowX11::set_popup() {
+
+	if (!wp->parent)
+		return;
+		
+	/* check we are there */
+	
+	XSetTransientForHint(wp->x11_display, wp->x11_window, wp->parent->wp->x11_window);
+	
+	WindowX11Private::PopupStack *ms=wp->parent->wp->popup_stack;
+	
+	while(ms) {
+	
+		if (ms->window==this)
+			return; // there already
+		
+		ms=ms->next;
+	}
+	
+	ms = GUI_NEW( WindowX11Private::PopupStack );
+	ms->window=this;
+	ms->next=wp->parent->wp->popup_stack;
+	wp->parent->wp->popup_stack=ms;
+	
+	if (wp->parent) 
+		AtomsX11::request_active_window( wp->parent->get_x11_window(),get_x11_window(),  wp->last_timestamp);
+					
+		
+}
+void WindowX11::remove_popup() {
+
+	if (!wp->parent)
+		return;
+
+	/* check we are there */
+	
+	WindowX11Private::PopupStack *ms=wp->parent->wp->popup_stack,*prev=NULL;
+	XSetTransientForHint(wp->x11_display, wp->x11_window, 0);
+	
+	while(ms) {
+	
+		if (ms->window==this) {
+		
+			if (prev) {
+				
+				prev->next=ms->next;
+			} else {
+			
+				wp->parent->wp->popup_stack=ms->next;
+			}
+			
+			GUI_DELETE(ms);
+			return;
+		}
+		prev=ms;
+		ms=ms->next;		
+	}
+}
+
+void WindowX11::check_hide_popup_stack() {
+
+	while (wp->popup_stack) {
+	
+		WindowX11 *window =wp->popup_stack->window;
+		window->set_state( WINDOW_STATE_VISIBLE, false );
+		window->remove_popup();
+	}
+}
+
+bool WindowX11::redirect_focus(bool p_force_redirect) {
+
+	// I have no idea how to do this in X11
+	// it should refocus the modal window..
+	
+	if (wp->modal_stack) {
+	
+		if (p_force_redirect)
+		
+			AtomsX11::request_active_window( wp->x11_window,wp->modal_stack->window->get_x11_window(),  wp->last_timestamp);
+		
+		return true;
+	} else {
+	
+		return false;
+	}
 
 }
 
 void WindowX11::process_x11_event(XEvent* p_event) {
-
+	
 	switch(p_event->type) {
 
 		case KeyPress:
 		case KeyRelease: {
 
-			if (redirect_focus())
-				break;
+			wp->last_timestamp=p_event->xkey.time;
+			
+			check_hide_popup_stack();
+			if (redirect_focus(true))
+				break;				
 				
 			// key event is a little complex, so
 			// it will be handled in it's own function.
@@ -577,7 +720,10 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		case ButtonPress:
 		case ButtonRelease: {
 						
-			if (redirect_focus())
+			
+			wp->last_timestamp=p_event->xbutton.time;
+			check_hide_popup_stack();
+			if (redirect_focus(true))
 				break;
 						
 			// ButtonPress and ButtonRelease are pretty
@@ -595,22 +741,26 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case MotionNotify: {
 
+			wp->last_timestamp=p_event->xmotion.time;
+			if (redirect_focus(false))
+				break;
+
 			// Motion is also simple.
 			// A little hack is in order
 			// to be able to send relative motion events.
 			
 			Point pos( p_event->xmotion.x, p_event->xmotion.y );			
 
-			if (!last_mouse_pos_valid) {
+			if (!wp->last_mouse_pos_valid) {
 			
-				last_mouse_pos=pos;
-				last_mouse_pos_valid=true;
+				wp->last_mouse_pos=pos;
+				wp->last_mouse_pos_valid=true;
 			}
 			
-			Point rel = pos - last_mouse_pos;
+			Point rel = pos - wp->last_mouse_pos;
 			unsigned int mask=fill_modifier_button_mask(p_event->xmotion.state);
 			
-			last_mouse_pos=pos;
+			wp->last_mouse_pos=pos;
 			
 			mouse_motion_event_signal.call(pos,rel,mask);
 
@@ -629,7 +779,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 				 	
 			if (p_event->type==EnterNotify) {
 				// invalidate previous motion
-				last_mouse_pos_valid=false;
+				wp->last_mouse_pos_valid=false;
 				mouse_entered_window_signal.call();
 			} else {
 				mouse_left_window_signal.call();
@@ -638,7 +788,12 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case FocusIn: {
 	
+			if (redirect_focus(true))
+				break;
+			
+			//check_hide_popup_stack();
 			gained_focus_signal.call();	
+			
 		} break;
 		case FocusOut: {
 
@@ -671,7 +826,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case VisibilityNotify: {
 
-			occluded=p_event->xvisibility.state==VisibilityFullyObscured;
+			wp->occluded=p_event->xvisibility.state==VisibilityFullyObscured;
 
 		} break;
 		case CreateNotify: {
@@ -687,16 +842,28 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		case UnmapNotify: {
 
 			//printf("unmap notify\n");
-			mapped=false;
+			wp->mapped=false;
+			if (wp->window_states[WINDOW_STATE_MODAL])
+				remove_modal();
+				
+			check_hide_popup_stack();
+			if (wp->window_states[WINDOW_STATE_POPUP])
+				remove_popup();
 		} break;
 		case MapNotify: {
 
-			mapped=true;
+			wp->mapped=true;
 				// most false by default
 			for (int i=0;i<WINDOW_STATE_MAX;i++) {
 			
-				set_state(WindowState(i),window_states[i]);
+				set_state(WindowState(i),wp->window_states[i]);
 			}
+
+			if (wp->window_states[WINDOW_STATE_MODAL])
+				set_modal();
+
+			if (wp->window_states[WINDOW_STATE_POPUP])
+				set_popup();
 
 			printf("map notify\n");
 		} break;
@@ -720,16 +887,16 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 				p_event->xconfigure.width,
 				p_event->xconfigure.height );
 			
-			bool pos_changed=( new_rect.pos != rect.pos );
-			bool size_changed=( new_rect.size != rect.size );
+			bool pos_changed=( new_rect.pos != wp->rect.pos );
+			bool size_changed=( new_rect.size != wp->rect.size );
 			
-			rect=new_rect;
+			wp->rect=new_rect;
 			
 			if ( pos_changed )
-				position_changed_signal.call( rect.pos );
+				position_changed_signal.call( wp->rect.pos );
 			
 			if ( size_changed )
-				size_changed_signal.call( rect.size );
+				size_changed_signal.call( wp->rect.size );
 			
 		} break;
 		case ConfigureRequest: {
@@ -764,7 +931,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 
 			
 			//printf("property notify\n");
-			char * name = XGetAtomName(x11_display,p_event->xproperty.atom);
+			char * name = XGetAtomName(wp->x11_display,p_event->xproperty.atom);
 			
 			printf("been set property %s\n",name);
 			XFree(name);
@@ -791,10 +958,10 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 		} break;
 		case ClientMessage: {
 
-			if ((int)p_event->xclient.data.l[0] == (int)wm_delete) {
+			if ((int)p_event->xclient.data.l[0] == (int)wp->wm_delete) {
 			
 				close_requested_signal.call();
-				if (window_states[WINDOW_STATE_CAN_CLOSE]) {
+				if (wp->window_states[WINDOW_STATE_CAN_CLOSE]) {
 					set_state(WINDOW_STATE_VISIBLE,false);
 					// should check if all roots are hidden(closed?) and exit
 					// the app
@@ -857,15 +1024,27 @@ static void _configure_shift_and_mask(int& p_shift, unsigned long& p_mask, unsig
 
 }
 
+WindowX11 *WindowX11::get_next() {
+
+	return wp->next;
+}
+Window WindowX11::get_x11_window() {
+
+	return wp->x11_window;
+}
+
+
 WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_x11_window, WindowX11 * p_next,WindowX11 *p_parent ) : PlatformWindow( p_platform ) {
 
-	parent=p_parent;
-	x11_window=p_x11_window;
-	x11_display=p_x11_display;
-	platform_x11=p_platform;
+	wp = GUI_NEW( WindowX11Private );
 
-	next=p_next;
-	mapped=true;
+	wp->parent=p_parent;
+	wp->x11_window=p_x11_window;
+	wp->x11_display=p_x11_display;
+	wp->platform_x11=p_platform;
+
+	wp->next=p_next;
+
 
 	unsigned long events=0;
 	/*
@@ -895,77 +1074,95 @@ WindowX11::WindowX11( PlatformX11 *p_platform,Display *p_x11_display,::Window p_
 			   FocusChangeMask | PropertyChangeMask |
 			   ColormapChangeMask | OwnerGrabButtonMask;
 
-	XSelectInput(x11_display, x11_window, events);
-	XMapWindow(x11_display, x11_window);
+	XSelectInput(wp->x11_display, wp->x11_window, events);
+	//XMapWindow(wp->x11_display, wp->x11_window);
 	
-	/* Set XIC */
+	/* Set wp->xic */
 	
 	if (p_platform->get_xim() && p_platform->get_xim_style()) {
 	
-		xic = XCreateIC (p_platform->get_xim(),XNInputStyle, p_platform->get_xim_style(),XNClientWindow,x11_window,XNFocusWindow, x11_window, NULL);
+		wp->xic = XCreateIC (p_platform->get_xim(),XNInputStyle, p_platform->get_xim_style(),XNClientWindow,wp->x11_window,XNFocusWindow, wp->x11_window, NULL);
 	} else {
 	
-		xic=NULL;
+		wp->xic=NULL;
 	}
 	
 	
-	x11_gc = XCreateGC(x11_display, x11_window, 0, 0);
-	Visual* visual = DefaultVisual( x11_display, 0 );
+	wp->x11_gc = XCreateGC(wp->x11_display, wp->x11_window, 0, 0);
+	Visual* visual = DefaultVisual( wp->x11_display, 0 );
 
-	XRenderPictFormat * fmt = XRenderFindVisualFormat(x11_display, visual);
+	XRenderPictFormat * fmt = XRenderFindVisualFormat(wp->x11_display, visual);
 	XRenderPictureAttributes att;
 	att.component_alpha = 1;
 	att.repeat = 0;
-	xrender_picture = XRenderCreatePicture(x11_display, x11_window, fmt, CPRepeat | CPComponentAlpha, &att);
+	wp->xrender_picture = XRenderCreatePicture(wp->x11_display, wp->x11_window, fmt, CPRepeat | CPComponentAlpha, &att);
 	
-	xft_draw = XftDrawCreate( x11_display, x11_window, visual, DefaultColormap( x11_display, DefaultScreen( x11_display ) ) );
+	wp->xft_draw = XftDrawCreate( wp->x11_display, wp->x11_window, visual, DefaultColormap( wp->x11_display, DefaultScreen( wp->x11_display ) ) );
    
-	wm_delete = XInternAtom(x11_display, "WM_DELETE_WINDOW", false);
-	XSetWMProtocols(x11_display, x11_window, &wm_delete, 1);
+	wp->wm_delete = XInternAtom(wp->x11_display, "WM_DELETE_WINDOW", false);
+	XSetWMProtocols(wp->x11_display, wp->x11_window, &wp->wm_delete, 1);
 
 
 	// calculate r_shift, 
-	_configure_shift_and_mask(r_shift,r_mask,visual->red_mask);
-	_configure_shift_and_mask(g_shift,g_mask,visual->green_mask);
-	_configure_shift_and_mask(b_shift,b_mask,visual->blue_mask);
+	_configure_shift_and_mask(wp->r_shift,wp->r_mask,visual->red_mask);
+	_configure_shift_and_mask(wp->g_shift,wp->g_mask,visual->green_mask);
+	_configure_shift_and_mask(wp->b_shift,wp->b_mask,visual->blue_mask);
 	
-	_xmbstring=0;
-	_xmblen=0;
-	last_keyrelease_time=0;
-	last_mouse_pos_valid=false;
-	occluded=false;
-	mapped=false;
-	modal_refcount=0;
+	wp->xmbstring=0;
+	wp->xmblen=0;
+	wp->last_keyrelease_time=0;
+	wp->last_mouse_pos_valid=false;
+	wp->occluded=false;
+	wp->mapped=false;
+	wp->modal_stack=NULL;
+	wp->popup_stack=NULL;
 	// most false by default
 	for (int i=0;i<WINDOW_STATE_MAX;i++) {
 	
-		window_states[i]=false;
+		wp->window_states[i]=false;
 	}
 	
-	window_states[WINDOW_STATE_VISIBLE]=true;
-	window_states[WINDOW_STATE_CAN_CLOSE]=true;
+	wp->window_states[WINDOW_STATE_VISIBLE]=true;
+	wp->window_states[WINDOW_STATE_CAN_CLOSE]=true;
+	wp->last_timestamp=0;
 }
 
 
 WindowX11::~WindowX11() {
 
-	if (xic)
-		XDestroyIC(xic);
+	if (wp->xic)
+		XDestroyIC(wp->xic);
 		
-	if (xrender_picture)
-		XRenderFreePicture( x11_display, xrender_picture );
+	if (wp->xrender_picture)
+		XRenderFreePicture( wp->x11_display, wp->xrender_picture );
 		
-	if (xft_draw)
-		XftDrawDestroy(xft_draw);
+	if (wp->xft_draw)
+		XftDrawDestroy(wp->xft_draw);
 	
-	if (x11_gc)
-		XFreeGC(x11_display,x11_gc);
+	if (wp->x11_gc)
+		XFreeGC(wp->x11_display,wp->x11_gc);
 		
-	if (_xmbstring)
-		free(_xmbstring);
+	if (wp->xmbstring)
+		free(wp->xmbstring);
 		
-	if (x11_window)
-		XDestroyWindow( x11_display, x11_window );
+	if (wp->x11_window)
+		XDestroyWindow( wp->x11_display, wp->x11_window );
+		
+	while (wp->modal_stack) {
+	
+		WindowX11Private::ModalStack *ms = wp->modal_stack;
+		wp->modal_stack=wp->modal_stack->next;
+		GUI_DELETE( ms );
+	}
+		
+	while (wp->popup_stack) {
+	
+		WindowX11Private::PopupStack *ms = wp->popup_stack;
+		wp->popup_stack=wp->popup_stack->next;
+		GUI_DELETE( ms );
+	}
+		
+	GUI_DELETE( wp );
 }
 
 

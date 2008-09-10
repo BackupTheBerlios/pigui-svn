@@ -15,6 +15,14 @@
 
 namespace GUI {
 
+
+class WindowPrivate {
+public:
+
+	PlatformWindow *platform_window;
+
+};
+
 Frame *Window::get_focus_frame() {
 
 	return NULL;
@@ -65,14 +73,16 @@ void Window::add_dirty_container(Container *p_container) {
 
 Window::Window() {
 
-	platform_window = Platform::get_singleton()->create_window();
+	wp = GUI_NEW( WindowPrivate );
+	
+	wp->platform_window = Platform::get_singleton()->create_window();
 }
 
 
 Window::~Window() {
 
-	if (platform_window)
-		delete platform_window;
+	if (wp->platform_window)
+		delete wp->platform_window;
 }
 
 

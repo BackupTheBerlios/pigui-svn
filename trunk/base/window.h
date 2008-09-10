@@ -24,11 +24,11 @@ namespace GUI {
 class Container;
 class Frame;
 
-class PlatformWindow;
+class WindowPrivate;
+
 class Window { 
 
-	PlatformWindow *platform_window;
-	
+	WindowPrivate *wp;		
 public:
 
 	Frame *get_focus_frame();

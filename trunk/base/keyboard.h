@@ -280,6 +280,7 @@ enum KeyModifierMask {
         KEY_MASK_CTRL = (1<<28),
         KEY_MASK_KPAD = (1<<29),
         KEY_MASK_GROUP_SWITCH = (1<<30)
+        // bit 30 can't be used because variant uses regular 32 bits int as datatype
 	
 };
 

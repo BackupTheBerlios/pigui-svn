@@ -50,6 +50,7 @@ public:
 	
 
 	virtual String system_get_name() const; ///< get system font name
+	virtual unsigned int system_get_flags() const; ///< get system font flags
 	virtual float system_get_size() const; ///< get system font size
 
 	/* COMMON METHODS */

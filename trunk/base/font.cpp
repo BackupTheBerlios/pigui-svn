@@ -241,6 +241,14 @@ float Font::system_get_size() const {
 	return _fp->font->get_size();
 }
 
+unsigned int Font::system_get_flags() const {
+
+	if (!_fp || !_fp->font)
+		return -1;
+
+	return _fp->font->get_flags();
+
+}
 /* COMMON METHODS */
 
 bool Font::is_custom() const {

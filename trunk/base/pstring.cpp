@@ -61,6 +61,7 @@ const char *CharString::get_data() {
 	return shared->data;
 }
 
+
 const CharString& CharString::operator=(CharString &p_str) {
 	
 	take_shared(p_str.shared);
@@ -383,12 +384,14 @@ void String::operator=(const CharType *p_str) {
 
 }
 
+/* 
+gets in the way of Variant::operator String()
 bool String::operator=(CharType p_chr) {
 	
 	copy_from(p_chr);
 	return !empty();
 }
-
+*/
 bool String::operator==(const char *p_str) const {
 	
 	int len=0;
@@ -914,7 +917,7 @@ String::String() {
 	create_shared();
 }
 
-int String::to_int() {
+int String::to_int() const {
 	
 	if (length()==0)
 		return 0;
@@ -938,7 +941,7 @@ int String::to_int() {
 	return integer;
 }
 
-double String::to_double() {
+double String::to_double() const {
 	
 	if (length()==0)
 		return 0;
@@ -1017,7 +1020,7 @@ void String::insert(int p_at_pos,String p_string) {
 	*this=pre+p_string+post;
 
 }
-String String::substr(int p_from,int p_chars) {
+String String::substr(int p_from,int p_chars) const {
 	
 	if (p_from<0 || p_from>=length() || p_chars<=0)
 		return "";
@@ -1030,7 +1033,7 @@ String String::substr(int p_from,int p_chars) {
 	return String(&shared->data[p_from],p_chars);
 	
 }
-int String::find(String p_str,int p_from) {
+int String::find(String p_str,int p_from) const {
 	
 	if (p_from<0)
 		return -1;
@@ -1067,7 +1070,7 @@ int String::find(String p_str,int p_from) {
 	return -1;
 }
 
-int String::findn(String p_str,int p_from) {
+int String::findn(String p_str,int p_from) const {
 	
 	if (p_from<0)
 		return -1;

@@ -126,6 +126,16 @@ enum PixmapFormat {
 	PIXMAP_FORMAT_RGBA,
 };
 
+enum PropertyHint {
+	PROPERTY_HINT_NONE, ///< no hint provided.
+	PROPERTY_HINT_RANGE, ///< hint_text = "min,max,step"
+	PROPERTY_HINT_ENUM, ///< hint_text= "val1,val2,val3,etc"
+	PROPERTY_HINT_LENGTH, ///< hint_text= "length" (as integer)
+	PROPERTY_HINT_FLAGS, ///< hint_text= "flag1,flag2,etc" (as bit flags)
+	PROPERTY_HINT_PATH, ///< a file path must be passed, hint_text (optionally) is a filter "*.png,*.wav,*.doc"
+	PROPERTY_HINT_FILE, ///< a file path must be passed, hint_text (optionally) is a filter "*.png,*.wav,*.doc," 
+	PROPERTY_HINT_DIR, ///< a directort path must be passed
+};
 
 //needing to include math.h/cmath for an integer/float abs function is asking too much
 

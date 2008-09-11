@@ -49,6 +49,12 @@ String FontX11::get_name() const {
 	
 	return name;
 }
+
+unsigned int FontX11::get_flags() const {
+
+	return flags;
+}
+
 float FontX11::get_size() const {
 	
 	return size;

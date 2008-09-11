@@ -14,6 +14,7 @@
 
 
 #include "base/theme.h"
+#include "base/object.h"
 
 namespace GUI {
 
@@ -26,8 +27,10 @@ class Frame;
 
 class WindowPrivate;
 
-class Window { 
+class Window : public Object { 
 
+	GUI_TYPE( Window, Object );
+	
 	WindowPrivate *wp;		
 public:
 

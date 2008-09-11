@@ -107,7 +107,7 @@ public:
 	
 	/* Regular Operators */
 	bool operator=(String p_str);
-	bool operator=(CharType p_chr);
+	//bool operator=(CharType p_chr); gets in the way of Variant::operator String()
 	bool operator==(String p_str) const;
 	bool operator!=(String p_str) const;
 	String operator+(const String &) const;
@@ -144,14 +144,14 @@ public:
 	bool empty() const;
 	
 	/* complex helpers */
-	String substr(int p_from,int p_chars);
-	int find(String p_str,int p_from=0); ///< return <0 if failed
-	int findn(String p_str,int p_from=0); ///< return <0 if failed, case insensitive
+	String substr(int p_from,int p_chars) const;
+	int find(String p_str,int p_from=0) const; ///< return <0 if failed
+	int findn(String p_str,int p_from=0) const; ///< return <0 if failed, case insensitive
 	void replace(String p_key,String p_with);
 	void insert(int p_at_pos,String p_string);
 	static String num(double p_num,int p_digits=-1);
-	double to_double();
-	int to_int();
+	double to_double() const;
+	int to_int() const;
 	
 	int get_slice_count(String p_splitter);
 	String get_slice(String p_splitter,int p_slice);

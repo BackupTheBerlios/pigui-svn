@@ -147,7 +147,7 @@ public:
 	
 	virtual String get_name() const=0;
 	virtual float get_size() const=0;
-
+	virtual unsigned int get_flags() const=0;
 	virtual bool has_character(unsigned int p_code) const=0;
 	
 	virtual int get_height() const=0;

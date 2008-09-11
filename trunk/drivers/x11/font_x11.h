@@ -48,6 +48,7 @@ public:
 	
 	virtual String get_name() const;
 	virtual float get_size() const;
+	virtual unsigned int get_flags() const;	
 	
 	virtual bool has_character(unsigned int p_code) const;
 	

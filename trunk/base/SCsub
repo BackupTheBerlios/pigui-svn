@@ -16,6 +16,9 @@ base_files=[\
 	"style_box.cpp",\
 	"widget.cpp",\
 	"window.cpp",\
+	"variant.cpp",\
+	"object.cpp",\
+	
 ]
 
 env.Library("base",base_files)

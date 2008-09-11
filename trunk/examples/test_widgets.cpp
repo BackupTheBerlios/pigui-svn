@@ -68,11 +68,10 @@ public:
 	
 	
 	void print_sayhi() { printf("say hi\n"); }
-	void print_sayhi2(GUI::String p_val) { printf("say hi %s\n",p_val.ascii().get_data()); }
+	void print_sayhi2(const GUI::String& p_val) { printf("say hi %s\n",p_val.ascii().get_data()); }
+	void print_sayhi3(Object *p_val) { printf("my type is %s\n",p_val->get_type().ascii().get_data()); }
 
 };
-
-
 
 int main(int argc, char *argv[]) {
 
@@ -89,7 +88,7 @@ int main(int argc, char *argv[]) {
 	
 	GUI::Object obj;
 	//obj.connect("sayhi",&pwtest,&PWTEST::print_sayhi);
-	obj.connect("sayhi2",&pwtest,&PWTEST::print_sayhi2);
+	obj.connect("sayhi3",&pwtest,&PWTEST::print_sayhi3);
 		
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_POPUP,true);
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_SHADED,true);

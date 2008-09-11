@@ -495,9 +495,10 @@ Variant::Variant(const Font& p_font) {
 Variant::Variant(Object *p_object) {
 
 	clear();
-	type=OBJECT;
-	_data._object=p_object;
-	_data._object=p_object;
+	if (p_object) {
+		type=OBJECT;
+		_data._object=p_object;
+	}
 
 }
 

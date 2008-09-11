@@ -69,6 +69,8 @@ private:
 	
 public:
 
+	inline Type get_type() const { return type; }
+
 	operator bool() const;
 	operator signed int() const;
 	operator unsigned int() const; // this is the real one
@@ -84,8 +86,8 @@ public:
 	operator Color() const;
 	operator Pixmap() const;
 	operator Font() const;
-	operator Object*() const;	
-
+	operator Object*() const;
+	
 	Variant(bool p_bool);
 	Variant(int p_int);
 	Variant(double p_double);
@@ -96,6 +98,7 @@ public:
 	Variant(const Pixmap& p_pixmap);
 	Variant(const Font& p_font);
 	Variant(Object *p_object);
+	
 
 	void operator=(const Variant& p_variant);
 	Variant(const Variant& p_variant);

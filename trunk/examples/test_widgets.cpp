@@ -1,6 +1,7 @@
 
 #include "drivers/x11/platform_x11.h"
 #include "base/constants.h"
+#include "base/object.h"
 #include <stdio.h>
 
 
@@ -10,7 +11,7 @@ void print_error_test(const char  *p_file,int p_line,const char*p_err) {
 }
 
 
-class PWTEST : public GUI::SignalTarget {
+class PWTEST : public GUI::SignalTarget, public GUI::Object {
 
 	GUI::PlatformWindow *w;
 	GUI::Pixmap pixmap;
@@ -64,8 +65,13 @@ public:
 			printf("Success loading font\n");
 		}
 	}
+	
+	
+	void print_sayhi() { printf("say hi\n"); }
+	void print_sayhi2(GUI::String p_val) { printf("say hi %s\n",p_val.ascii().get_data()); }
 
 };
+
 
 
 int main(int argc, char *argv[]) {
@@ -81,7 +87,10 @@ int main(int argc, char *argv[]) {
 
 	PWTEST pwtest2("Dialog",pwtest.get_w());
 	
-	
+	GUI::Object obj;
+	//obj.connect("sayhi",&pwtest,&PWTEST::print_sayhi);
+	obj.connect("sayhi2",&pwtest,&PWTEST::print_sayhi2);
+		
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_POPUP,true);
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_SHADED,true);
 	pwtest2.get_w()->set_state(GUI::WINDOW_STATE_BORDERLESS,true);

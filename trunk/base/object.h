@@ -15,6 +15,7 @@
 #include "base/variant.h"
 #include "base/list.h"
 #include "base/constants.h"
+#include "base/slot.h"
 
 namespace GUI {
 
@@ -111,6 +112,20 @@ public:
 	Variant get_property(const String& p_name) const;
 	
 	void get_property_list(List<PropertyInfo> *p_list) const;	
+	
+	void connect( const String& p_signal, Slot *p_slot );
+	
+	template<class T>
+	void connect( const String& p_signal, T* p_instance, void (T::*p_method)() ) {
+	
+		connect( p_signal, GUI_NEW(  (Slot0<T>)( p_instance, p_method) ) );
+	}
+	
+	template<class T, class P1>
+	void connect( const String& p_signal, T* p_instance, void (T::*p_method)(P1) ) {
+	
+		connect( p_signal, GUI_NEW(  (Slot1<T,P1>)( p_instance, p_method) ) );
+	}
 	
 	Object();	
 	~Object();

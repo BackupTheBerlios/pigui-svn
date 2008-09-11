@@ -146,6 +146,8 @@ public:
 				copy->custom = GUI_NEW( _CustomFont );
 				copy->custom->copy_from( *custom );
 			}
+			
+			return copy;
 		}
 	}
 

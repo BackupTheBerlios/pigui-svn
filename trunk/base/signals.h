@@ -16,7 +16,7 @@
 //#include "typedefs.h"
 #include "base/constants.h"
 #include "base/memory.h"
-
+#include "base/slot.h"
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */

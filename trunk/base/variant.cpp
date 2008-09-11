@@ -181,6 +181,25 @@ Variant::operator double() const {
 
 	return 0;
 }
+/* this doesn't work..
+
+Variant::operator const String&() const {
+
+	// this one is kinda risky, but helps in many cases (like connecting signals to const String&)
+	static String _err="";
+	
+	if (type==STRING) {
+	
+		return string;
+	} else {
+	
+		GUI_PRINT_ERROR("Forced Variant to 'const String&', when it wasn't of type STRING.");
+		_err;
+	}	
+	
+}
+
+*/
 
 Variant::operator String() const {
 

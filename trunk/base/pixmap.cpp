@@ -31,7 +31,9 @@ public:
 			PixmapPrivate *copy= GUI_NEW( PixmapPrivate );
 			
 			copy->refcount=1;
-			copy->pixmap=pixmap->copy();						
+			copy->pixmap=pixmap->copy();	
+								
+			return copy;
 		}
 	}
 

@@ -79,6 +79,13 @@ void Object::get_property_list(List<PropertyInfo> *p_list) const {
 	_get_property_listv(p_list);
 }
 
+void Object::connect( const String& p_signal, Slot *p_slot ) {
+
+	p_slot->call(String("moush"));
+
+}
+
+
 Object::Object() {
 
 	op = GUI_NEW( ObjectPrivate );

@@ -58,8 +58,9 @@ void RangeOwner::set_range(RangeBase *p_range,bool p_own_it) {
 
 	}
 
-	if (range_owned) {
+	if (range && range_owned) {
 		GUI_DELETE( range );
+		range=NULL;
 	}
 
 	range=p_range;
@@ -76,7 +77,10 @@ void RangeOwner::set_range(RangeBase *p_range,bool p_own_it) {
 			update();
 			range_ptr_changed();
 		}
-	};
+	} else {
+	
+		range_owned=false;
+	}
 }
 
 void RangeOwner::set_auto_hide(bool p_auto_hide) {

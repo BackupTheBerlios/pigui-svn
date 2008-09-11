@@ -59,26 +59,31 @@ RangeBase *SpinBox::get_range() {
 }
 void SpinBox::set_range(RangeBase *p_range,bool p_own_it) {
 
-
 	if (range) {
 
 		range->range_changed_signal.disconnect( this, &SpinBox::_range_changed );
 		range->value_changed_signal.disconnect( this, &SpinBox::_value_changed );
 
 	}
+
+	if (p_range) {
+
+		updown->set_range( p_range, false );
+		if ( range_owned ) {
+			GUI_DELETE( range );
+			range = 0;
+		}
+
+		range_owned=p_own_it;
 	
-	if (range_owned) {
-		GUI_DELETE( range );
-	}
+		p_range->range_changed_signal.connect( this, &SpinBox::_range_changed );
+		p_range->value_changed_signal.connect( this, &SpinBox::_value_changed );
+	} else {
+		
+		range_owned = false;
+	};
 
 	range=p_range;
-
-	range_owned=p_own_it;
-
-	updown->set_range( p_range );
-			
-	range->range_changed_signal.connect( this, &SpinBox::_range_changed );
-	range->value_changed_signal.connect( this, &SpinBox::_value_changed );
 	
 	if (get_parent()) {
 		update();

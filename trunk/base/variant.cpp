@@ -446,7 +446,7 @@ Variant::Variant(const String& p_string) {
 
 	clear();
 	type=STRING;
-	string=string;
+	string=p_string;
 
 }
 Variant::Variant(const Point& p_point) {

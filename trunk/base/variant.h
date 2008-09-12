@@ -89,7 +89,13 @@ public:
 	operator Object*() const;
 	
 	Variant(bool p_bool);
-	Variant(int p_int);
+	Variant(signed int p_int); // real one
+	Variant(unsigned int p_int);
+	Variant(signed short p_short); // real one
+	Variant(unsigned short p_short);
+	Variant(signed char p_char); // real one
+	Variant(unsigned char p_char);
+	Variant(float p_float);
 	Variant(double p_double);
 	Variant(const String& p_string);
 	Variant(const Point& p_point);

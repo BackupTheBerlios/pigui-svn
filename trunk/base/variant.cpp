@@ -428,6 +428,52 @@ Variant::Variant(bool p_bool) {
 	type=BOOL;
 	_data._bool=p_bool;
 }
+
+Variant::Variant(unsigned int p_int) {
+
+
+	clear();
+	type=INT;
+	_data._int=p_int;
+
+}
+Variant::Variant(signed short p_short) {
+
+
+	clear();
+	type=INT;
+	_data._int=p_short;
+
+}
+Variant::Variant(unsigned short p_short) {
+
+	clear();
+	type=INT;
+	_data._int=p_short;
+
+}
+Variant::Variant(signed char p_char) {
+
+	clear();
+	type=INT;
+	_data._int=p_char;
+
+}
+Variant::Variant(unsigned char p_char) {
+
+	clear();
+	type=INT;
+	_data._int=p_char;
+
+}
+Variant::Variant(float p_float) {
+
+	clear();
+	type=DOUBLE;
+	_data._double=p_float;
+
+}
+
 Variant::Variant(int p_int) {
 
 	clear();

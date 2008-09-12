@@ -11,7 +11,7 @@ void print_error_test(const char  *p_file,int p_line,const char*p_err) {
 }
 
 
-class PWTEST : public GUI::SignalTarget, public GUI::Object {
+class PWTEST :  public GUI::Object {
 
 	GUI::PlatformWindow *w;
 	GUI::Pixmap pixmap;
@@ -19,9 +19,10 @@ class PWTEST : public GUI::SignalTarget, public GUI::Object {
 	GUI::Font font;
 	GUI::String name;
 	
-	void update( const GUI::Rect& p_rect ) {
+	void update( GUI::Rect p_rect ) {
 
 		printf("exposed %i,%i - %i,%i\n",p_rect.pos.x,p_rect.pos.y,p_rect.size.x,p_rect.size.y);
+		
 		w->draw_rect( GUI::Point(10,10),GUI::Size(20,20),GUI::Color(255,0,255) );
 		w->draw_rect( GUI::Point(20,20),GUI::Size(40,5),GUI::Color(100,200,255) );
 		w->draw_line( GUI::Point(5,5),GUI::Size(15,73),GUI::Color(255,200,80), 5 );
@@ -59,7 +60,7 @@ public:
 		pixmap.copy_rect_to(GUI::Rect(0,0,16,16),pixmap_copy,GUI::Point(16,16));
 		
 		w=GUI::Platform::get_singleton()->create_window(parent); 
-		w->update_event_signal.connect( this, &PWTEST::update );
+		w->connect( "update", this, &PWTEST::update );
 		if (!font.system_load("FreeSans",12,GUI::FONT_STYLE_BOLD)) {
 			
 			printf("Success loading font\n");

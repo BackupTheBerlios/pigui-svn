@@ -17,7 +17,8 @@
 #include "base/style_box.h"
 #include "base/constants.h"
 #include "base/geometry.h"
-#include "base/signals.h"
+#include "base/object.h"
+
 
 //#include "base/theme.h"
 
@@ -29,7 +30,7 @@ namespace GUI {
 
 class Platform;
 
-class PlatformBase {
+class PlatformBase : public Object {
 	const Platform *owner;
 protected:
 	PlatformBase(Platform *p_owner) { owner = p_owner; }
@@ -87,31 +88,36 @@ public:
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect())=0;
 
-	// point, button, pressed, modifier/button mask
-	Signal< Method4<const Point&, int, bool, unsigned int > > mouse_button_event_signal;
-	// point, modifier/button mask
-	Signal< Method2<const Point&, unsigned int > > mouse_doubleclick_event_signal;
-	// new position, relative motion, modifier/button mask
-	Signal< Method3<const Point&, const Point&, unsigned int > > mouse_motion_event_signal;
-	// mouse left the window
-	Signal<> mouse_left_window_signal;
-	// mouse entered the window
-	Signal<> mouse_entered_window_signal;
-	// unicode, scan code, pressed, keyrepeat, modifier/button mask
-	Signal< Method5< unsigned int, unsigned int, bool, bool, int >  > key_event_signal;
-	// update notify (rect area to update)
-	Signal< Method1<const Rect&> > update_event_signal;
-	// rect changed notify
-	Signal< Method1<const Rect&> > rect_changed_event_signal;
-
-	Signal<> gained_focus_signal;
-	Signal<> lost_focus_signal;
-	
-	Signal< Method1< const Point& > > position_changed_signal;
-	Signal< Method1< const Size& > > size_changed_signal;
-
-	Signal<> close_requested_signal;
-
+	/* signals:
+		-mouse_button
+			pos:Point
+			button:int
+			pressed:bool
+			mask:int
+		
+		-mouse_doubleclick
+			pos:Point
+			mask:int
+		-mouse_motion
+			pos:Point
+			pos_rel:Point
+			mask:int
+		-mouse_enter_window
+		-mouse_exit_window
+		-key
+			unicode:int
+			scancode:int
+			pressed:int
+			echo:bool
+			mask:int
+		-update
+			area:Rect
+		-rect_change
+			rect:Rect
+		-focus_enter
+		-focus_exit
+		-close_request			
+	*/
 	virtual ~PlatformWindow();
 };
 
@@ -250,11 +256,16 @@ protected:
 	PlatformTimer(Platform *p_owner) : PlatformBase(p_owner) {};
 public:
 
-	virtual void start(unsigned int p_interval_ms,const Method& p_callback,bool p_single_shot=true)=0;
+	virtual void start(unsigned int p_interval_ms,bool p_single_shot=true)=0;
 	virtual void stop()=0;
 
 	virtual bool is_active() const=0;
 	virtual unsigned int get_interval() const=0;
+	
+	/* 
+		signals:
+			-timeout
+	*/
 
 	virtual ~PlatformTimer();
 };

@@ -51,8 +51,9 @@ struct Point { //used for point and size
 		
 	void swap_xy() { int aux=x; x=y; y=aux; }
 	
-	Point(const Point &p_from) : width(x) , height(y) { x=p_from.x; y=p_from.y; }
-	Point(int p_x=0,int p_y=0) : width(x) , height(y) { x=p_x; y=p_y; }
+	Point(const Point &p_from) { x=p_from.x; y=p_from.y; }
+	Point(int p_x,int p_y) { x=p_x; y=p_y; }
+	inline Point() : x(0), y(0) {}
 };
 
 typedef Point Size;
@@ -136,7 +137,18 @@ struct Rect {
 		return true;
 	}
 	
-	Rect( const Point& p_pos=Point(), const Size& p_size=Size() ) { pos=p_pos; size=p_size; }
+	bool operator==(const Rect& p_rect) const {
+	
+		return pos==p_rect.pos && size==p_rect.size; 
+	}
+	
+	bool operator!=(const Rect& p_rect) const {
+	
+		return pos!=p_rect.pos || size!=p_rect.size; 
+	}
+
+	inline Rect() {}
+	Rect( const Point& p_pos, const Size& p_size ) { pos=p_pos; size=p_size; }
 	Rect( int p_x,int p_y, int p_width,int p_height ) { pos.x=p_x; pos.y=p_y; size.width=p_width; size.height=p_height;  }
 };
 

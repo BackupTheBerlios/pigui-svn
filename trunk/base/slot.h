@@ -158,7 +158,14 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1) {
 			
-		P1 arg1=p1;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+		   
+		P1 arg1;
+		arg1=p1;
 			
 		if (method)
 			(instance->*method)(arg1);
@@ -181,8 +188,16 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1,const Variant& p2) {
 			
-		P1 arg1=p1;
-		P2 arg2=p2;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+			
+		P1 arg1;
+		arg1=p1; // avoid references from working
+		P2 arg2;
+		arg2=p2; // avoid references from working
 			
 		if (method)
 			(instance->*method)(arg1,arg2);
@@ -205,9 +220,18 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1,const Variant& p2,const Variant& p3) {
 			
-		P1 arg1=p1;
-		P2 arg2=p2;
-		P3 arg3=p3;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+			
+		P1 arg1;
+		arg1=p1;
+		P2 arg2;
+		arg2=p2;
+		P3 arg3;
+		arg3=p3;
 			
 		if (method)
 			(instance->*method)(arg1,arg2,arg3);
@@ -230,10 +254,20 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1,const Variant& p2,const Variant& p3,const Variant& p4) {
 			
-		P1 arg1=p1;
-		P2 arg2=p2;
-		P3 arg3=p3;
-		P4 arg4=p4;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+			
+		P1 arg1;
+		arg1=p1;
+		P2 arg2;
+		arg2=p2;
+		P3 arg3;
+		arg3=p3;
+		P4 arg4;
+		arg4=p4;
 			
 		if (method)
 			(instance->*method)(arg1,arg2,arg3,arg4);
@@ -257,11 +291,22 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1,const Variant& p2,const Variant& p3,const Variant& p4,const Variant& p5) {
 			
-		P1 arg1=p1;
-		P2 arg2=p2;
-		P3 arg3=p3;
-		P4 arg4=p4;
-		P5 arg5=p5;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+			
+		P1 arg1;
+		arg1=p1;
+		P2 arg2;
+		arg2=p2;
+		P3 arg3;
+		arg3=p3;
+		P4 arg4;
+		arg4=p4;
+		P5 arg5;
+		arg5=p5;
 			
 		if (method)
 			(instance->*method)(arg1,arg2,arg3,arg4,arg5);
@@ -285,12 +330,24 @@ public:
 	virtual Object *get_owner() const { return instance; }
 	virtual void call(const Variant& p1,const Variant& p2,const Variant& p3,const Variant& p4,const Variant& p5,const Variant& p6) {
 			
-		P1 arg1=p1;
-		P2 arg2=p2;
-		P3 arg3=p3;
-		P4 arg4=p4;
-		P5 arg5=p5;
-		P6 arg6=p6;
+		/* If you see a compile-time error here, it means
+		   you are connecting to a member function with 
+		   other types of parameters than the ones explicitly 
+		   defined in variant.h.
+		*/
+			
+		P1 arg1;
+		arg1=p1;
+		P2 arg2;
+		arg2=p2;
+		P3 arg3;
+		arg3=p3;
+		P4 arg4;
+		arg4=p4;
+		P5 arg5;
+		arg5=p5;
+		P6 arg6;
+		arg6=p6;
 			
 		if (method)
 			(instance->*method)(arg1,arg2,arg3,arg4,arg5,arg6);

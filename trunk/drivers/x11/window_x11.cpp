@@ -549,7 +549,7 @@ void WindowX11::handle_key_event(XKeyEvent *p_event) {
 	
 	/* Phase 7, send event to Window */
 	
-	key_event_signal.call( unicode, keycode, keypress, echo, mask );
+	call("key",unicode,keycode,keypress,echo,mask);
 	
 }
 
@@ -735,7 +735,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 			
 			unsigned int mask=fill_modifier_button_mask(p_event->xbutton.state);
 ;
-			mouse_button_event_signal.call(pos,button,pressed,mask);
+			call("mouse_button",pos,button,pressed,mask);
 			
 			printf("mouse %s, time is %i\n",pressed?"press":"release",p_event->xbutton.time);
 		} break;
@@ -762,7 +762,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 			
 			wp->last_mouse_pos=pos;
 			
-			mouse_motion_event_signal.call(pos,rel,mask);
+			call("mouse_motion",pos,rel,mask);
 
 		} break;
 		case EnterNotify:
@@ -780,9 +780,9 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 			if (p_event->type==EnterNotify) {
 				// invalidate previous motion
 				wp->last_mouse_pos_valid=false;
-				mouse_entered_window_signal.call();
+				call("mouse_enter_window");
 			} else {
-				mouse_left_window_signal.call();
+				call("mouse_exit_window");
 			}
 
 		} break;
@@ -792,12 +792,12 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 				break;
 			
 			//check_hide_popup_stack();
-			gained_focus_signal.call();	
+			call("focus_enter");	
 			
 		} break;
 		case FocusOut: {
 
-			lost_focus_signal.call();
+			call("focus_exit");	
 		} break;
 		case KeymapNotify: {
 
@@ -810,7 +810,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 			// should stack them, but fro now..
 			Rect expose_rect( Point( p_event->xexpose.x, p_event->xexpose.y), Size(p_event->xexpose.width, p_event->xexpose.height ));
 
-			update_event_signal.call( expose_rect );
+			call("update",expose_rect);
 
 		} break;
 		case GraphicsExpose: {
@@ -887,16 +887,10 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 				p_event->xconfigure.width,
 				p_event->xconfigure.height );
 			
-			bool pos_changed=( new_rect.pos != wp->rect.pos );
-			bool size_changed=( new_rect.size != wp->rect.size );
-			
+			bool changed = (new_rect!=wp->rect);
 			wp->rect=new_rect;
-			
-			if ( pos_changed )
-				position_changed_signal.call( wp->rect.pos );
-			
-			if ( size_changed )
-				size_changed_signal.call( wp->rect.size );
+			if (changed)
+				call("rect_change",new_rect);
 			
 		} break;
 		case ConfigureRequest: {
@@ -960,7 +954,7 @@ void WindowX11::process_x11_event(XEvent* p_event) {
 
 			if ((int)p_event->xclient.data.l[0] == (int)wp->wm_delete) {
 			
-				close_requested_signal.call();
+				call("close_request");
 				if (wp->window_states[WINDOW_STATE_CAN_CLOSE]) {
 					set_state(WINDOW_STATE_VISIBLE,false);
 					// should check if all roots are hidden(closed?) and exit

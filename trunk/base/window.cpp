@@ -20,8 +20,18 @@ class WindowPrivate {
 public:
 
 	PlatformWindow *platform_window;
+	Container *root_container;
 
 };
+
+
+void Window::_update_notify(Rect p_rect) {
+
+	if (!wp->root_container)
+		return;
+		
+		
+}
 
 Frame *Window::get_focus_frame() {
 
@@ -76,6 +86,7 @@ Window::Window() {
 	wp = GUI_NEW( WindowPrivate );
 	
 	wp->platform_window = Platform::get_singleton()->create_window();
+	wp->root_container=0;
 }
 
 

@@ -19,9 +19,9 @@ namespace GUI {
 */
 class StyleBox{
 public:
-    StyleBox();
 
-    ~StyleBox();
+	StyleBox();	
+	~StyleBox();
 
 };
 

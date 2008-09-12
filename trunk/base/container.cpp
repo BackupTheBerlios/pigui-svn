@@ -133,6 +133,12 @@ void Container::update_size() {
 		get_window()->add_dirty_container( this );
 }
 
+
+void Container::draw_tree(const Rect& p_exposed) {
+
+	
+}
+
 void Container::resize() {
 	
 	if (!get_window()) {

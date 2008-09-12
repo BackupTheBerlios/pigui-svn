@@ -31,7 +31,10 @@ class Window : public Object {
 
 	GUI_TYPE( Window, Object );
 	
-	WindowPrivate *wp;		
+	WindowPrivate *wp;
+		
+	void _update_notify(Rect p_rect);
+		
 public:
 
 	Frame *get_focus_frame();

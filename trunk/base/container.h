@@ -73,8 +73,10 @@ protected:
 	 */
 	virtual ContainerChild *create_container_child()=0; 
 
+private:
 friend class Window;
 
+	void draw_tree(const Rect& p_exposed);
 	void resize();
 public:
 

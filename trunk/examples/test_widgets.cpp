@@ -22,7 +22,7 @@ class PWTEST :  public GUI::Object {
 	void update( GUI::Rect p_rect ) {
 
 		printf("exposed %i,%i - %i,%i\n",p_rect.pos.x,p_rect.pos.y,p_rect.size.x,p_rect.size.y);
-		
+	
 		w->draw_rect( GUI::Point(10,10),GUI::Size(20,20),GUI::Color(255,0,255) );
 		w->draw_rect( GUI::Point(20,20),GUI::Size(40,5),GUI::Color(100,200,255) );
 		w->draw_line( GUI::Point(5,5),GUI::Size(15,73),GUI::Color(255,200,80), 5 );
@@ -61,7 +61,7 @@ public:
 		
 		w=GUI::Platform::get_singleton()->create_window(parent); 
 		w->connect( "update", this, &PWTEST::update );
-		if (!font.system_load("FreeSans",12,GUI::FONT_STYLE_BOLD)) {
+		if (font.load("FreeSans",12,GUI::FONT_STYLE_BOLD)==GUI::OK) {
 			
 			printf("Success loading font\n");
 		}

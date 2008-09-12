@@ -251,13 +251,10 @@ Variant::operator String() const {
 			if (!_data._font->is_valid()) {
 			
 				return "Font (NIL)";
-			} else if (_data._font->is_custom()) {
-			
-				return "Font (CUSTOM)";
 			} else {
 			
-				String fontstr = "Font ("+_data._font->system_get_name()+","+_data._font->system_get_size();
-				unsigned int flags = _data._font->system_get_flags();
+				String fontstr = "Font ("+_data._font->get_name()+","+_data._font->get_size();
+				unsigned int flags = _data._font->get_flags();
 				if (flags&FONT_STYLE_BOLD)
 					fontstr+=",Bold";
 				if (flags&FONT_STYLE_ITALIC)

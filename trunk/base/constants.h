@@ -137,6 +137,18 @@ enum PropertyHint {
 	PROPERTY_HINT_DIR, ///< a directort path must be passed
 };
 
+enum StyleBoxPixmaps {
+	STYLEBOX_PIXMAPS_TOP_LEFT,
+	STYLEBOX_PIXMAPS_TOP_CENTER,
+	STYLEBOX_PIXMAPS_TOP_RIGHT,
+	STYLEBOX_PIXMAPS_CENTER_LEFT,
+	STYLEBOX_PIXMAPS_CENTER,
+	STYLEBOX_PIXMAPS_CENTER_RIGHT,
+	STYLEBOX_PIXMAPS_BOTTOM_LEFT,
+	STYLEBOX_PIXMAPS_BOTTOM_CENTER,
+	STYLEBOX_PIXMAPS_BOTTOM_RIGHT,
+	STYLEBOX_PIXMAPS_MAX,
+};
 //needing to include math.h/cmath for an integer/float abs function is asking too much
 
 template<class T>

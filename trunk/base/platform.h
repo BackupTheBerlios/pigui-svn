@@ -29,6 +29,7 @@
 namespace GUI {
 
 class Platform;
+class Theme;
 
 class PlatformBase : public Object {
 	const Platform *owner;
@@ -44,11 +45,8 @@ protected:
 	PlatformTheme(Platform *p_owner) : PlatformBase(p_owner) {};
 public:
 
-	virtual StyleBox get_stylebox(unsigned int p_style_idx) const=0;
-	virtual int get_constant(unsigned int p_constant_idx) const=0;
-	virtual Font get_font(unsigned int p_font_idx) const=0;
-	virtual Pixmap get_pixmap(unsigned int p_pixmap_idx) const=0;
-	virtual Color get_color(unsigned int p_color_idx) const=0;
+	virtual Theme * get_theme()=0;
+	virtual void configure_default()=0;
 
 	virtual ~PlatformTheme();
 };
@@ -87,6 +85,7 @@ public:
 	virtual void draw_stylebox( const StyleBox& p_style,const Point& p_from,const Size& p_size)=0;
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect())=0;
+	virtual void add_dirty_region(const Rect& p_rect)=0;
 
 	/* signals:
 		-mouse_button

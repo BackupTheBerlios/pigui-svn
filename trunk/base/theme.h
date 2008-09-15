@@ -13,22 +13,49 @@
 #define GUI_THEME_H
 
 
-#include "base/style_box.h"
-#include "base/font.h"
-#include "base/pixmap.h"
+#include "base/variant.h"
 
 namespace GUI {
 /**
 	@author Juan Linietsky <reduzio@gmail.com>
 */
-class Theme{
+
+class ThemePrivate;
+
+enum ThemeDefaultID {
+
+	SB_FIRST=0,
+	SB_CONTAINER=SB_FIRST+1,
+	SB_ROOT_CONTAINER=SB_FIRST+2,
+	SB_POPUP_CONTAINER=SB_FIRST+3,	
+	PIXMAP=0x1000,
+
+
+	FONT_FIRST=0x2000,
+
+	FONT_LABEL=FONT_FIRST+1,
+
+	C_FIRST=0x3000,
+
+	COLOR_FIRST=0x3000,
+
+	COLOR_LABEL=COLOR_FIRST+1,
+
+	USER_FIRST=0x10000
+};
+
+
+
+class Theme {
+	
+	ThemePrivate *tp;
+	
 public:
 	
-	const StyleBox& get_stylebox(int p_index) const;
-	const Pixmap& get_pixmap(int p_index) const;
-	const Font& get_font(int p_index) const;
-	int get_constant(int p_index) const;
-	const Color& get_color(int p_index) const;
+	void set_var( int p_id, const Variant& p_id);
+	void set_var_name( int p_id, String p_name );
+	const Variant& get_var( int p_id ) const;
+	String get_var_name( int p_id ) const;
 
 	Theme();	
 	~Theme();

@@ -12,11 +12,7 @@
 #ifndef GUI_FRAME_H
 #define GUI_FRAME_H
 
-#include "base/geometry.h"
-#include "base/pixmap.h"
-#include "base/font.h"
-#include "base/style_box.h"
-
+#include "base/object.h"
 
 namespace GUI {
 
@@ -31,7 +27,7 @@ class Widget;
 class Painter;
 
 
-class Frame {
+class Frame : public Object {
 
 	FramePrivate *_fp;
 
@@ -40,34 +36,23 @@ friend class Window;
 
 	virtual void set_window(Window *p_window); 
 	void set_parent(Container *p_parent); 
+	void set_rect( const Rect& p_rect );
 protected:
 
 	virtual Size compute_minimum_size() const;
 
 	void set_update_bg(bool p_enabled); 
 
-	const StyleBox& stylebox(int p_index) const;
-	const Font& font(int p_index) const;
-	const Pixmap& pixmap(int p_index) const;
-	int constant(int p_index) const;
-	const Color& color(int p_index) const;
+	const Variant& theme(int p_id) const;
 
 public:
 
 	/* THEME CUSTOMIZATION */
 
-	void replace_stylebox(int p_style, int p_with_style); 
-	void replace_font(int p_font, int p_with_font); 
-	void replace_pixmap(int p_pixmap, int p_with_pixmap); 
-	void replace_constant(int p_constant, int p_with_constant);
-	void replace_color(int p_color, int p_with_color); 
+	void theme_replace(int p_id, int p_with_id);
+	void theme_override(int p_id, const Variant& p_variant);
+	void theme_restore(int p_id);
 	
-	void set_custom_stylebox(int p_style, const StyleBox& p_stylebox); 
-	void set_custom_font(int p_font, const Font& p_font); 
-	void set_custom_pixmap(int p_pixmap, const Pixmap& p_pixmap); 
-	void set_custom_constant(int p_constant, int p_with_constant);
-	void set_custom_color(int p_color, const Color& p_with_color);
-
 	/* HINTING */
 
 	virtual void set_cursor(Pixmap p_pixmap, const Point& p_hotspot);

@@ -363,6 +363,18 @@ void WindowX11::draw_set_clipping(bool p_enabled,const Rect& p_rect) {
 
 }
 
+void WindowX11::add_dirty_region(const Rect& p_rect) {
+/* @TODO
+	[14:27] <daniels> the problem is that if you're composited and hidden behind that window, then X tells you that your whole window is invisible
+	[14:27] <daniels> but what if the window in front is transparent?
+	
+	I need to either figure out a way to fix this, or wait until XComposite works properly
+	-juan
+*/
+	XClearArea(wp->x11_display, wp->x11_window, p_rect.pos.x, p_rect.pos.y, p_rect.size.width, p_rect.size.height, True);
+}
+
+
 unsigned int WindowX11::fill_modifier_button_mask(unsigned int p_x11_state) {
 
 	unsigned int mask=0;

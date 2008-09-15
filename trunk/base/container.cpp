@@ -139,6 +139,11 @@ void Container::draw_tree(const Rect& p_exposed) {
 	
 }
 
+void Container::window_request_size(const Size& p_size) {
+
+
+}
+
 void Container::resize() {
 	
 	if (!get_window()) {
@@ -149,7 +154,13 @@ void Container::resize() {
 
 	//@TODO maybe we could skip this entire check and try to find is someone has heigh for width...
 
-	Size size = get_size(); //@todo apply margin
+	Size size = get_size(); 
+	
+	// substract the decoration size from the actual size
+	StyleBox style = theme( get_parent() ? SB_CONTAINER : ( get_window()->get_state( WINDOW_STATE_POPUP ) ? SB_POPUP_CONTAINER : SB_ROOT_CONTAINER ) );	
+	size-=style.get_minimum_size();
+	
+	
 	Size minsize = get_minimum_size();
 
 	if (minsize.width > _cp->minsize_cache.width || _cp->minsize_cache.height > get_size().height || size.width < _cp->minsize_cache.width || size.height < _cp->minsize_cache.height) {

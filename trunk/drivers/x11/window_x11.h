@@ -80,9 +80,12 @@ public:
 	virtual void draw_pixmap(const Pixmap& p_pixmap, const Point& p_pos,const Rect& p_source);	
 	virtual void draw_string(const Font& p_font,const Point& p_pos,const Color& p_color,const String& p_string,Direction p_dir=RIGHT);
 
+	
 	virtual void draw_stylebox( const StyleBox& p_style,const Point& p_from,const Size& p_size);
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect());
+
+	virtual void add_dirty_region(const Rect& p_rect);
 
 	void process_x11_event(XEvent* p_event);
 	WindowX11 *get_next(); 

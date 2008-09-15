@@ -12,6 +12,7 @@
 #include "window.h"
 
 #include "base/platform.h"
+#include "base/container.h"
 
 namespace GUI {
 
@@ -23,6 +24,20 @@ public:
 	Container *root_container;
 
 };
+
+
+bool Window::get_state(WindowState p_state) const {
+
+	if (!wp->platform_window)
+		return false;
+		
+	return wp->platform_window->get_state(p_state);
+
+}
+void Window::set_state( WindowState p_state, bool p_enabled) {
+
+	wp->platform_window->set_state( p_state, p_enabled );
+}
 
 
 void Window::_update_notify(Rect p_rect) {
@@ -66,7 +81,14 @@ Container *Window::get_root_container() {
 
 void Window::set_root_container(Container *p_root) {
 
-
+	if (wp->root_container) {	
+		GUI_PRINT_ERROR("Window already has root container.");
+		return;
+	}
+	
+	wp->root_container=p_root;
+	// This will force the root container to expand the window to wathever size it needs, redraw, etc.
+	wp->root_container->window_request_size(Size(1,1)); 
 }
 
 
@@ -91,6 +113,9 @@ Window::Window() {
 
 
 Window::~Window() {
+
+	if (wp->root_container)
+		GUI_DELETE( wp->root_container );
 
 	if (wp->platform_window)
 		delete wp->platform_window;

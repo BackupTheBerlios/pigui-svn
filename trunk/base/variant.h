@@ -18,7 +18,7 @@
 #include "base/font.h"
 #include "base/geometry.h"
 #include "base/list.h"
-
+#include "base/style_box.h"
 
 namespace GUI {
 /**
@@ -42,26 +42,24 @@ public:
 		COLOR,
 		PIXMAP,
 		FONT,
+		STYLEBOX,
 		OBJECT,
 	};
 	
 private:
 
-	// A variant is, at most. 28 bytes.
+	// A variant is, at most. 20 bytes.
 	
 	Type type; // type part 
-	
-	String string; // string part, 4 bytes
-	
+		
 	union {
 	
 		bool _bool;
 		double _double;
 		int _int;
 		int _ints[4]; // for point/rect
+		unsigned char mem[16]; // this is enough to contain a String, Font, Pixmap or StyleBox
 		Object *_object;
-		Pixmap *_pixmap;
-		Font *_font;
 	} _data;
 	
 	void clear();
@@ -86,6 +84,7 @@ public:
 	operator Color() const;
 	operator Pixmap() const;
 	operator Font() const;
+	operator StyleBox() const;
 	operator Object*() const;
 	
 	Variant(bool p_bool);
@@ -98,11 +97,14 @@ public:
 	Variant(float p_float);
 	Variant(double p_double);
 	Variant(const String& p_string);
+	Variant(const char * p_cstring);
+	Variant(const String::CharType * p_wstring);
 	Variant(const Point& p_point);
 	Variant(const Rect& p_rect);
 	Variant(const Color& p_color);
 	Variant(const Pixmap& p_pixmap);
 	Variant(const Font& p_font);
+	Variant(const StyleBox& p_stylebox);
 	Variant(Object *p_object);
 	
 

@@ -82,9 +82,7 @@ int main(int argc, char *argv[]) {
 	PWTEST pwtest("Base");
 	pwtest.get_w()->set_state(GUI::WINDOW_STATE_VISIBLE,true);
 	pwtest.get_w()->set_state(GUI::WINDOW_STATE_SKIP_TASKBAR,true);
-	
-	
-
+		
 	PWTEST pwtest2("Dialog",pwtest.get_w());
 	
 	GUI::Object obj;

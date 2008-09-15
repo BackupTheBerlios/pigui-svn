@@ -16,34 +16,30 @@
 
 namespace GUI {
 
+// todo, make faster
+struct _ThemeOverride {
 
-template<class T>
-struct _StyleOverride {
+	int var;
+	int with; 
+	Variant with_t;
 
-	int style;
-	int with; // if -1, use with_t
-	T with_t;
-
-	_StyleOverride *next;
+	_ThemeOverride *next;
 	
-	int get(int p_style,T** t_t) { // return -2 if nothing found, -1 if replacement
+	_ThemeOverride* get(int p_var) { // return -2 if nothing found, -1 if replacement
 	
-		if (p_style==style) {
+		if (p_var==var) {
 			
-			if (with>=0)
-				return with;
-			*t_t=&with_t;
-			return -1;
+			return this;
 		}
 
 		else if (next)
-			return next->get( p_style, t_t);
+			return next->get( p_var);
 		else
-			return p_style;
+			return NULL;
 	}
 	
-	_StyleOverride(int p_style=-1,int p_with=-1,T p_t=T(),_StyleOverride *p_next=0) { style=p_style; with=p_with; next=p_next; with_t=p_t; }
-	~_StyleOverride() { if (next) GUI_DELETE( next ); }
+	_ThemeOverride(int p_var=-1,int p_with=-1,const Variant& p_t=Variant(),_ThemeOverride *p_next=0) { var=p_var; with=p_with; next=p_next; with_t=p_t; }
+	~_ThemeOverride() { if (next) GUI_DELETE( next ); }
 };
 
 struct FramePrivate {
@@ -65,11 +61,7 @@ struct FramePrivate {
 	Point size_cache;
 	Point pos_cache;
 
-	_StyleOverride<StyleBox> *stylebox_overrides;
-	_StyleOverride<Font> *font_overrides;
-	_StyleOverride<Pixmap> *pixmap_overrides;
-	_StyleOverride<int> *constant_overrides;
-	_StyleOverride<Color> *color_overrides;
+	_ThemeOverride* theme_overrides;
 
 	Theme *theme;
 
@@ -80,11 +72,7 @@ struct FramePrivate {
 
 		parent=NULL;
 		window=NULL;
-		stylebox_overrides=NULL;
-		font_overrides=NULL;
-		pixmap_overrides=NULL;
-		constant_overrides=NULL;
-		color_overrides=NULL;
+		theme_overrides=NULL;
 		h_align=HALIGN_FILL;
 		v_align=VALIGN_FILL;
 		focus_mode=FOCUS_NONE;
@@ -128,6 +116,12 @@ void Frame::set_parent(Container *p_parent) {
 }
 
 
+void Frame::set_rect( const Rect& p_rect ) {
+
+	_fp->pos_cache=p_rect.pos;
+	_fp->size_cache=p_rect.size;
+}
+
 Size Frame::compute_minimum_size() const {
 
 	return Size();
@@ -145,284 +139,89 @@ void Frame::set_update_bg(bool p_enabled) {
 /* THEME CUSTOMIZATION */
 
 /**
- * Replace a stylebox with another, all within the Theme.
- * @param p_style stylebox index
- * @param p_with_style replacement index
+ * Replace a theme variable with another, all within the Theme.
+ * @param p_id variable index
+ * @param p_with_id replacement index
  */
-void Frame::replace_stylebox(int p_style, int p_with_style) {
+void Frame::theme_replace(int p_id, int p_with_id) {
 
-	_fp->stylebox_overrides = GUI_NEW( _StyleOverride<StyleBox>( p_style, p_with_style,StyleBox(),_fp->stylebox_overrides) );
-}
-/**
- * Replace a font with another, all within the Theme.
- * @param p_font font index
- * @param p_with_font replacement index
- */
-void Frame::replace_font(int p_font, int p_with_font) {
-
-	_fp->font_overrides = GUI_NEW( _StyleOverride<Font>( p_font, p_with_font,Font(),_fp->font_overrides) );
-}
-/**
- * Replace a pixmap with another, all within the Theme.
- * @param p_pixmap pixmap index
- * @param p_with_pixmap replacement index
- */
-void Frame::replace_pixmap(int p_pixmap, int p_with_pixmap) {
-
-	_fp->pixmap_overrides = GUI_NEW( _StyleOverride<Pixmap>( p_pixmap, p_with_pixmap,Pixmap(),_fp->pixmap_overrides) );
-
+	theme_restore(p_id);
+	_fp->theme_overrides = GUI_NEW( _ThemeOverride( p_id, p_with_id,Variant(),_fp->theme_overrides) );
 }
 
 /**
- * Replace a constant with another, all within the Theme.
- * @param p_constant constant index
- * @param p_with_constant replacement index
+ * Override a theme variable by a custom user-provided value
+ * @param p_id variable index
+ * @param p_with replacement value
  */
-void Frame::replace_constant(int p_constant, int p_with_constant) {
+void Frame::theme_override(int p_id, const Variant& p_variant) {
 
-	_fp->constant_overrides = GUI_NEW( _StyleOverride<int>( p_constant, p_with_constant,0,_fp->constant_overrides) );
-
-}
-/**
- * Replace a color with another, all within the Theme.
- * @param p_color color index
- * @param p_with_color replacement index
- */
-void Frame::replace_color(int p_color, int p_with_color) {
-
-	_fp->color_overrides = GUI_NEW( _StyleOverride<Color>( p_color, p_with_color,0,_fp->color_overrides) );
-}
-
-
-/**
- * Replace a stylebox from the theme for custom one, privided by the user
- * @param p_style stylebox index from the theme
- * @param p_style_box user provided stylebox
- */
-void Frame::set_custom_stylebox(int p_style, const StyleBox& p_stylebox) {
-
-	_fp->stylebox_overrides = GUI_NEW( _StyleOverride<StyleBox>( p_style, -1,p_stylebox,_fp->stylebox_overrides) );
-
+	theme_restore(p_id);
+	_fp->theme_overrides = GUI_NEW( _ThemeOverride( p_id, -1,p_variant,_fp->theme_overrides) );
 }
 
 /**
- * Replace a font from the theme for custom one, privided by the user
- * @param p_style font index from the theme
- * @param p_style_box user provided font
- */
-void Frame::set_custom_font(int p_style, const Font& p_font) {
-
-	_fp->font_overrides = GUI_NEW( _StyleOverride<Font>( p_style, -1,p_font,_fp->font_overrides) );
-
-}
-
-/**
- * Replace a pixmap from the theme for custom one, privided by the user
- * @param p_style pixmap index from the theme
- * @param p_style_box user provided pixmap
- */
-void Frame::set_custom_pixmap(int p_style, const Pixmap& p_pixmap) {
-
-	_fp->pixmap_overrides = GUI_NEW( _StyleOverride<Pixmap>( p_style, -1,p_pixmap,_fp->pixmap_overrides) );
-
-}
-
-/**
- * Replace a constant from the theme for custom one, privided by the user
- * @param p_style constant index from the theme
- * @param p_style_box user provided constant
- */
-void Frame::set_custom_constant(int p_style, int p_constant) {
-
-	_fp->constant_overrides = GUI_NEW( _StyleOverride<int>( p_style, -1,p_constant,_fp->constant_overrides) );
-
-}
-
-/**
- * Replace a color from the theme for custom one, privided by the user
- * @param p_style color index from the theme
- * @param p_style_box user provided color
- */
-void Frame::set_custom_color(int p_style, const Color& p_color) {
-
-	_fp->color_overrides = GUI_NEW( _StyleOverride<Color>( p_style, -1,p_color,_fp->color_overrides) );
-
-}
-
-/**
- * Get a stylebox from the theme. 
+ * Get a variable from the theme. 
  * if overrides are found, they are returned. Otherwise if the frame has a custom theme,
  * it is used. Then, the window theme is used, and finally the default one if nothing else was found.
- * @param p_index stylebox theme index
- * @return stylebox
+ * @param p_index theme index id
+ * @return variant
  */
 
-const StyleBox& Frame::stylebox(int p_index) const {
+const Variant& Frame::theme(int p_id) const {
 
-	StyleBox*res=NULL;
 	
-	int idx = _fp->stylebox_overrides->get( p_index, &res );
-
-	if (idx==-1) {
-
-		return *res;
-	} else if (idx>=0) {
-
-		p_index=idx;
+	/* Check theme overrides */	
+	if ( _fp->theme_overrides) {
+		_ThemeOverride *to = _fp->theme_overrides->get( p_id );
+		if (to) {
+		
+			if (to->with_t.get_type()!=Variant::NIL)
+				return to->with_t;
+			else 
+				p_id=to->with;
+		}
 	}
 
 	if (_fp->theme ) {
 
-		return _fp->theme->get_stylebox(p_index);
+		return _fp->theme->get_var(p_id);
 
 	} else if (_fp->window) {
 
-		return _fp->window->get_theme()->get_stylebox(p_index);
+		return _fp->window->get_theme()->get_var(p_id);
 	} 
 
-	static StyleBox empty;
+	static Variant empty;
 	return empty;
 
 }
 
-/**
- * Get a font from the theme. 
- * if overrides are found, they are returned. Otherwise if the frame has a custom theme,
- * it is used. Then, the window theme is used, and finally the default one if nothing else was found.
- * @param p_index font theme index
- * @return font
- */
+void Frame::theme_restore(int p_id) {
 
-const Font& Frame::font(int p_index) const {
-
-	Font*res=NULL;
+	_ThemeOverride *to=_fp->theme_overrides, *prev=NULL;
 	
-	int idx = _fp->font_overrides->get( p_index, &res );
-
-	if (idx==-1) {
-
-		return *res;
-	} else if (idx>=0) {
-
-		p_index=idx;
+	while(to) {
+	
+		if (to->var==p_id) {
+		
+			if (prev) {
+			
+				prev->next=to->next;
+			} else {
+			
+				_fp->theme_overrides=to->next;
+			}
+			
+			GUI_DELETE( to );
+			return;
+			
+		}
+	
+		to=to->next;
 	}
-
-	if (_fp->theme ) {
-
-		return _fp->theme->get_font(p_index);
-
-	} else if (_fp->window) {
-
-		return _fp->window->get_theme()->get_font(p_index);
-	} 
-
-	static Font empty;
-	return empty;
 }
 
-/**
- * Get a pixmap from the theme. 
- * if overrides are found, they are returned. Otherwise if the frame has a custom theme,
- * it is used. Then, the window theme is used, and finally the default one if nothing else was found.
- * @param p_index pixmap theme index
- * @return pixmap
- */
-
-const Pixmap& Frame::pixmap(int p_index) const {
-
-	Pixmap*res=NULL;
-	
-	int idx = _fp->pixmap_overrides->get( p_index, &res );
-
-	if (idx==-1) {
-
-		return *res;
-	} else if (idx>=0) {
-
-		p_index=idx;
-	}
-
-	if (_fp->theme ) {
-
-		return _fp->theme->get_pixmap(p_index);
-
-	} else if (_fp->window) {
-
-		return _fp->window->get_theme()->get_pixmap(p_index);
-	} 
-
-	static Pixmap empty;
-	return empty;
-}
-
-/**
- * Get a constant from the theme. 
- * if overrides are found, they are returned. Otherwise if the frame has a custom theme,
- * it is used. Then, the window theme is used, and finally the default one if nothing else was found.
- * @param p_index constant theme index
- * @return constant
- */
-
-int Frame::constant(int p_index) const {
-
-	int*res=NULL;
-	
-	int idx = _fp->constant_overrides->get( p_index, &res );
-
-	if (idx==-1) {
-
-		return *res;
-	} else if (idx>=0) {
-
-		p_index=idx;
-	}
-
-	if (_fp->theme ) {
-
-		return _fp->theme->get_constant(p_index);
-
-	} else if (_fp->window) {
-
-		return _fp->window->get_theme()->get_constant(p_index);
-	} 
-
-	return 0;
-}
-
-/**
- * Get a color from the theme. 
- * if overrides are found, they are returned. Otherwise if the frame has a custom theme,
- * it is used. Then, the window theme is used, and finally the default one if nothing else was found.
- * @param p_index color theme index
- * @return color
- */
-
-const Color& Frame::color(int p_index) const {
-
-	Color*res=NULL;
-	
-	int idx = _fp->color_overrides->get( p_index, &res );
-
-	if (idx==-1) {
-
-		return *res;
-	} else if (idx>=0) {
-
-		p_index=idx;
-	}
-
-	if (_fp->theme ) {
-
-		return _fp->theme->get_color(p_index);
-
-	} else if (_fp->window) {
-
-		return _fp->window->get_theme()->get_color(p_index);
-	} 
-
-	static Color empty;
-	return empty;
-}
 
 /* HINTING */
 

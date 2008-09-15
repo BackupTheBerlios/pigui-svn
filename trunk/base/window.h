@@ -36,6 +36,10 @@ class Window : public Object {
 	void _update_notify(Rect p_rect);
 		
 public:
+	/* Window Info */
+	
+	bool get_state(WindowState p_state) const;
+	void set_state( WindowState p_state, bool p_enabled );
 
 	Frame *get_focus_frame();
 	void set_focus_frame(Frame *p_frame);

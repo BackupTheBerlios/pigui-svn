@@ -18,6 +18,8 @@ base_files=[\
 	"variant.cpp",\
 	"object.cpp",\
 	"slot.cpp",\
+	"theme.cpp",\
+	"theme_default.cpp",\
 	
 ]
 

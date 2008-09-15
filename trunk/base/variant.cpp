@@ -11,8 +11,10 @@
 //
 #include "variant.h"
 #include "base/object.h"
+#include <new>
 
 namespace GUI {
+
 
 Variant::operator bool() const {
 
@@ -39,7 +41,7 @@ Variant::operator bool() const {
 		} break;
 		case STRING: {
 		
-			return string.length();
+			return ((String*)_data.mem)->length();
 		
 		} break;
 		case POINT: {
@@ -53,10 +55,14 @@ Variant::operator bool() const {
 		
 		} break;
 		case PIXMAP: { 
-			return _data._pixmap->is_valid();		
+			return ((Pixmap*)_data.mem)->is_valid();		
 		} break;
 		case FONT: {
-			return _data._font->is_valid();		
+			return ((Font*)_data.mem)->is_valid();		
+		} break;
+		case STYLEBOX: {
+			
+			return false;
 		} break;
 		case OBJECT: {
 		
@@ -99,7 +105,7 @@ Variant::operator signed int() const {
 		} break;
 		case STRING: {
 		
-			return string.to_int();
+			return ((String*)_data.mem)->to_int();
 		
 		} break;
 		case POINT: {
@@ -118,6 +124,7 @@ Variant::operator signed int() const {
 		} break;
 		case PIXMAP:
 		case FONT:
+		case STYLEBOX:
 		case OBJECT: {
 		
 			return 0;
@@ -154,7 +161,7 @@ Variant::operator double() const {
 		} break;
 		case STRING: {
 		
-			return string.to_double();
+			return ((String*)_data.mem)->to_double();
 		
 		} break;
 		case POINT: {
@@ -173,6 +180,7 @@ Variant::operator double() const {
 		} break;
 		case PIXMAP:
 		case FONT:
+		case STYLEBOX:
 		case OBJECT: {
 		
 			return 0;
@@ -225,7 +233,7 @@ Variant::operator String() const {
 		} break;
 		case STRING: {
 		
-			return string;
+			return *((String*)_data.mem);
 		
 		} break;
 		case POINT: {
@@ -243,18 +251,21 @@ Variant::operator String() const {
 		
 		} break;
 		case PIXMAP: {
-		
-			return (_data._pixmap->is_valid()?("Pixmap ("+String::num(_data._pixmap->get_size().width)+"x"+String::num(_data._pixmap->get_size().height)+")"):"Pixmap (NIL)");
+			
+			Pixmap pixmap = *((Pixmap*)_data.mem);
+			return (pixmap.is_valid()?("Pixmap ("+String::num(pixmap.get_size().width)+"x"+String::num(pixmap.get_size().height)+")"):"Pixmap (NIL)");
 		};
 		case FONT: {
 		
-			if (!_data._font->is_valid()) {
+			Font font = *((Font*)_data.mem);
+		
+			if (!font.is_valid()) {
 			
 				return "Font (NIL)";
 			} else {
 			
-				String fontstr = "Font ("+_data._font->get_name()+","+_data._font->get_size();
-				unsigned int flags = _data._font->get_flags();
+				String fontstr = "Font ("+font.get_name()+","+font.get_size();
+				unsigned int flags = font.get_flags();
 				if (flags&FONT_STYLE_BOLD)
 					fontstr+=",Bold";
 				if (flags&FONT_STYLE_ITALIC)
@@ -265,6 +276,10 @@ Variant::operator String() const {
 				return fontstr;			
 			}
 		
+		} break;
+		case STYLEBOX: {
+		
+			return "StyleBox";
 		} break;
 		case OBJECT: {
 		
@@ -311,7 +326,7 @@ Variant::operator Pixmap() const {
 
 	if (type==PIXMAP) {
 	
-		return *_data._pixmap;
+		return *((Pixmap*)_data.mem);
 	} else {
 		return Pixmap();
 	}
@@ -321,9 +336,19 @@ Variant::operator Font() const {
 
 	if (type==FONT) {
 	
-		return *_data._font;
+		return *((Font*)_data.mem);
 	} else {
+	
 		return Font();
+	}
+}
+Variant::operator StyleBox() const {
+
+	if (type==STYLEBOX) {
+	
+		return *((StyleBox*)_data.mem);
+	} else {
+		return StyleBox();
 	}
 }
 
@@ -342,12 +367,19 @@ void Variant::clear() {
 
 	switch(type) {
 	
+		case STRING: { 
+		
+			((String*)_data.mem)->~String();
+		} break;
 		case PIXMAP: { 
-			GUI_DELETE( _data._pixmap );
+			((Pixmap*)_data.mem)->~Pixmap();
 			
 		} break;
 		case FONT: {
-			GUI_DELETE( _data._font );
+			((Font*)_data.mem)->~Font();
+		} break;
+		case STYLEBOX: {
+			((StyleBox*)_data.mem)->~StyleBox();
 		} break;
 		default: break;
 	}
@@ -368,7 +400,7 @@ void Variant::reference(const Variant&p_variant) {
 			// none	
 		} break;
 		case BOOL: {
-		
+					
 			_data._bool=p_variant._data._bool;
 
 		} break;
@@ -383,7 +415,7 @@ void Variant::reference(const Variant&p_variant) {
 		} break;
 		case STRING: {
 		
-			string=p_variant.string;
+			new((void*)&_data.mem[0]) String(*((String*)p_variant._data.mem));
 		
 		} break;
 		case POINT: {
@@ -403,13 +435,15 @@ void Variant::reference(const Variant&p_variant) {
 		
 		} break;
 		case PIXMAP: { 
-			_data._pixmap=GUI_NEW( Pixmap );
-			*_data._pixmap=*p_variant._data._pixmap;
-			
+			new(_data.mem) Pixmap(*((Pixmap*)p_variant._data.mem));			
 		} break;
 		case FONT: {
-			_data._font=GUI_NEW( Font );
-			*_data._font=*p_variant._data._font;
+			new(_data.mem) Font(*((Font*)p_variant._data.mem));
+
+		} break;
+		case STYLEBOX: {
+			new(_data.mem) StyleBox(*((StyleBox*)p_variant._data.mem));
+
 		} break;
 		case OBJECT: {
 		
@@ -489,9 +523,26 @@ Variant::Variant(const String& p_string) {
 
 	clear();
 	type=STRING;
-	string=p_string;
+	new(_data.mem) String(p_string);
+
 
 }
+
+Variant::Variant(const char * p_cstring) {
+
+	clear();
+	type=STRING;
+	new(_data.mem) String(p_cstring);
+	
+}
+Variant::Variant(const String::CharType * p_wstring) {
+
+	clear();
+	type=STRING;
+	new(_data.mem) String(p_wstring);
+
+}
+
 Variant::Variant(const Point& p_point) {
 
 	clear();
@@ -522,16 +573,24 @@ Variant::Variant(const Pixmap& p_pixmap) {
 
 	clear();
 	type=PIXMAP;
-	_data._pixmap = GUI_NEW( Pixmap );
-	*_data._pixmap=p_pixmap;
+	new(_data.mem) Pixmap(p_pixmap);
+
 	
 }
 Variant::Variant(const Font& p_font) {
 
 	clear();
 	type=FONT;
-	_data._font = GUI_NEW( Font );
-	*_data._font=p_font;
+	new(_data.mem) Font(p_font);
+	
+
+}
+
+Variant::Variant(const StyleBox& p_stylebox) {
+
+	clear();
+	type=STYLEBOX;
+	new(_data.mem) StyleBox(p_stylebox);
 	
 
 }

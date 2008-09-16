@@ -86,6 +86,7 @@ public:
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect());
 
 	virtual void add_dirty_region(const Rect& p_rect);
+	virtual void request_size_update();
 
 	void process_x11_event(XEvent* p_event);
 	WindowX11 *get_next(); 

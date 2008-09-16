@@ -13,6 +13,7 @@
 
 #include "base/platform.h"
 #include "base/container.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -104,6 +105,50 @@ void Window::set_minimum_size_changed(const Size& p_new_minsize) {
 
 }
 
+void Window::mouse_button_callback(Point p_point, int p_button,bool p_pressed, int p_mask) {
+
+	printf("button\n");
+}
+void Window::mouse_doubleclick_callback(Point p_point, int p_mask) {
+
+
+}
+void Window::mouse_motion_callback(Point p_pos,Point p_pos_rel, int p_mask ) {
+
+
+}
+void Window::mouse_enter_window_callback() {
+
+
+}
+void Window::mouse_exit_window_callback() {
+
+
+}
+void Window::key_callback(int p_unicode, int p_scancode, bool p_pressed, bool p_echo, int p_mask ) {
+
+
+}
+void Window::update_callback(Rect p_rect) {
+
+
+}
+void Window::size_update_callback() {
+
+
+}
+void Window::focus_enter_callback() {
+
+
+}
+void Window::focus_exit_callback() {
+
+
+}
+void Window::close_request_callback() {
+
+
+}
 
 
 Window::Window() {
@@ -112,6 +157,20 @@ Window::Window() {
 	
 	_wp->platform_window = Platform::get_singleton()->create_window();
 	_wp->root_container=0;
+	
+	/* Connect Platformwindow Signals */
+	_wp->platform_window->connect( "mouse_button", this, &Window::mouse_button_callback );
+	_wp->platform_window->connect( "mouse_doubleclick", this, &Window::mouse_doubleclick_callback );
+	_wp->platform_window->connect( "mouse_motion", this, &Window::mouse_motion_callback );
+	_wp->platform_window->connect( "mouse_enter_window", this, &Window::mouse_enter_window_callback );
+	_wp->platform_window->connect( "mouse_exit_window", this, &Window::mouse_exit_window_callback );
+	_wp->platform_window->connect( "key", this, &Window::key_callback );
+	_wp->platform_window->connect( "update", this, &Window::update_callback );
+	_wp->platform_window->connect( "size_update", this, &Window::size_update_callback );
+	_wp->platform_window->connect( "focus_enter", this, &Window::focus_enter_callback );
+	_wp->platform_window->connect( "focus_exit", this, &Window::focus_exit_callback );
+	_wp->platform_window->connect( "close_request", this, &Window::close_request_callback );
+	
 }
 
 

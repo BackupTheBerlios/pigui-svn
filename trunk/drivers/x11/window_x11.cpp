@@ -375,6 +375,12 @@ void WindowX11::add_dirty_region(const Rect& p_rect) {
 }
 
 
+void WindowX11::request_size_update() {
+
+	wp->platform_x11->add_size_update_window(this);
+
+}
+
 unsigned int WindowX11::fill_modifier_button_mask(unsigned int p_x11_state) {
 
 	unsigned int mask=0;

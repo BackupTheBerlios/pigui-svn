@@ -104,7 +104,22 @@ void PlatformX11::iteration() {
 		w=w->get_next();
 	}
 
+	performing_size_updates=true;
+	
+	for(List<WindowX11*>::Element *I=pending_size_update_windows.begin();I;I=I->next()) {
+	
+		I->get()->call("do_size_update");	
+	}
+
+	pending_size_update_windows.clear();
+	performing_size_updates=false;
+	
 	XFlush(x11_display);
+}
+
+void PlatformX11::add_size_update_window(WindowX11 *p_window) {
+
+	pending_size_update_windows.push_front(p_window);
 }
 
 static int _cmpstringp(const void *p1, const void *p2) {
@@ -268,6 +283,8 @@ PlatformX11::PlatformX11() {
 	window_list=0;
 
 	generate_font_list();
+	
+	performing_size_updates=false;
 	
 }
 

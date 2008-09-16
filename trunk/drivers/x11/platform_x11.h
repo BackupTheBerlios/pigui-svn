@@ -38,7 +38,10 @@ class PlatformX11 : public Platform {
 	::Display *x11_display;
 	::XIM xim;
 	::XIMStyle xim_style;
-
+	
+	bool performing_size_updates;
+	List<WindowX11*> pending_size_update_windows;
+	
 	struct FontInfoListX11 {
 		
 		String name;
@@ -64,6 +67,7 @@ friend class WindowX11;
 		return static_cast<FontX11*>( extract_platform_font(p_font) );
 	}
 	
+	void add_size_update_window(WindowX11 *p_window);
 public:
 
 	inline ::XIM get_xim() { return xim; }

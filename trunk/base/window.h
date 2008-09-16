@@ -35,6 +35,20 @@ class Window : public Object {
 		
 	void _update_notify(Rect p_rect);
 	
+	/* Callbacks from PlatformWindow */	
+	
+	void mouse_button_callback(Point p_point, int p_button,bool p_pressed, int p_mask);
+	void mouse_doubleclick_callback(Point p_point, int p_mask);
+	void mouse_motion_callback(Point p_pos,Point p_pos_rel, int p_mask );
+	void mouse_enter_window_callback();
+	void mouse_exit_window_callback();
+	void key_callback(int p_unicode, int p_scancode, bool p_pressed, bool p_echo, int p_mask );
+	void update_callback(Rect p_rect);
+	void size_update_callback();
+	void focus_enter_callback();
+	void focus_exit_callback();
+	void close_request_callback();
+	
 friend class Container;		
 		
 	List<Container*>::Element* add_container_pending_resize(Container *p_container);

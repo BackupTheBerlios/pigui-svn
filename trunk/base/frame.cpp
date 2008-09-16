@@ -57,6 +57,7 @@ struct FramePrivate {
 
 	FocusMode focus_mode;
 	Size minimum_size;
+	Size minimum_size_cache; // used by container
 
 	Point size_cache;
 	Point pos_cache;
@@ -83,6 +84,14 @@ struct FramePrivate {
 
 };
 
+void Frame::set_minimum_size_cache(const Size& p_size) {
+
+	_fp->minimum_size_cache=p_size;
+}
+Size Frame::get_minimum_size_cache() const {
+
+	return _fp->minimum_size_cache;
+}
 
 void Frame::set_window(Window *p_window) {
 

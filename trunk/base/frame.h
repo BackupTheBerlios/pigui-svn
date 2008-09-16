@@ -37,6 +37,8 @@ friend class Window;
 	virtual void set_window(Window *p_window); 
 	void set_parent(Container *p_parent); 
 	void set_rect( const Rect& p_rect );
+	void set_minimum_size_cache(const Size& p_size);
+	Size get_minimum_size_cache() const;
 protected:
 
 	virtual Size compute_minimum_size() const;
@@ -95,6 +97,8 @@ public:
 
 	virtual bool has_width_for_height() const;
 	virtual int get_width_for_height() const;
+	
+	virtual void check_minimum_size()=0;
 
 	/* EVENTS */
 

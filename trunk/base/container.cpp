@@ -141,7 +141,7 @@ void Container::draw_tree(const Rect& p_exposed) {
 
 void Container::window_request_size(const Size& p_size) {
 
-
+	set_rect( Rect( Point(), p_size ) );
 }
 
 void Container::resize() {

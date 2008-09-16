@@ -15,7 +15,7 @@
 
 #include "base/theme.h"
 #include "base/object.h"
-
+#include "base/list.h"
 namespace GUI {
 
 /**
@@ -31,9 +31,13 @@ class Window : public Object {
 
 	GUI_TYPE( Window, Object );
 	
-	WindowPrivate *wp;
+	WindowPrivate *_wp;
 		
 	void _update_notify(Rect p_rect);
+	
+friend class Container;		
+		
+	List<Container*>::Element* add_container_pending_resize(Container *p_container);
 		
 public:
 	/* Window Info */
@@ -44,7 +48,6 @@ public:
 	Frame *get_focus_frame();
 	void set_focus_frame(Frame *p_frame);
 
-	void add_dirty_container(Container *p_container);
 	void set_minimum_size_changed(const Size& p_new_minsize);
 
 	void frame_deleted_notify(Frame *p_frame);

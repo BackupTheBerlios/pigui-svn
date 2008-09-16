@@ -54,6 +54,7 @@ class Container : public Frame {
 	ContainerPrivate *_cp;
 
 	void set_resizing(bool p_resizing);
+	void set_pending_resize_tree();	
 protected:
 
 	ContainerChild *add_frame_base( Frame *p_frame,bool p_front=false );
@@ -63,7 +64,7 @@ protected:
          * p_size will never be smaller than get_minimum_size()
 	 * @param r_size size
 	 */
-	virtual void resize_childs(Size& p_size)=0;
+	virtual void resize_children(Size& p_size)=0;
 
 	/**
 	 * Create a container child.
@@ -84,8 +85,7 @@ friend class Window;
 	
 public:
 
-	
-	void update_size();
+	void check_minimum_size();
 
 	ContainerChild *get_child_list();
 	ContainerChild *get_child_list_last();

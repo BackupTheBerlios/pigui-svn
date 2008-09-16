@@ -86,6 +86,7 @@ public:
 	
 	virtual void draw_set_clipping(bool p_enabled,const Rect& p_rect=Rect())=0;
 	virtual void add_dirty_region(const Rect& p_rect)=0;
+	virtual void request_size_update()=0; ///< Window will call this only once util answered with a "do_size_update" signal.
 
 	/* signals:
 		-mouse_button
@@ -113,6 +114,7 @@ public:
 			area:Rect
 		-rect_change
 			rect:Rect
+		-do_size_update
 		-focus_enter
 		-focus_exit
 		-close_request			

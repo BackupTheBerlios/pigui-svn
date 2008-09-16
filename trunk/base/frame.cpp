@@ -346,7 +346,7 @@ void Frame::set_h_align(HAlign p_h_align) {
 
 	_fp->h_align=p_h_align;
 	if (_fp->parent)
-		_fp->parent->update_size();
+		_fp->parent->check_minimum_size();
 
 }
 
@@ -358,7 +358,7 @@ void Frame::set_v_align(VAlign p_v_align) {
 	
 	_fp->v_align=p_v_align;
 	if (_fp->parent)
-		_fp->parent->update_size();
+		_fp->parent->check_minimum_size();
 
 }
 /**
@@ -470,7 +470,7 @@ void Frame::set_minimum_size(const Size & p_size ) {
 	_fp->minimum_size=p_size;
 	
 	if (_fp->parent)
-		_fp->parent->update_size();
+		_fp->parent->check_minimum_size();
 }
 
 Size Frame::get_minimum_size() const {
@@ -592,7 +592,7 @@ void Frame::show() {
 
 	if (_fp->parent && is_visible()) {
 
-		_fp->parent->update_size();
+		_fp->parent->check_minimum_size();
 	}
 }
 void Frame::hide() {
@@ -606,7 +606,7 @@ void Frame::hide() {
 
 	if (_fp->parent && was_visible) {
 
-		_fp->parent->update_size();
+		_fp->parent->check_minimum_size();
 	}
 }
 

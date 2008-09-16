@@ -20,29 +20,36 @@ namespace GUI {
 class WindowPrivate {
 public:
 
+	List<Container*> containers_pending_resize;
+
 	PlatformWindow *platform_window;
 	Container *root_container;
 
 };
 
+List<Container*>::Element* Window::add_container_pending_resize(Container *p_container) {
+
+	_wp->containers_pending_resize.push_back(p_container);
+	return _wp->containers_pending_resize.back();
+}
 
 bool Window::get_state(WindowState p_state) const {
 
-	if (!wp->platform_window)
+	if (!_wp->platform_window)
 		return false;
 		
-	return wp->platform_window->get_state(p_state);
+	return _wp->platform_window->get_state(p_state);
 
 }
 void Window::set_state( WindowState p_state, bool p_enabled) {
 
-	wp->platform_window->set_state( p_state, p_enabled );
+	_wp->platform_window->set_state( p_state, p_enabled );
 }
 
 
 void Window::_update_notify(Rect p_rect) {
 
-	if (!wp->root_container)
+	if (!_wp->root_container)
 		return;
 		
 		
@@ -81,14 +88,14 @@ Container *Window::get_root_container() {
 
 void Window::set_root_container(Container *p_root) {
 
-	if (wp->root_container) {	
+	if (_wp->root_container) {	
 		GUI_PRINT_ERROR("Window already has root container.");
 		return;
 	}
 	
-	wp->root_container=p_root;
+	_wp->root_container=p_root;
 	// This will force the root container to expand the window to wathever size it needs, redraw, etc.
-	wp->root_container->window_request_size(Size(1,1)); 
+	_wp->root_container->window_request_size(Size(1,1)); 
 }
 
 
@@ -98,27 +105,23 @@ void Window::set_minimum_size_changed(const Size& p_new_minsize) {
 }
 
 
-void Window::add_dirty_container(Container *p_container) {
-
-
-}
 
 Window::Window() {
 
-	wp = GUI_NEW( WindowPrivate );
+	_wp = GUI_NEW( WindowPrivate );
 	
-	wp->platform_window = Platform::get_singleton()->create_window();
-	wp->root_container=0;
+	_wp->platform_window = Platform::get_singleton()->create_window();
+	_wp->root_container=0;
 }
 
 
 Window::~Window() {
 
-	if (wp->root_container)
-		GUI_DELETE( wp->root_container );
+	if (_wp->root_container)
+		GUI_DELETE( _wp->root_container );
 
-	if (wp->platform_window)
-		delete wp->platform_window;
+	if (_wp->platform_window)
+		delete _wp->platform_window;
 }
 
 

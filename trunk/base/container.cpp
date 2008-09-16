@@ -1,3 +1,4 @@
+
 //
 // C++ Implementation: container
 //
@@ -21,7 +22,8 @@ public:
 		bool resizing;
 	} root;
 
-	bool size_dirty;
+	bool pending_resize;
+	List<Container*>::Element *pending_resize_request;
 
 	ContainerChild *child_list_begin;
 	ContainerChild *child_list_end;
@@ -30,12 +32,63 @@ public:
 
 	ContainerPrivate() {
 
-		size_dirty=true;
+		pending_resize=false;
+		pending_resize_request=NULL;
 		child_list_begin=NULL;
 		child_list_end=NULL;
 		root.resizing=false;
 	};
 };
+
+
+void Container::set_pending_resize_tree() {
+
+	if (_cp->pending_resize) {
+	
+		// we found a level of the tree downwards that is already pending resize,
+		// so we should quit.
+		
+		if ( _cp->pending_resize_request ) {
+			// before quitting, we should make sure to take over its pending resize request,
+			// so the window will ask *us* to resize instead of this previous, less important, one.
+			
+			_cp->pending_resize_request->erase(); // this list allows us to do this.
+			_cp->pending_resize_request=NULL;
+			
+		}
+		
+		return;
+	}
+	
+	for( ContainerChild *I = _cp->child_list_begin ; I ; I=I->next ) {
+	
+		if (I->frame->container_cast())
+			I->frame->container_cast()->set_pending_resize_tree();
+	}
+}
+
+void Container::check_minimum_size() {
+
+	if (_cp->pending_resize)
+		return;
+		
+	if (!get_window())
+		return;
+		
+	if (_cp->pending_resize_request) {
+	
+		GUI_PRINT_ERROR("Bug, pending resize request not cleared");
+		return;
+	}
+	_cp->pending_resize_request = get_window()->add_container_pending_resize(this);
+	_cp->pending_resize=true;
+	// set tree to wait for a resize
+	for( ContainerChild *I = _cp->child_list_begin ; I ; I=I->next ) {
+	
+		if (I->frame->container_cast())
+			I->frame->container_cast()->set_pending_resize_tree();
+	}
+}
 
 
 void Container::set_resizing(bool p_resizing) {
@@ -126,13 +179,6 @@ ContainerChild *Container::add_frame_base( Frame *p_frame,bool p_front ) {
 }
 
 
-void Container::update_size() {
-	
-	_cp->size_dirty=true;
-	if (get_window())
-		get_window()->add_dirty_container( this );
-}
-
 
 void Container::draw_tree(const Rect& p_exposed) {
 
@@ -141,7 +187,9 @@ void Container::draw_tree(const Rect& p_exposed) {
 
 void Container::window_request_size(const Size& p_size) {
 
+
 	set_rect( Rect( Point(), p_size ) );
+
 }
 
 void Container::resize() {
@@ -177,13 +225,13 @@ void Container::resize() {
 	}
 
 	// This should be a safe bet, without height for width everything should fit
-	resize_childs( size );
+	resize_children( size );
 
 	// enable REAL resizing
 	set_resizing(true);
 
 	// since the "width" of the childrens in the tree should now be correct thanks to the
-	// resize_childs two lines ago, we will try once more to do the resize, with 
+	// resize_children two lines ago, we will try once more to do the resize, with 
 	// height for width enabled. This is the REAL resize check.
 
 	minsize = get_minimum_size(); // check minimum size with height for width enabled.
@@ -202,10 +250,10 @@ void Container::resize() {
 			get_window()->set_minimum_size_changed(minsize);
 			return;
 		}		
-	}
+  	}
 
 	// since minsize didn't change, let's just reorganize everything normally then
-	resize_childs(size); 
+	resize_children(size); 
 	
 	set_resizing(false);
 }

@@ -1,4 +1,32 @@
 
+
+#include "drivers/x11/platform_x11.h"
+#include "base/constants.h"
+#include "base/object.h"
+#include "base/window.h"
+
+
+
+void print_error_test(const char  *p_file,int p_line,const char*p_err) {
+
+	printf("ERROR: %s:%i - %s\n",p_file,p_line,p_err);
+}
+
+
+int main(int argc, char *argv[]) {
+
+	_GUI_print_error_func=print_error_test;
+	GUI::PlatformX11 platform_x11;
+	
+	GUI::Window *window = new GUI::Window;
+	
+	window->set_state( GUI::WINDOW_STATE_VISIBLE, true );
+	return platform_x11.run();
+
+}
+
+
+#if 0
 #include "drivers/x11/platform_x11.h"
 #include "base/constants.h"
 #include "base/object.h"
@@ -98,3 +126,4 @@ int main(int argc, char *argv[]) {
 	return platform_x11.run();
 
 }
+#endif

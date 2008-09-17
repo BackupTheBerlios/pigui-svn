@@ -87,11 +87,11 @@ public:
 
 	void check_minimum_size();
 
-	ContainerChild *get_child_list();
-	ContainerChild *get_child_list_last();
+	ContainerChild *get_children();
+	ContainerChild *get_children_last();
 
-	const ContainerChild *get_child_list() const;
-	const ContainerChild *get_child_list_last() const;
+	const ContainerChild *get_children() const;
+	const ContainerChild *get_children_last() const;
 
 	bool has_child(Frame *p_frame) const;
 

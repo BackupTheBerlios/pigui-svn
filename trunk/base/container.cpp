@@ -25,8 +25,8 @@ public:
 	bool pending_resize;
 	List<Container*>::Element *pending_resize_request;
 
-	ContainerChild *child_list_begin;
-	ContainerChild *child_list_end;
+	ContainerChild *children_begin;
+	ContainerChild *children_end;
 
 	Size minsize_cache;
 
@@ -34,8 +34,8 @@ public:
 
 		pending_resize=false;
 		pending_resize_request=NULL;
-		child_list_begin=NULL;
-		child_list_end=NULL;
+		children_begin=NULL;
+		children_end=NULL;
 		root.resizing=false;
 	};
 };
@@ -60,7 +60,7 @@ void Container::set_pending_resize_tree() {
 		return;
 	}
 	
-	for( ContainerChild *I = _cp->child_list_begin ; I ; I=I->next ) {
+	for( ContainerChild *I = _cp->children_begin ; I ; I=I->next ) {
 	
 		if (I->frame->container_cast())
 			I->frame->container_cast()->set_pending_resize_tree();
@@ -83,7 +83,7 @@ void Container::check_minimum_size() {
 	_cp->pending_resize_request = get_window()->add_container_pending_resize(this);
 	_cp->pending_resize=true;
 	// set tree to wait for a resize
-	for( ContainerChild *I = _cp->child_list_begin ; I ; I=I->next ) {
+	for( ContainerChild *I = _cp->children_begin ; I ; I=I->next ) {
 	
 		if (I->frame->container_cast())
 			I->frame->container_cast()->set_pending_resize_tree();
@@ -115,6 +115,24 @@ bool Container::is_resizing() const {
 	return get_root()->_cp->root.resizing;
 }
 
+ContainerChild *Container::get_children() {
+
+	return _cp->children_begin;
+}
+ContainerChild *Container::get_children_last() {
+
+	return _cp->children_end;
+}
+
+const ContainerChild *Container::get_children() const {
+
+	return _cp->children_begin;
+}
+const ContainerChild *Container::get_children_last() const {
+
+	return _cp->children_end;
+}
+
 void Container::set_window(Window *p_window) {
 
 	if (get_window() && p_window!=NULL) {
@@ -126,7 +144,7 @@ void Container::set_window(Window *p_window) {
 	}
 	
 	Frame::set_window(p_window);
-	ContainerChild *c=_cp->child_list_begin;
+	ContainerChild *c=_cp->children_begin;
 
 	while (c) {
 
@@ -148,22 +166,22 @@ ContainerChild *Container::add_frame_base( Frame *p_frame,bool p_front ) {
 		return NULL;
 	}
 
-	if (_cp->child_list_begin) { //if exists
+	if (_cp->children_begin) { //if exists
 		
 		if (p_front) {
 			
-			_cp->child_list_begin->prev=new_child;
-			new_child->next=_cp->child_list_begin;
-			_cp->child_list_begin=new_child;
+			_cp->children_begin->prev=new_child;
+			new_child->next=_cp->children_begin;
+			_cp->children_begin=new_child;
 		} else {
-			_cp->child_list_end->next=new_child;
-			new_child->prev=_cp->child_list_end;
-			_cp->child_list_end=new_child;
+			_cp->children_end->next=new_child;
+			new_child->prev=_cp->children_end;
+			_cp->children_end=new_child;
 		}
 	} else { //if it doesnt
 		
-		_cp->child_list_begin=new_child;
-		_cp->child_list_end=new_child;
+		_cp->children_begin=new_child;
+		_cp->children_end=new_child;
 	}
 
 	new_child->frame=p_frame;
@@ -281,7 +299,7 @@ void Container::remove_child( Frame *p_frame ) {
 
 bool Container::has_child(Frame *p_frame) const {
 
-	const ContainerChild *c = get_child_list();
+	const ContainerChild *c = get_children();
 	while(c) {
 
 		if (c->get_frame()==p_frame)

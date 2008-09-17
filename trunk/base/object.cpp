@@ -10,6 +10,7 @@
 //
 //
 #include "object.h"
+#include <stdio.h>
 
 namespace GUI {
 
@@ -272,8 +273,10 @@ void Object::call(String p_signal,const Variant& p1,const Variant& p2,const Vari
 
 	List<Slot*>::Element *I=op->slot_list.begin();
 	
+	printf("call4\n");
 	while (I) {
 	
+		printf("%s wants %s\n",I->get()->get_signal().ascii().get_data(),p_signal.ascii().get_data());
 		if (I->get()->get_signal() == p_signal) {
 			I->get()->call(p1,p2,p3,p4);
 		}

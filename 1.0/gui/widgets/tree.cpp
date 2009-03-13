@@ -1017,6 +1017,10 @@ void Tree::mouse_button(const Point& p_pos, int p_button,bool p_press,int p_modi
 	if (!root)
 		return;
 
+	if (p_button==BUTTON_WHEEL_UP || p_button==BUTTON_WHEEL_DOWN) {
+		return;
+	};
+
 	Point pos = p_pos - get_painter()->get_stylebox_offset( stylebox( SB_TREE_NORMAL ) );
 	propagate_mouse_event(pos,0,0,false,root,p_button,p_modifier_mask);
 

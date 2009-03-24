@@ -22,7 +22,7 @@ namespace GUI {
 	@author Juan Linietsky <reduzio@gmail.com>
 */
 
-enum KeyCode { /* List Taken from SDL */
+enum KeyScanCode { /* List Taken from SDL */
 	
 	KEY_UNKNOWN,
 	KEY_FIRST,
@@ -290,8 +290,8 @@ class KeycodeTranslator {
 	unsigned int table[KEY_MAX];
 public:	
 	
-	void add_code(unsigned int p_foreign,KeyCode p_code); //map foreign -> keycode
-	KeyCode get_code(unsigned int p_foreign);
+	void add_code(unsigned int p_foreign,KeyScanCode p_code); //map foreign -> keycode
+	KeyScanCode get_code(unsigned int p_foreign);
 	
 	KeycodeTranslator();
 	virtual ~KeycodeTranslator();

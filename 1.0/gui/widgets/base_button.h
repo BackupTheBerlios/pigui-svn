@@ -36,7 +36,7 @@ private:
 	
 	bool toggle_mode;
 	
-	struct Status {
+	struct ButtonStatus {
 		
 		bool pressed;
 		bool hovering;

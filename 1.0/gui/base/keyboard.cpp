@@ -296,7 +296,7 @@ Keyboard::~Keyboard()
 
 
 	
-void KeycodeTranslator::add_code(unsigned int p_foreign,KeyCode p_code) {
+void KeycodeTranslator::add_code(unsigned int p_foreign,KeyScanCode p_code) {
 	
 	if (p_code==KEY_MAX)
 		return; //pointless
@@ -304,7 +304,7 @@ void KeycodeTranslator::add_code(unsigned int p_foreign,KeyCode p_code) {
 	table[p_code]=p_foreign;
 	
 }
-KeyCode KeycodeTranslator::get_code(unsigned int p_foreign) {
+KeyScanCode KeycodeTranslator::get_code(unsigned int p_foreign) {
 	
 	/* not the fastest ever.. but works. Since it's done once per keypress, it's not an issue.
 		May change to hashtable later, but dont think so */
@@ -312,7 +312,7 @@ KeyCode KeycodeTranslator::get_code(unsigned int p_foreign) {
 	for (int i=0;i<KEY_MAX;i++) {
 		
 		if (table[i]==p_foreign)
-			return (KeyCode)i; //this should be safe
+			return (KeyScanCode)i; //this should be safe
 	}
 	
 	return KEY_UNKNOWN;

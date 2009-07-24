@@ -699,7 +699,25 @@ void Skin::set_default() {
 	SET_BITMAP( BITMAP_ICON_DEFAULT, INVALID_BITMAP_ID );
 	
 	set_default_extra();
-		
+
+	/* colors (from CGA palette) */
+	SET_COLOR(COLOR_BLACK, Color(0, 0, 0));
+	SET_COLOR(COLOR_BLUE,  Color(0, 0, 0xaa));
+	SET_COLOR(COLOR_GREEN, Color(0, 0xaa, 0));
+	SET_COLOR(COLOR_CYAN, Color(0, 0xaa, 0xaa));
+	SET_COLOR(COLOR_RED, Color(0xaa, 0, 0));
+	SET_COLOR(COLOR_MAGENTA, Color(0xaa, 0, 0xaa));
+	SET_COLOR(COLOR_BROWN, Color(0xaa, 0x55, 0));
+	SET_COLOR(COLOR_LIGHT_GRAY, Color(0xaa, 0xaa, 0xaa));
+	SET_COLOR(COLOR_GRAY, Color(0x55, 0x55, 0x55));
+	SET_COLOR(COLOR_LIGHT_BLUE, Color(0x55, 0x55, 0xff));
+	SET_COLOR(COLOR_LIGHT_GREEN, Color(0x55, 0xff, 0x55));
+	SET_COLOR(COLOR_LIGHT_CYAN, Color(0x55, 0xff, 0xff));
+	SET_COLOR(COLOR_LIGHT_RED, Color(0xff, 0x55, 0x55));
+	SET_COLOR(COLOR_LIGHT_MAGENTA, Color(0xff, 0x55, 0xff));
+	SET_COLOR(COLOR_YELLOW, Color(0xff, 0xff, 0x55));
+	SET_COLOR(COLOR_WHITE, Color(0xff, 0xff, 0xff));
+
 }
 
 

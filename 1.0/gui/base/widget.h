@@ -23,7 +23,7 @@ class Widget : public Frame {
 protected:	
 	
 	virtual Size get_minimum_size_internal(); ///< Use this one when writing widgets
-	Painter *get_painter(); ///< Will return 0 unless inside a window
+	virtual Painter *get_painter(); ///< Will return 0 unless inside a window
 	Timer *get_timer(); ///< Will return 0 unless inside a window
 	
 	
